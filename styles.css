@@ -59,11 +59,10 @@
   --esp-footer-linhas: 4px;     /* Preview | Entre as linhas de texto */
   --esp-legenda: 0px;          /* Preview | Entre itens da legenda */
 
-  --alt-btn-primario: 29px;     /* Botões | Altura do primário */
-  --alt-btn-secundario: 29px;   /* Botões | Altura do secundário */
-  --esp-botoes: 2px;            /* Botões | Entre os dois */
+  --alt-botao: 29px;            /* Botões | Altura */
+  --esp-botoes: 6px;            /* Botões | Entre os dois */
   --esp-acima-botoes: 0px;      /* Botões | Acima do grupo */
-  --esp-botao-x: 12px;          /* Botões | Recuo horizontal */
+  --esp-botao-x: 8px;           /* Botões | Recuo horizontal */
 
   --esp-rodape: 20px;           /* Rodapé | Altura */
   --alt-rodape-itens: 20px;     /* Rodapé | Altura dos itens */
@@ -91,15 +90,14 @@
   --fonte-legenda: 8px;         /* Fontes | Legenda do preview */
   --fonte-fmt-dim: 9px;         /* Fontes | Dimensão no seletor */
   --esp-fmt-dim: 8px;           /* Controles | Nome → dimensão */
-  --fonte-btn-primario: 10px;   /* Fontes | Botão primário */
-  --fonte-btn-secundario: 9px;  /* Fontes | Botão secundário */
+  --fonte-botao: 9px;           /* Fontes | Botões de ação */
   --fonte-badge: 7.5px;         /* Rodapé | Fonte do badge */
   --fonte-rodape: 7px;          /* Rodapé | Fonte do texto */
 
   --peso-modo: 600;             /* Pesos | Orgânico / Anúncio */
   --peso-modo-ativo: 700;       /* Pesos | Modo ativo */
   --peso-dropdown: 400;         /* Pesos | Formato selecionado */
-  --peso-btn-primario: 700;     /* Pesos | Botão primário */
+  --peso-botao: 600;            /* Pesos | Botões de ação */
 }
 
 * {
@@ -516,7 +514,8 @@ body {
 
 .button-group {
   display: flex;
-  flex-direction: column;
+  /* lado a lado: economiza uma linha de altura no painel */
+  flex-direction: row;
   width: 100%;
   margin-top: var(--esp-acima-botoes);
 }
@@ -524,14 +523,15 @@ body {
 .btn-primary {
   /* recuo horizontal: sem ele um rótulo longo encosta na borda */
   padding: 0 var(--esp-botao-x);
-  width: 100%;
-  height: var(--alt-btn-primario);
+  flex: 1;
+  min-width: 0;
+  height: var(--alt-botao);
   background-color: var(--vermelho-raro);
   color: #ffffff;
   border-radius: var(--raio-controle);
   font-family: var(--font-brand-mono);
-  font-size: var(--fonte-btn-primario);
-  font-weight: var(--peso-btn-primario);
+  font-size: var(--fonte-botao);
+  font-weight: var(--peso-botao);
   text-transform: uppercase;
   letter-spacing: 0.6px;
   display: flex;
@@ -542,21 +542,18 @@ body {
   user-select: none;
 }
 
-.btn-primary:hover {
-  background-color: var(--vermelho-hover);
-}
-
 .btn-secondary {
   /* recuo horizontal: sem ele um rótulo longo encosta na borda */
   padding: 0 var(--esp-botao-x);
-  width: 100%;
-  height: var(--alt-btn-secundario);
+  flex: 1;
+  min-width: 0;
+  height: var(--alt-botao);
   background-color: transparent;
   color: var(--text-muted);
   border: calc(var(--borda) * 1px) solid var(--border-color);
   border-radius: var(--raio-controle);
   font-family: var(--font-brand-mono);
-  font-size: var(--fonte-btn-secundario);
+  font-size: var(--fonte-botao);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -566,12 +563,6 @@ body {
   cursor: pointer;
   transition: all 0.15s ease;
   user-select: none;
-}
-
-.btn-secondary:hover {
-  border-color: rgba(255, 255, 255, 0.35);
-  color: var(--text-main);
-  background-color: rgba(255, 255, 255, 0.04);
 }
 
 .panel-footer {
@@ -725,7 +716,7 @@ body {
 .platform-strip.extended-strip { margin-top: var(--esp-fileiras); }
 
 /* o segundo botão se afasta do primeiro */
-.button-group > .btn-secondary { margin-top: var(--esp-botoes); }
+.button-group > .btn-secondary { margin-left: var(--esp-botoes); }
 
 /* dentro das fileiras horizontais */
 .controls-row > .mode-container { margin-right: var(--esp-modo-stepper); }
@@ -777,13 +768,6 @@ body {
    --------------------------------------------------------------------------- */
 
 .badge-lr,
-.btn-primary {
-  background-color: var(--vermelho-raro);
-  color: var(--sobre-acento);
-}
-
-.btn-primary:hover { background-color: var(--vermelho-hover); }
-
 .mode-btn {
   background-color: transparent;
   color: var(--text-muted);
@@ -833,4 +817,30 @@ body {
   flex: 1;
   overflow: hidden;
   white-space: nowrap;
+}
+
+
+/* ---------------------------------------------------------------------------
+   BOTÕES DE AÇÃO: os dois com o mesmo desenho, contornados e sem cor. O acento
+   aparece só no hover — o painel em repouso fica calmo, e a cor passa a
+   significar "é aqui que eu vou clicar" em vez de decorar.
+   --------------------------------------------------------------------------- */
+
+.btn-primary,
+.btn-secondary {
+  background-color: transparent;
+  color: var(--text-muted);
+  border: calc(var(--borda) * 1px) solid var(--border-color);
+  font-size: var(--fonte-botao);
+  font-weight: var(--peso-botao);
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.btn-primary:hover,
+.btn-secondary:hover {
+  background-color: var(--vermelho-raro);
+  border-color: var(--vermelho-raro);
+  color: var(--sobre-acento);
 }
