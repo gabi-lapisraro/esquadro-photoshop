@@ -35,7 +35,7 @@
      Editáveis pelo playground.html, que lê estes mesmos tokens.
      Comentário no formato "Grupo | Rótulo" — o gerador do playground usa isso.
      Nada de `gap`: o UXP ignora gap em flexbox. */
-  --alt-logo: 14px;             /* Rodapé | Altura do logo ESQUADЯO */
+  --alt-logo: 14px;             /* Cabeçalho | Altura do logo ESQUADЯO */
 
   --tam-icone: 27px;            /* Ícones | Altura da célula */
   --colunas-icones: 7;          /* Ícones | Colunas (6 redes + o botão +) */
@@ -61,9 +61,9 @@
   --esp-acima-botoes: 0px;      /* Botões | Acima do grupo */
   --esp-botao-x: 8px;           /* Botões | Recuo horizontal */
 
-  --esp-rodape: 20px;           /* Rodapé | Altura */
-  --alt-rodape-itens: 20px;     /* Rodapé | Altura dos itens */
-  --tam-color-dot: 6px;         /* Rodapé | Bolinha de cor */
+  --esp-cabecalho: 20px;           /* Cabeçalho | Altura */
+  --alt-cabecalho-itens: 20px;     /* Cabeçalho | Altura dos itens */
+  --tam-color-dot: 6px;         /* Cabeçalho | Bolinha de cor */
 
   --esp-blocos: 10px;           /* Blocos | Plataformas → controles */
   --esp-controles: 2px;        /* Blocos | Entre controles e preview */
@@ -87,9 +87,9 @@
   --fonte-fmt-dim: 9px;         /* Fontes | Dimensão no seletor */
   --esp-fmt-dim: 8px;           /* Controles | Nome → dimensão */
   --fonte-botao: 9px;           /* Fontes | Botões de ação */
-  --alt-wordmark: 13px;         /* Rodapé | Altura do wordmark */
-  --esp-assinatura: 7px;        /* Rodapé | Entre as linhas da assinatura */
-  --fonte-rodape: 7px;          /* Rodapé | Fonte do texto */
+  --alt-wordmark: 13px;         /* Cabeçalho | Altura do wordmark */
+  --esp-assinatura: 7px;        /* Cabeçalho | Entre as linhas da assinatura */
+  --fonte-rodape: 7px;          /* Cabeçalho | Fonte do texto */
 
   --peso-modo: 600;             /* Pesos | Orgânico / Anúncio */
   --peso-modo-ativo: 700;       /* Pesos | Modo ativo */
@@ -519,22 +519,28 @@ body {
   user-select: none;
 }
 
-.panel-footer {
-  padding: var(--esp-rodape) var(--esp-corpo-x) var(--esp-rodape);
+.panel-header {
+  padding: var(--esp-cabecalho) var(--esp-corpo-x) var(--esp-cabecalho);
   display: flex;
   /* logo do ESQUADЯO à esquerda; à direita, um bloco com cores, wordmark e
-     tag, uma por linha e alinhados à direita. */
+     tag, uma por linha. `stretch` faz a logo crescer até a altura das três
+     linhas juntas, sem eu ter que somar os valores à mão — a soma mudaria a
+     cada ajuste de espaçamento no playground. */
   flex-direction: row;
   justify-content: space-between;
-  align-items: center;
+  align-items: stretch;
   border-top: none;
   width: 100%;
   background-color: var(--bg-color);
 }
 
-/* logo do ESQUADЯO, agora no rodapé e sem a caixa de borda que tinha antes */
-.footer-logo {
-  height: var(--alt-logo);
+/* logo do ESQUADЯO, sem a caixa de borda que tinha antes. A altura vem do
+   bloco da direita, não de um valor fixo; o min-height é só rede de segurança
+   caso o `stretch` não pegue no UXP. */
+.header-logo {
+  align-self: stretch;
+  height: auto;
+  min-height: var(--alt-logo);
   width: auto;
   max-width: 118px;
   color: var(--acento-visivel);
@@ -542,19 +548,19 @@ body {
 }
 
 /* bloco da direita: uma informação por linha, encostadas à direita */
-.footer-meta {
+.header-meta {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
 }
 
-.footer-meta > * + * { margin-top: var(--esp-assinatura); }
-.footer-meta .footer-brand-label { text-align: right; }
+.header-meta > * + * { margin-top: var(--esp-assinatura); }
+.header-meta .header-brand-label { text-align: right; }
 
 /* a paleta perde a altura fixa: quem manda é o bloco */
-.panel-footer .theme-palette { height: auto; }
+.panel-header .theme-palette { height: auto; }
 
-.footer-brand-label {
+.header-brand-label {
   font-family: var(--font-brand-mono);
   font-size: var(--fonte-rodape);
   line-height: 1;
@@ -698,13 +704,13 @@ body {
    RODAPÉ: tag menor e tudo na mesma altura de linha.
    --------------------------------------------------------------------------- */
 
-.panel-footer .footer-brand-label {
-  height: var(--alt-rodape-itens);
-  line-height: var(--alt-rodape-itens);
+.panel-header .header-brand-label {
+  height: var(--alt-cabecalho-itens);
+  line-height: var(--alt-cabecalho-itens);
 }
 
-.panel-footer .theme-palette {
-  height: var(--alt-rodape-itens);
+.panel-header .theme-palette {
+  height: var(--alt-cabecalho-itens);
   display: flex;
   align-items: center;
 }
@@ -809,7 +815,7 @@ body {
    a paleta como o resto do painel.
    --------------------------------------------------------------------------- */
 
-.footer-wordmark {
+.header-wordmark {
   height: var(--alt-wordmark);
   width: auto;
   color: var(--acento-visivel);
