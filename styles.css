@@ -34,11 +34,7 @@
      Editáveis pelo playground.html, que lê estes mesmos tokens.
      Comentário no formato "Grupo | Rótulo" — o gerador do playground usa isso.
      Nada de `gap`: o UXP ignora gap em flexbox. */
-
-  --esp-header-topo: 17px;      /* Cabeçalho | Topo */
-  --esp-header-base: 3px;       /* Cabeçalho | Base */
-  --alt-logo-card: 41px;        /* Cabeçalho | Altura da caixa */
-  --alt-logo: 14px;             /* Cabeçalho | Altura do logo */
+  --alt-logo: 14px;             /* Rodapé | Altura do logo ESQUADЯO */
 
   --tam-icone: 27px;            /* Ícones | Altura da célula */
   --colunas-icones: 7;          /* Ícones | Colunas (6 redes + o botão +) */
@@ -78,7 +74,6 @@
   --raio-caixa: 4px;            /* Formas | Cantos das caixas */
   --raio-controle: 3px;         /* Formas | Cantos dos controles */
   --raio-item: 2px;             /* Formas | Cantos dos itens */
-  --raio-badge: 2.5px;          /* Formas | Cantos do badge */
   --borda: 1;                   /* Formas | Espessura da borda */
 
   --fonte-dropdown: 10.5px;     /* Fontes | Formato selecionado */
@@ -91,7 +86,8 @@
   --fonte-fmt-dim: 9px;         /* Fontes | Dimensão no seletor */
   --esp-fmt-dim: 8px;           /* Controles | Nome → dimensão */
   --fonte-botao: 9px;           /* Fontes | Botões de ação */
-  --fonte-badge: 7.5px;         /* Rodapé | Fonte do badge */
+  --alt-wordmark: 13px;         /* Rodapé | Altura do wordmark */
+  --esp-assinatura: 7px;        /* Rodapé | Entre as linhas da assinatura */
   --fonte-rodape: 7px;          /* Rodapé | Fonte do texto */
 
   --peso-modo: 600;             /* Pesos | Orgânico / Anúncio */
@@ -127,49 +123,6 @@ body {
   background-color: var(--bg-color);
   display: flex;
   flex-direction: column;
-}
-
-/* Header com Box delimitado */
-.panel-header {
-  padding: var(--esp-header-topo) var(--esp-corpo-x) var(--esp-header-base);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: var(--bg-color);
-}
-
-.brand-logo-card {
-  width: 100%;
-  height: var(--alt-logo-card);
-  background-color: transparent;
-  border: calc(var(--borda) * 1px) solid var(--border-color);
-  border-radius: var(--raio-caixa);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.panel-logo-svg {
-  height: var(--alt-logo);
-  width: auto;
-  max-width: 130px;
-  display: block;
-  color: var(--vermelho-raro);
-  transition: color 0.2s ease;
-}
-
-.badge-lr {
-  background-color: var(--vermelho-raro);
-  color: #ffffff;
-  font-family: var(--font-brand-mono);
-  font-size: 8px;
-  line-height: 8px;
-  padding: 3px 6px;
-  border-radius: var(--raio-badge);
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  white-space: nowrap;
-  transition: all 0.2s ease;
 }
 
 .panel-body {
@@ -568,6 +521,8 @@ body {
 .panel-footer {
   padding: var(--esp-rodape) var(--esp-corpo-x) var(--esp-rodape);
   display: flex;
+  /* logo do ESQUADЯO à esquerda; à direita, um bloco com cores, wordmark e
+     tag, uma por linha e alinhados à direita. */
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
@@ -576,10 +531,32 @@ body {
   background-color: var(--bg-color);
 }
 
+/* logo do ESQUADЯO, agora no rodapé e sem a caixa de borda que tinha antes */
+.footer-logo {
+  height: var(--alt-logo);
+  width: auto;
+  max-width: 118px;
+  color: var(--vermelho-raro);
+  flex-shrink: 0;
+}
+
+/* bloco da direita: uma informação por linha, encostadas à direita */
+.footer-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.footer-meta > * + * { margin-top: var(--esp-assinatura); }
+.footer-meta .footer-brand-label { text-align: right; }
+
+/* a paleta perde a altura fixa: quem manda é o bloco */
+.panel-footer .theme-palette { height: auto; }
+
 .footer-brand-label {
   font-family: var(--font-brand-mono);
   font-size: var(--fonte-rodape);
-  line-height: 7px;
+  line-height: 1;
   font-weight: 600;
   color: var(--text-dim);
   letter-spacing: 0.8px;
@@ -610,12 +587,6 @@ body {
 
 .color-dot:hover {
   transform: scale(1.2);
-}
-
-.color-dot.active {
-  box-shadow:
-    0 0 0 1.5px var(--bg-color),
-    0 0 0 2.5px rgba(255, 255, 255, 0.3);
 }
 
 .floating-tooltip {
@@ -726,16 +697,6 @@ body {
    RODAPÉ: tag menor e tudo na mesma altura de linha.
    --------------------------------------------------------------------------- */
 
-.panel-footer .badge-lr {
-  font-size: var(--fonte-badge);
-  letter-spacing: 0.4px;
-  padding: 0 6px;
-  height: var(--alt-rodape-itens);
-  line-height: var(--alt-rodape-itens);
-  display: inline-block;
-  border-radius: 2px;
-}
-
 .panel-footer .footer-brand-label {
   height: var(--alt-rodape-itens);
   line-height: var(--alt-rodape-itens);
@@ -767,11 +728,6 @@ body {
    feito neste arquivo era desfeito no primeiro clique.
    --------------------------------------------------------------------------- */
 
-.badge-lr,
-.mode-btn {
-  background-color: transparent;
-  color: var(--text-muted);
-}
 
 .mode-btn.active {
   background-color: var(--vermelho-raro);
@@ -843,4 +799,18 @@ body {
   background-color: var(--vermelho-raro);
   border-color: var(--vermelho-raro);
   color: var(--sobre-acento);
+}
+
+
+/* ---------------------------------------------------------------------------
+   WORDMARK no rodapé: arte-final oficial em vetor, do design system, no lugar
+   do retângulo com texto. Herda a cor do tema por currentColor, então acompanha
+   a paleta como o resto do painel.
+   --------------------------------------------------------------------------- */
+
+.footer-wordmark {
+  height: var(--alt-wordmark);
+  width: auto;
+  color: var(--vermelho-raro);
+  flex-shrink: 0;
 }
