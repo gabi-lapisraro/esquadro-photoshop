@@ -75,6 +75,29 @@
   --esp-corpo-x: 15px;          /* Blocos | Margem lateral */
   --esp-corpo-topo: 12px;       /* Blocos | Topo do corpo */
   --esp-corpo-base: 13px;       /* Blocos | Base do corpo */
+
+  --raio-caixa: 4px;            /* Formas | Cantos das caixas */
+  --raio-controle: 3px;         /* Formas | Cantos dos controles */
+  --raio-item: 2px;             /* Formas | Cantos dos itens */
+  --raio-badge: 2.5px;          /* Formas | Cantos do badge */
+  --borda: 1;                   /* Formas | Espessura da borda */
+
+  --fonte-dropdown: 10.5px;     /* Fontes | Formato selecionado */
+  --fonte-item: 10px;           /* Fontes | Item da lista */
+  --fonte-modo: 9.5px;          /* Fontes | Orgânico / Anúncio */
+  --fonte-stepper: 9.5px;       /* Fontes | Número da quantidade */
+  --fonte-stepper-sinal: 12px;  /* Fontes | Sinais + e - */
+  --fonte-dim: 9px;             /* Fontes | Dimensão do preview */
+  --fonte-legenda: 8px;         /* Fontes | Legenda do preview */
+  --fonte-btn-primario: 10px;   /* Fontes | Botão primário */
+  --fonte-btn-secundario: 9px;  /* Fontes | Botão secundário */
+  --fonte-badge: 7.5px;         /* Rodapé | Fonte do badge */
+  --fonte-rodape: 7px;          /* Rodapé | Fonte do texto */
+
+  --peso-modo: 600;             /* Pesos | Orgânico / Anúncio */
+  --peso-modo-ativo: 700;       /* Pesos | Modo ativo */
+  --peso-dropdown: 400;         /* Pesos | Formato selecionado */
+  --peso-btn-primario: 700;     /* Pesos | Botão primário */
 }
 
 * {
@@ -119,8 +142,8 @@ body {
   width: 100%;
   height: var(--alt-logo-card);
   background-color: transparent;
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
+  border: calc(var(--borda) * 1px) solid var(--border-color);
+  border-radius: var(--raio-caixa);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -142,7 +165,7 @@ body {
   font-size: 8px;
   line-height: 8px;
   padding: 3px 6px;
-  border-radius: 2.5px;
+  border-radius: var(--raio-badge);
   font-weight: 700;
   letter-spacing: 0.5px;
   white-space: nowrap;
@@ -182,7 +205,7 @@ body {
   flex: 0 0 calc(100% / var(--colunas-icones));
   width: auto;
   height: var(--tam-icone);
-  border-radius: 3px;
+  border-radius: var(--raio-controle);
   background-color: transparent;
   border: none;
   color: var(--text-muted);
@@ -225,8 +248,8 @@ body {
 .mode-segmented {
   display: flex;
   background-color: transparent;
-  border: 1px solid var(--border-color);
-  border-radius: 3px;
+  border: calc(var(--borda) * 1px) solid var(--border-color);
+  border-radius: var(--raio-controle);
   padding: 2px;
   height: var(--alt-controle);
   box-sizing: border-box;
@@ -234,10 +257,10 @@ body {
 
 .mode-btn {
   flex: 1;
-  border-radius: 2px;
+  border-radius: var(--raio-item);
   font-family: var(--font-brand-mono);
-  font-size: 9.5px;
-  font-weight: 600;
+  font-size: var(--fonte-modo);
+  font-weight: var(--peso-modo);
   text-transform: uppercase;
   letter-spacing: 0.4px;
   display: flex;
@@ -263,8 +286,8 @@ body {
   display: flex;
   align-items: center;
   background-color: transparent;
-  border: 1px solid var(--border-color);
-  border-radius: 3px;
+  border: calc(var(--borda) * 1px) solid var(--border-color);
+  border-radius: var(--raio-controle);
   box-sizing: border-box;
   overflow: hidden;
   width: 100%;
@@ -281,7 +304,7 @@ body {
   border: none !important;
   color: var(--text-muted) !important;
   font-family: var(--font-brand-mono);
-  font-size: 12px;
+  font-size: var(--fonte-stepper-sinal);
   font-weight: 600;
   cursor: pointer;
   display: flex;
@@ -304,7 +327,7 @@ body {
   justify-content: center;
   font-family: var(--font-brand-mono);
   color: var(--text-main);
-  font-size: 9.5px;
+  font-size: var(--fonte-stepper);
   font-weight: 600;
   user-select: none;
 }
@@ -318,15 +341,15 @@ body {
   width: 100%;
   height: 28px;
   background-color: transparent;
-  border: 1px solid var(--border-color);
-  border-radius: 3px;
+  border: calc(var(--borda) * 1px) solid var(--border-color);
+  border-radius: var(--raio-controle);
   padding: 0 var(--esp-dropdown-x);
   display: flex;
   justify-content: space-between;
   align-items: center;
   font-family: var(--font-brand-mono);
-  font-size: 10.5px;
-  font-weight: 400;
+  font-size: var(--fonte-dropdown);
+  font-weight: var(--peso-dropdown);
   color: var(--text-main);
   cursor: pointer;
   transition: all 0.15s ease;
@@ -355,8 +378,8 @@ body {
   max-height: 180px;
   overflow-y: auto;
   background-color: #1a1a1a;
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
+  border: calc(var(--borda) * 1px) solid var(--border-color);
+  border-radius: var(--raio-caixa);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
   display: none;
   flex-direction: column;
@@ -371,10 +394,10 @@ body {
 .custom-dropdown-item {
   padding: var(--esp-item-y) var(--esp-item-x);
   font-family: var(--font-brand-mono);
-  font-size: 10px;
+  font-size: var(--fonte-item);
   font-weight: 400;
   color: var(--text-muted);
-  border-radius: 2px;
+  border-radius: var(--raio-item);
   cursor: pointer;
   transition: all 0.12s ease;
   display: flex;
@@ -389,7 +412,7 @@ body {
 
 .custom-dropdown-item.active {
   background-color: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: calc(var(--borda) * 1px) solid rgba(255, 255, 255, 0.2);
   color: var(--text-main);
   font-weight: 500;
 }
@@ -397,7 +420,7 @@ body {
 .preview-card {
   background-color: transparent;
   border: none;
-  border-radius: 4px;
+  border-radius: var(--raio-caixa);
   padding: var(--esp-preview-topo) 10px var(--esp-preview-base);
   display: flex;
   flex-direction: column;
@@ -420,7 +443,7 @@ body {
 
 .canvas-preview {
   position: relative;
-  border: 1px solid rgba(255, 255, 255, 0.6);
+  border: calc(var(--borda) * 1px) solid rgba(255, 255, 255, 0.6);
   background-color: #161616;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
   transition: width 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), 
@@ -462,7 +485,7 @@ body {
 
 .dim-badge {
   font-family: var(--font-brand-mono);
-  font-size: 9px;
+  font-size: var(--fonte-dim);
   font-weight: 600;
   color: var(--text-main);
   letter-spacing: 0.8px;
@@ -479,7 +502,7 @@ body {
 .legend-row {
   display: flex;
   font-family: var(--font-brand-mono);
-  font-size: 8px;
+  font-size: var(--fonte-legenda);
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.4px;
@@ -516,10 +539,10 @@ body {
   height: var(--alt-btn-primario);
   background-color: var(--vermelho-raro);
   color: #ffffff;
-  border-radius: 3px;
+  border-radius: var(--raio-controle);
   font-family: var(--font-brand-mono);
-  font-size: 10px;
-  font-weight: 700;
+  font-size: var(--fonte-btn-primario);
+  font-weight: var(--peso-btn-primario);
   text-transform: uppercase;
   letter-spacing: 0.6px;
   display: flex;
@@ -539,10 +562,10 @@ body {
   height: var(--alt-btn-secundario);
   background-color: transparent;
   color: var(--text-muted);
-  border: 1px solid var(--border-color);
-  border-radius: 3px;
+  border: calc(var(--borda) * 1px) solid var(--border-color);
+  border-radius: var(--raio-controle);
   font-family: var(--font-brand-mono);
-  font-size: 9px;
+  font-size: var(--fonte-btn-secundario);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -573,7 +596,7 @@ body {
 
 .footer-brand-label {
   font-family: var(--font-brand-mono);
-  font-size: 7px;
+  font-size: var(--fonte-rodape);
   line-height: 7px;
   font-weight: 600;
   color: var(--text-dim);
@@ -617,9 +640,9 @@ body {
   position: fixed;
   background-color: #111111;
   color: #f5f5f5;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: calc(var(--borda) * 1px) solid rgba(255, 255, 255, 0.2);
   padding: 3px 6px;
-  border-radius: 3px;
+  border-radius: var(--raio-controle);
   font-family: var(--font-brand-mono);
   font-size: 8.5px;
   font-weight: 600;
@@ -649,11 +672,11 @@ body {
   background-color: #111111;
   color: #ffffff;
   padding: 6px 12px;
-  border-radius: 4px;
+  border-radius: var(--raio-caixa);
   font-family: var(--font-brand-mono);
   font-size: 9px;
   font-weight: 600;
-  border: 1px solid var(--vermelho-raro);
+  border: calc(var(--borda) * 1px) solid var(--vermelho-raro);
   z-index: 10000;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
   white-space: nowrap;
@@ -722,7 +745,7 @@ body {
    --------------------------------------------------------------------------- */
 
 .panel-footer .badge-lr {
-  font-size: 7.5px;
+  font-size: var(--fonte-badge);
   letter-spacing: 0.4px;
   padding: 0 6px;
   height: var(--alt-rodape-itens);
