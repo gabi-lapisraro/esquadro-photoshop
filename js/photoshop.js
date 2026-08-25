@@ -184,23 +184,38 @@ async function applyGuides(fmt) {
   try {
     let onArtboard = false;
 
+    let conflito = null;
+
     await core.executeAsModal(async () => {
       const doc = app.activeDocument;
 
-      // A detecção serve só para a mensagem. O offset é sempre ZERO: com
-      // prancheta ativa a guia é medida a partir da borda dela, e sem
-      // prancheta é medida a partir do canvas — nos dois casos a origem já é
-      // o ponto de partida certo.
-      onArtboard = (await _findArtboardOffset(doc)) !== null;
+      // As guias vão para a prancheta que contém a camada selecionada. O offset
+      // é ZERO porque, com prancheta ativa, o Photoshop mede a guia a partir da
+      // borda dela; sem prancheta, mede a partir do canvas. Nos dois casos a
+      // origem já é o ponto de partida certo.
+      const board = await _findArtboardOffset(doc);
+      onArtboard = board !== null;
+
+      // Se a prancheta selecionada não tem o tamanho do formato escolhido, as
+      // guias sairiam no lugar errado. É exatamente o erro silencioso que este
+      // plugin existe para evitar, então recusa em vez de desenhar torto.
+      if (board && (Math.abs(board.width - fmt.width) > 1 ||
+                    Math.abs(board.height - fmt.height) > 1)) {
+        conflito = `A prancheta selecionada é ${Math.round(board.width)}×${Math.round(board.height)}` +
+                   ` e "${fmt.name}" é ${fmt.width}×${fmt.height}. Escolha o formato que corresponde.`;
+        return;
+      }
 
       _drawVerticalGuides(doc, fmt, 0);
       _drawHorizontalGuides(doc, fmt, 0);
     }, { commandName: "Aplicar Guias de Segurança" });
 
+    if (conflito) return { ok: false, message: conflito };
+
     return {
       ok: true,
       message: onArtboard
-        ? "Guias aplicadas na prancheta ativa."
+        ? "Guias aplicadas na prancheta selecionada."
         : "Guias aplicadas no documento."
     };
   } catch (err) {
@@ -334,7 +349,7 @@ async function _lerArtboardRect() {
  * propriedade `artboard` no descritor. Por isso a leitura é via batchPlay, subindo
  * a hierarquia até achar uma prancheta (a camada ativa pode estar dentro dela).
  *
- * @returns {Promise<{x: number, y: number}|null>} null se não estiver em prancheta
+ * @returns {Promise<{x,y,width,height}|null>} null se não estiver em prancheta
  */
 async function _findArtboardOffset(doc) {
   const { batchPlay } = ps.action;
@@ -367,7 +382,12 @@ async function _findArtboardOffset(doc) {
       const rect = info && info.artboardRect;
 
       if (info && info.artboardEnabled && rect) {
-        return { x: rect.left, y: rect.top };
+        return {
+          x: rect.left,
+          y: rect.top,
+          width: rect.right - rect.left,
+          height: rect.bottom - rect.top
+        };
       }
     } catch (e) {
       // Camada sem propriedade de prancheta: apenas continua subindo
