@@ -89,6 +89,8 @@
   --fonte-stepper-sinal: 12px;  /* Fontes | Sinais + e - */
   --fonte-dim: 9px;             /* Fontes | Dimensão do preview */
   --fonte-legenda: 8px;         /* Fontes | Legenda do preview */
+  --fonte-fmt-dim: 9px;         /* Fontes | Dimensão no seletor */
+  --esp-fmt-dim: 8px;           /* Controles | Nome → dimensão */
   --fonte-btn-primario: 10px;   /* Fontes | Botão primário */
   --fonte-btn-secundario: 9px;  /* Fontes | Botão secundário */
   --fonte-badge: 7.5px;         /* Rodapé | Fonte do badge */
@@ -806,3 +808,29 @@ body {
 
 .legenda-safe { color: var(--vermelho-raro); }
 .legenda-crop { color: var(--guide-crop); }
+
+
+/* ---------------------------------------------------------------------------
+   SELETOR DE FORMATO: nome à esquerda, dimensão à direita — o gatilho fechado
+   passa a ter o mesmo alinhamento dos itens da lista aberta.
+   --------------------------------------------------------------------------- */
+
+#dropdownCurrentLabel {
+  flex: 1;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+/* a dimensão, no gatilho e nos itens */
+.fmt-dim {
+  font-size: var(--fonte-fmt-dim);
+  color: var(--text-dim);
+  white-space: nowrap;
+  margin-left: var(--esp-fmt-dim);
+}
+
+.custom-dropdown-item > span:first-child {
+  flex: 1;
+  overflow: hidden;
+  white-space: nowrap;
+}

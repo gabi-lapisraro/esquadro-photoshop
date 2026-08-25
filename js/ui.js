@@ -125,6 +125,10 @@ function formatToken(fmt) {
 // Ordem em que as peças aparecem na lista. Segue o uso, não o alfabeto.
 const ORDEM_DE_USO = ['FEED', 'STORY', 'REELS', 'PERFIL'];
 
+// Dentro do grupo de feed, a proporção manda: 4:5 primeiro, que é a peça mais
+// usada. Ordenar por área punha o 3:4 na frente do 4:5 só por ser mais alto.
+const ORDEM_PROPORCAO = ['4:5', '1:1', '3:4', '1.91:1', '16:9', '4:3', '5:4'];
+
 // Nomes que são peça de feed mesmo onde a abreviação não vira FEED (Google Ads).
 const NOMES_FEED_PARA_ORDEM = ['Quadrado', 'Retrato', 'Paisagem', 'Feed', 'Carrossel'];
 
@@ -246,6 +250,7 @@ function init(config) {
   els.customDropdown = document.getElementById('customDropdown');
   els.dropdownTrigger = document.getElementById('dropdownTrigger');
   els.dropdownCurrentLabel = document.getElementById('dropdownCurrentLabel');
+  els.dropdownCurrentDim = document.getElementById('dropdownCurrentDim');
   els.dropdownMenu = document.getElementById('dropdownMenu');
   
   els.qtdInput = document.getElementById('qtdInput');
@@ -532,7 +537,10 @@ function selectFormat(fmtId) {
   selectedFormatId = fmtId;
   const fmt = getSelectedFormat();
   if (fmt) {
-    els.dropdownCurrentLabel.textContent = `${fmt.name} ${fmt.width}×${fmt.height}`;
+    els.dropdownCurrentLabel.textContent = fmt.name;
+    if (els.dropdownCurrentDim) {
+      els.dropdownCurrentDim.textContent = `${fmt.width}×${fmt.height}`;
+    }
   }
   
   // Atualiza classe active nos itens do menu
@@ -559,8 +567,15 @@ function populateFormats() {
   formats = [...formats].sort((a, b) => {
     const ra = ordemDeUso(a), rb = ordemDeUso(b);
     if (ra !== rb) return ra - rb;
-    // dentro do mesmo grupo: maior área primeiro, que aproxima quadrado,
-    // retrato e paisagem na ordem em que se costuma produzir
+
+    // dentro do grupo, a proporção mais usada primeiro
+    const pa = ORDEM_PROPORCAO.indexOf(a.ratio);
+    const pb = ORDEM_PROPORCAO.indexOf(b.ratio);
+    const ia = pa === -1 ? ORDEM_PROPORCAO.length : pa;
+    const ib = pb === -1 ? ORDEM_PROPORCAO.length : pb;
+    if (ia !== ib) return ia - ib;
+
+    // proporção igual ou fora da lista: maior área primeiro
     const areaA = (a.width || 0) * (a.height || 0);
     const areaB = (b.width || 0) * (b.height || 0);
     if (areaA !== areaB) return areaB - areaA;
@@ -571,6 +586,7 @@ function populateFormats() {
 
   if (formats.length === 0) {
     els.dropdownCurrentLabel.textContent = 'Sem formatos disponíveis';
+    if (els.dropdownCurrentDim) els.dropdownCurrentDim.textContent = '';
     selectedFormatId = null;
     els.customDropdown.classList.remove('open');
     setActionsEnabled(false);
@@ -586,8 +602,7 @@ function populateFormats() {
       nameSpan.textContent = fmt.name;
       
       const dimSpan = document.createElement('span');
-      dimSpan.style.fontSize = '9px';
-      dimSpan.style.opacity = '0.7';
+      dimSpan.className = 'fmt-dim';
       dimSpan.textContent = `${fmt.width}×${fmt.height}`;
 
       item.appendChild(nameSpan);
