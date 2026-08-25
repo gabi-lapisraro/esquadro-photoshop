@@ -40,7 +40,8 @@
   --alt-logo-card: 41px;        /* Cabeçalho | Altura da caixa */
   --alt-logo: 14px;             /* Cabeçalho | Altura do logo */
 
-  --tam-icone: 27px;            /* Ícones | Área do ícone */
+  --tam-icone: 27px;            /* Ícones | Altura da célula */
+  --colunas-icones: 7;          /* Ícones | Colunas (6 redes + o botão +) */
   --tam-icone-svg: 17px;        /* Ícones | Desenho do ícone */
   --esp-fileiras: 2px;          /* Ícones | Entre as fileiras */
 
@@ -165,14 +166,21 @@ body {
 
 .platform-strip {
   display: flex;
-  justify-content: space-between;
+  /* flex-start, não space-between: com space-between a fileira de baixo, que
+     tem uma posição a menos, espalharia diferente e sairia desalinhada da de
+     cima. Com base fixa de 1/N cada ícone ocupa sua coluna. */
+  justify-content: flex-start;
   align-items: center;
   width: 100%;
 }
 
 /* Ícones planos sem caixas brancas, com hover limpo */
 .platform-icon {
-  width: var(--tam-icone);
+  /* a célula é 1/N da largura; o desenho fica centralizado dentro dela. Assim
+     a segunda fileira cai exatamente sob a primeira, e a coluna que sobra fica
+     vazia embaixo do botão +. */
+  flex: 0 0 calc(100% / var(--colunas-icones));
+  width: auto;
   height: var(--tam-icone);
   border-radius: 3px;
   background-color: transparent;
@@ -735,37 +743,6 @@ body {
 }
 
 
-/* ---------------------------------------------------------------------------
-   STEPPER VERTICAL: número à esquerda, + e - empilhados à direita.
-   Mantém a altura da linha igual à dos botões de modo, então os três controles
-   ficam alinhados. Feito por `order` e `flex-wrap` para não mexer no HTML —
-   a ordem no DOM é menos, número, mais.
-   --------------------------------------------------------------------------- */
-
-.stepper-group { flex: 0 0 52px; }
-
-
-
-.stepper-container .stepper-input {
-  order: 1;
-  flex: 1 1 auto;
-  height: var(--alt-controle);
-  font-size: 10.5px;
-}
-
-/* os dois botões ocupam a mesma coluna de 18px e por isso quebram um sob o
-   outro, cada um com metade da altura do controle */
-.stepper-container .stepper-btn {
-  flex: 0 0 18px;
-  width: 18px;
-  height: calc(var(--alt-controle) / 2);
-  min-height: 0;
-  font-size: 11px;
-  line-height: 1;
-}
-
-.stepper-container #btnPlus  { order: 2; }
-.stepper-container #btnMinus { order: 3; }
 
 
 /* ---------------------------------------------------------------------------
