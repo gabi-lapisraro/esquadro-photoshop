@@ -1,6 +1,7 @@
 /* Fonte embarcada. O UXP não busca CSS remoto, então @import do Google Fonts
    cai em silêncio no monospace do sistema. Os .ttf vão dentro do plugin. */
 @font-face { font-family: 'IBM Plex Mono'; font-weight: 400; src: url('fonts/IBMPlexMono-Regular.ttf'); }
+@font-face { font-family: 'IBM Plex Mono'; font-weight: 500; src: url('fonts/IBMPlexMono-Medium.ttf'); }
 @font-face { font-family: 'IBM Plex Mono'; font-weight: 600; src: url('fonts/IBMPlexMono-SemiBold.ttf'); }
 @font-face { font-family: 'IBM Plex Mono'; font-weight: 700; src: url('fonts/IBMPlexMono-Bold.ttf'); }
 
@@ -102,11 +103,11 @@ body {
 }
 
 .panel-body {
-  padding: 8px 12px 14px;
+  padding: 10px 12px 14px;
   display: flex;
   flex-direction: column;
-  /* respiro entre os blocos: com 8px eles encostavam um no outro */
-  gap: 13px;
+  /* o corpo ocupa a altura livre, e a sobra é absorvida pelo preview abaixo */
+  flex: 1;
   background-color: var(--bg-color);
 }
 
@@ -270,7 +271,7 @@ body {
   align-items: center;
   font-family: var(--font-brand-mono);
   font-size: 10.5px;
-  font-weight: 500;
+  font-weight: 400;
   color: var(--text-main);
   cursor: pointer;
   transition: all 0.15s ease;
@@ -316,7 +317,7 @@ body {
   padding: 6px 8px;
   font-family: var(--font-brand-mono);
   font-size: 10px;
-  font-weight: 500;
+  font-weight: 400;
   color: var(--text-muted);
   border-radius: 2px;
   cursor: pointer;
@@ -335,18 +336,23 @@ body {
   background-color: transparent;
   border: 1px solid rgba(255, 255, 255, 0.2);
   color: var(--text-main);
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .preview-card {
   background-color: transparent;
   border: none;
   border-radius: 4px;
-  padding: 12px 10px 10px;
+  padding: 16px 10px 14px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  /* absorve a altura sobrando do painel: a folga vira respiro em volta do
+     canvas, em vez de virar vazio entre os botões e o rodapé */
+  flex: 1;
+  justify-content: center;
+  min-height: 132px;
+  gap: 12px;
 }
 
 .preview-stage {
@@ -450,9 +456,9 @@ body {
 .button-group {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 9px;
   width: 100%;
-  margin-top: 4px;
+  margin-top: 8px;
 }
 
 .btn-primary {
@@ -505,10 +511,7 @@ body {
 }
 
 .panel-footer {
-  /* margin-top auto empurra o rodapé para o fim, em vez de deixá-lo colado ao
-     conteúdo com fundo morto abaixo. */
-  margin-top: auto;
-  padding: 14px 12px 12px;
+  padding: 14px 12px 14px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -640,4 +643,51 @@ body {
   background-color: rgba(28, 40, 55, 0.95);
   border-color: #3f6b96;
   color: #9dc4e8;
+}
+
+
+/* ---------------------------------------------------------------------------
+   ESPAÇAMENTO: margin, não gap.
+   O subset de CSS do UXP ignora `gap` em flexbox. Tudo que foi espaçado com
+   gap funcionava no navegador e não fazia nada no painel do Photoshop — foi o
+   que deixou os blocos encostados por várias rodadas de ajuste.
+   --------------------------------------------------------------------------- */
+
+.panel-body > .platform-container { margin-bottom: 16px; }
+.panel-body > .controls-row       { margin-bottom: 14px; }
+.panel-body > .custom-dropdown    { margin-bottom: 14px; }
+.panel-body > .preview-card       { margin-bottom: 16px; }
+
+.platform-strip.extended-strip { margin-top: 8px; }
+
+/* o segundo botão se afasta do primeiro */
+.button-group > .btn-secondary { margin-top: 9px; }
+
+/* dentro das fileiras horizontais */
+.controls-row > .mode-container { margin-right: 8px; }
+.preview-footer .legend-item + .legend-item { margin-left: 12px; }
+
+/* ---------------------------------------------------------------------------
+   RODAPÉ: tag menor e tudo na mesma altura de linha.
+   --------------------------------------------------------------------------- */
+
+.panel-footer .badge-lr {
+  font-size: 7.5px;
+  letter-spacing: 0.4px;
+  padding: 0 6px;
+  height: 16px;
+  line-height: 16px;
+  display: inline-block;
+  border-radius: 2px;
+}
+
+.panel-footer .footer-brand-label {
+  height: 16px;
+  line-height: 16px;
+}
+
+.panel-footer .theme-palette {
+  height: 16px;
+  display: flex;
+  align-items: center;
 }

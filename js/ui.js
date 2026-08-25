@@ -122,6 +122,23 @@ function formatToken(fmt) {
   return formatAbbr(fmt);
 }
 
+// Ordem em que as peças aparecem na lista. Segue o uso, não o alfabeto.
+const ORDEM_DE_USO = ['FEED', 'STORY', 'REELS', 'PERFIL'];
+
+// Nomes que são peça de feed mesmo onde a abreviação não vira FEED (Google Ads).
+const NOMES_FEED_PARA_ORDEM = ['Quadrado', 'Retrato', 'Paisagem', 'Feed', 'Carrossel'];
+
+/** Posição do formato na ordem de uso. Quanto menor, mais no topo da lista. */
+function ordemDeUso(fmt) {
+  const abbr = formatAbbr(fmt);
+  const i = ORDEM_DE_USO.indexOf(abbr);
+  if (i !== -1) return i;
+  if (NOMES_FEED_PARA_ORDEM.indexOf(fmt.name) !== -1) return 0;
+  if (abbr === 'STATUS') return 1;   // Status do WhatsApp é o story dele
+  if (abbr === 'FORYOU') return 2;   // For You do TikTok é o reels dele
+  return ORDEM_DE_USO.length;        // o resto vai para o fim
+}
+
 /** DDMM da data de hoje. */
 function todayDDMM() {
   const d = new Date();
@@ -561,8 +578,17 @@ function populateFormats() {
   const platform = platformsData[dbKey] || {};
   let formats = platform.formats || [];
   
-  // Ordena os formatos alfabeticamente
-  formats = [...formats].sort((a, b) => a.name.localeCompare(b.name));
+  // Ordem de uso, não alfabética: feed primeiro, depois story, reels e perfil.
+  formats = [...formats].sort((a, b) => {
+    const ra = ordemDeUso(a), rb = ordemDeUso(b);
+    if (ra !== rb) return ra - rb;
+    // dentro do mesmo grupo: maior área primeiro, que aproxima quadrado,
+    // retrato e paisagem na ordem em que se costuma produzir
+    const areaA = (a.width || 0) * (a.height || 0);
+    const areaB = (b.width || 0) * (b.height || 0);
+    if (areaA !== areaB) return areaB - areaA;
+    return a.name.localeCompare(b.name);
+  });
   
   els.dropdownMenu.innerHTML = '';
 
