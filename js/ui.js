@@ -430,9 +430,16 @@ function applyTheme(color) {
   // de qualquer regra de CSS, então cada ajuste no styles.css era desfeito no
   // primeiro clique.
   themeColor = color;
+
+  // O acento em TRAÇO pode diferir da cor cheia: o Vinho Raro dá 1.02:1 sobre o
+  // painel escuro e desaparece. A bolinha declara o seu em data-acento.
+  const escolhida = document.querySelector(`.color-dot[data-color="${color}"]`);
+  const acento = (escolhida && escolhida.getAttribute('data-acento')) || color;
+
   const raiz = document.documentElement.style;
   raiz.setProperty('--vermelho-raro', color);
-  raiz.setProperty('--guide-safe', color);
+  raiz.setProperty('--acento-visivel', acento);
+  raiz.setProperty('--guide-safe', acento);
   raiz.setProperty('--sobre-acento', contrastOn(color));
 
   updatePreview();

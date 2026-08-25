@@ -25,7 +25,8 @@
   --text-dim: #a0a0a0;
   
   --guide-safe: #E61C00;
-  --sobre-acento: #ffffff;   /* cor de texto sobre o acento */ 
+  --sobre-acento: #ffffff;   /* cor de texto sobre o acento */
+  --acento-visivel: #E61C00; /* acento em traço, sobre o painel escuro */ 
   --guide-crop: #7bbcd9; 
 
   --font-brand-mono: 'IBM Plex Mono', monospace;
@@ -536,7 +537,7 @@ body {
   height: var(--alt-logo);
   width: auto;
   max-width: 118px;
-  color: var(--vermelho-raro);
+  color: var(--acento-visivel);
   flex-shrink: 0;
 }
 
@@ -736,7 +737,7 @@ body {
 
 .platform-icon { color: var(--text-muted); }
 .platform-icon.active,
-.btn-toggle-strip.active { color: var(--vermelho-raro); }
+.btn-toggle-strip.active { color: var(--acento-visivel); }
 
 
 
@@ -746,7 +747,7 @@ body {
    fica no Azul Raro, como a guia desenhada no documento.
    --------------------------------------------------------------------------- */
 
-.legenda-safe { color: var(--vermelho-raro); }
+.legenda-safe { color: var(--acento-visivel); }
 .legenda-crop { color: var(--guide-crop); }
 
 
@@ -811,6 +812,25 @@ body {
 .footer-wordmark {
   height: var(--alt-wordmark);
   width: auto;
-  color: var(--vermelho-raro);
+  color: var(--acento-visivel);
   flex-shrink: 0;
+}
+
+
+/* ---------------------------------------------------------------------------
+   SELETOR DE COR: a seleção se mostra por evidência, não por anel. A cor
+   escolhida fica cheia e um pouco maior; as outras recuam. Substitui o traço
+   branco que existia, que competia com as próprias cores.
+   --------------------------------------------------------------------------- */
+
+.color-dot {
+  opacity: 0.45;
+  transform: scale(0.82);
+}
+
+.color-dot:hover { opacity: 0.8; }
+
+.color-dot.active {
+  opacity: 1;
+  transform: scale(1);
 }
