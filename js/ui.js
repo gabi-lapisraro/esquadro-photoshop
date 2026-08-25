@@ -135,10 +135,14 @@ function todayDDMM() {
  * O "#TAREFA" é literal e igual para todos — quem cria renomeia na hora de
  * salvar, com o número do RunRunIt.
  */
+// "TAЯEFA" com o R virado, referenciando a marca. É o caractere cirílico Я
+// (U+042F), não um R rotacionado: em nome de arquivo não há CSS para espelhar.
+const MARCADOR_TAREFA = '#TA\u042FEFA';
+
 function buildDocName() {
   const plat = PLATFORM_ABBR[getActiveDatabaseKey()] || currentPlatform.toUpperCase();
   const fmt = formatToken(getSelectedFormat());
-  const partes = ['#TAREFA', plat, fmt, todayDDMM()].filter(Boolean);
+  const partes = [MARCADOR_TAREFA, plat, fmt, todayDDMM()].filter(Boolean);
   return partes.join('_');
 }
 
