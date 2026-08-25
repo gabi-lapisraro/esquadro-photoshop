@@ -415,91 +415,31 @@ function bindEvents() {
 function applyTheme(color) {
   if (!color) return;
 
-  // Atualiza active nos dots
-  const colorDots = document.querySelectorAll('.color-dot');
-  colorDots.forEach(d => {
-    if (d.getAttribute('data-color').toLowerCase() === color.toLowerCase()) {
-      d.classList.add('active');
-    } else {
-      d.classList.remove('active');
-    }
+  document.querySelectorAll('.color-dot').forEach(d => {
+    const igual = (d.getAttribute('data-color') || '').toLowerCase() === color.toLowerCase();
+    d.classList.toggle('active', igual);
   });
 
-  // Aplica as variáveis no CSS root (atualiza tudo que depende da cor da marca)
+  // Só duas variáveis na raiz, e o CSS resolve o resto. Antes daqui saíam 26
+  // escritas de estilo inline em badge, botões e ícones — e estilo inline ganha
+  // de qualquer regra de CSS, então cada ajuste no styles.css era desfeito no
+  // primeiro clique.
   themeColor = color;
-  document.documentElement.style.setProperty('--vermelho-raro', color);
-  document.documentElement.style.setProperty('--guide-safe', color);
+  const raiz = document.documentElement.style;
+  raiz.setProperty('--vermelho-raro', color);
+  raiz.setProperty('--guide-safe', color);
+  raiz.setProperty('--sobre-acento', contrastOn(color));
 
-  const textColor = contrastOn(color);
-
-  // Atualiza badge de Lápis Raro
-  const badge = document.querySelector('.badge-lr');
-  if (badge) {
-    badge.style.backgroundColor = color;
-    badge.style.color = textColor;
-  }
-
-  // Atualiza botão primário
-  if (els.btnCreate) {
-    els.btnCreate.style.backgroundColor = color;
-    els.btnCreate.style.color = textColor;
-  }
-
-  // Atualiza botões de modo
-  if (els.modeOrganic) {
-    if (els.modeOrganic.classList.contains('active')) {
-      els.modeOrganic.style.backgroundColor = color;
-      els.modeOrganic.style.color = textColor;
-    } else {
-      els.modeOrganic.style.backgroundColor = 'transparent';
-      els.modeOrganic.style.color = 'var(--text-muted)';
-    }
-  }
-
-  if (els.modeAds) {
-    if (els.modeAds.classList.contains('active')) {
-      els.modeAds.style.backgroundColor = color;
-      els.modeAds.style.color = textColor;
-    } else {
-      els.modeAds.style.backgroundColor = 'transparent';
-      els.modeAds.style.color = 'var(--text-muted)';
-    }
-  }
-
-  // Atualiza ícone ativo da plataforma
-  const activeIcon = document.querySelector('.platform-icon.active');
-  if (activeIcon) {
-    activeIcon.style.color = color;
-  }
-
-  // Atualiza botão toggle de mais plataformas se ativo
-  if (els.btnToggleStrip && els.btnToggleStrip.classList.contains('active')) {
-    els.btnToggleStrip.style.color = color;
-  }
-
-  // Atualiza legenda de safe zone
-  const dotSafe = document.querySelector('.dot-safe');
-  if (dotSafe) dotSafe.style.backgroundColor = color;
-
-  // Atualiza preview de guias
   updatePreview();
   salvarPrefs();
 }
 
+
 function selectPlatform(plat) {
   currentPlatform = plat;
 
-  // Atualiza classes ativas nos ícones
-  const themeColor = currentThemeColor();
-  const icons = document.querySelectorAll('.platform-icon:not(.btn-toggle-strip)');
-  icons.forEach(icon => {
-    if (icon.getAttribute('data-platform') === plat) {
-      icon.classList.add('active');
-      icon.style.color = themeColor;
-    } else {
-      icon.classList.remove('active');
-      icon.style.color = 'var(--text-muted)';
-    }
+  document.querySelectorAll('.platform-icon:not(.btn-toggle-strip)').forEach(icon => {
+    icon.classList.toggle('active', icon.getAttribute('data-platform') === plat);
   });
 
   // adjustModeForPlatform termina em selectMode, que já chama populateFormats.
@@ -508,29 +448,14 @@ function selectPlatform(plat) {
   salvarPrefs();
 }
 
+
 function selectMode(mode) {
   currentMode = mode;
-  const themeColor = currentThemeColor();
-  const textColor = contrastOn(themeColor);
-
-  if (mode === 'organic') {
-    els.modeOrganic.classList.add('active');
-    els.modeOrganic.style.backgroundColor = themeColor;
-    els.modeOrganic.style.color = textColor;
-    els.modeAds.classList.remove('active');
-    els.modeAds.style.backgroundColor = 'transparent';
-    els.modeAds.style.color = 'var(--text-muted)';
-  } else {
-    els.modeAds.classList.add('active');
-    els.modeAds.style.backgroundColor = themeColor;
-    els.modeAds.style.color = textColor;
-    els.modeOrganic.classList.remove('active');
-    els.modeOrganic.style.backgroundColor = 'transparent';
-    els.modeOrganic.style.color = 'var(--text-muted)';
-  }
-
+  els.modeOrganic.classList.toggle('active', mode === 'organic');
+  els.modeAds.classList.toggle('active', mode !== 'organic');
   populateFormats();
 }
+
 
 function adjustModeForPlatform() {
   const plat = currentPlatform;

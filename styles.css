@@ -24,7 +24,8 @@
   --text-muted: #d0d0d0;
   --text-dim: #a0a0a0;
   
-  --guide-safe: #E61C00; 
+  --guide-safe: #E61C00;
+  --sobre-acento: #ffffff;   /* cor de texto sobre o acento */ 
   --guide-crop: #7bbcd9; 
 
   --font-brand-mono: 'IBM Plex Mono', monospace;
@@ -256,10 +257,13 @@ body {
   background-color: transparent;
   border: 1px solid var(--border-color);
   border-radius: 3px;
-  height: var(--alt-controle);
   box-sizing: border-box;
   overflow: hidden;
   width: 100%;
+  flex-wrap: wrap;
+  align-content: center;
+  height: var(--alt-controle);
+  padding: 0;
 }
 
 .stepper-btn {
@@ -740,12 +744,7 @@ body {
 
 .stepper-group { flex: 0 0 52px; }
 
-.stepper-container {
-  flex-wrap: wrap;
-  align-content: center;
-  height: var(--alt-controle);
-  padding: 0;
-}
+
 
 .stepper-container .stepper-input {
   order: 1;
@@ -778,3 +777,35 @@ body {
 .preview-card > * + *   { margin-top: var(--esp-preview-interno); }
 .preview-footer > * + * { margin-top: var(--esp-footer-linhas); }
 .legend-item > .dot     { margin-right: var(--esp-legenda-dot); }
+
+
+/* ---------------------------------------------------------------------------
+   TEMA: o JS define apenas --vermelho-raro e --sobre-acento na raiz.
+   Todo o resto é resolvido aqui. Antes o JS escrevia cor inline em badge,
+   botões e ícones, e estilo inline vence qualquer regra de CSS — então ajuste
+   feito neste arquivo era desfeito no primeiro clique.
+   --------------------------------------------------------------------------- */
+
+.badge-lr,
+.btn-primary {
+  background-color: var(--vermelho-raro);
+  color: var(--sobre-acento);
+}
+
+.btn-primary:hover { background-color: var(--vermelho-hover); }
+
+.mode-btn {
+  background-color: transparent;
+  color: var(--text-muted);
+}
+
+.mode-btn.active {
+  background-color: var(--vermelho-raro);
+  color: var(--sobre-acento);
+}
+
+.platform-icon { color: var(--text-muted); }
+.platform-icon.active,
+.btn-toggle-strip.active { color: var(--vermelho-raro); }
+
+.dot-safe { background-color: var(--vermelho-raro); }
