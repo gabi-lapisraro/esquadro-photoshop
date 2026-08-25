@@ -11,3 +11,6 @@ node_modules/
 
 # Build da cópia de teste
 .teste-build/
+
+# Playground de espaçamento (gerado)
+playground.html

@@ -28,6 +28,51 @@
   --guide-crop: #7bbcd9; 
 
   --font-brand-mono: 'IBM Plex Mono', monospace;
+
+  /* ---- Espaçamento e tamanhos ----
+     Editáveis pelo playground.html, que lê estes mesmos tokens.
+     Comentário no formato "Grupo | Rótulo" — o gerador do playground usa isso.
+     Nada de `gap`: o UXP ignora gap em flexbox. */
+
+  --esp-header-topo: 12px;      /* Cabeçalho | Topo */
+  --esp-header-base: 4px;       /* Cabeçalho | Base */
+  --alt-logo-card: 38px;        /* Cabeçalho | Altura da caixa */
+  --alt-logo: 15px;             /* Cabeçalho | Altura do logo */
+
+  --tam-icone: 28px;            /* Ícones | Área do ícone */
+  --tam-icone-svg: 15px;        /* Ícones | Desenho do ícone */
+  --esp-fileiras: 8px;          /* Ícones | Entre as fileiras */
+
+  --alt-controle: 28px;         /* Controles | Altura */
+  --esp-modo-stepper: 8px;      /* Controles | Modo → stepper */
+  --esp-dropdown-x: 10px;       /* Controles | Recuo do dropdown */
+  --esp-item-y: 6px;            /* Controles | Item da lista, vertical */
+  --esp-item-x: 8px;            /* Controles | Item da lista, lateral */
+
+  --esp-preview-topo: 16px;     /* Preview | Topo */
+  --esp-preview-base: 14px;     /* Preview | Base */
+  --alt-stage: 110px;           /* Preview | Altura do palco */
+  --alt-preview-min: 132px;     /* Preview | Altura mínima */
+  --esp-preview-interno: 12px;  /* Preview | Entre canvas e textos */
+  --esp-footer-linhas: 5px;     /* Preview | Entre as linhas de texto */
+  --esp-legenda: 12px;          /* Preview | Entre itens da legenda */
+  --esp-legenda-dot: 4px;       /* Preview | Bolinha → rótulo */
+
+  --alt-btn-primario: 32px;     /* Botões | Altura do primário */
+  --alt-btn-secundario: 28px;   /* Botões | Altura do secundário */
+  --esp-botoes: 9px;            /* Botões | Entre os dois */
+  --esp-acima-botoes: 8px;      /* Botões | Acima do grupo */
+
+  --esp-rodape: 14px;           /* Rodapé | Altura */
+  --alt-rodape-itens: 16px;     /* Rodapé | Altura dos itens */
+  --tam-color-dot: 6px;         /* Rodapé | Bolinha de cor */
+
+  --esp-blocos: 16px;           /* Blocos | Plataformas → controles */
+  --esp-controles: 14px;        /* Blocos | Entre controles e preview */
+  --esp-preview: 16px;          /* Blocos | Abaixo do preview */
+  --esp-corpo-x: 12px;          /* Blocos | Margem lateral */
+  --esp-corpo-topo: 10px;       /* Blocos | Topo do corpo */
+  --esp-corpo-base: 14px;       /* Blocos | Base do corpo */
 }
 
 * {
@@ -61,7 +106,7 @@ body {
 
 /* Header com Box delimitado */
 .panel-header {
-  padding: 12px 12px 4px;
+  padding: var(--esp-header-topo) var(--esp-corpo-x) var(--esp-header-base);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -70,7 +115,7 @@ body {
 
 .brand-logo-card {
   width: 100%;
-  height: 38px;
+  height: var(--alt-logo-card);
   background-color: transparent;
   border: 1px solid var(--border-color);
   border-radius: 4px;
@@ -80,7 +125,7 @@ body {
 }
 
 .panel-logo-svg {
-  height: 15px;
+  height: var(--alt-logo);
   width: auto;
   max-width: 130px;
   display: block;
@@ -103,7 +148,7 @@ body {
 }
 
 .panel-body {
-  padding: 10px 12px 14px;
+  padding: var(--esp-corpo-topo) var(--esp-corpo-x) var(--esp-corpo-base);
   display: flex;
   flex-direction: column;
   /* o corpo ocupa a altura livre, e a sobra é absorvida pelo preview abaixo */
@@ -115,7 +160,6 @@ body {
   display: flex;
   flex-direction: column;
   width: 100%;
-  gap: 6px;
 }
 
 .platform-strip {
@@ -127,8 +171,8 @@ body {
 
 /* Ícones planos sem caixas brancas, com hover limpo */
 .platform-icon {
-  width: 28px;
-  height: 28px;
+  width: var(--tam-icone);
+  height: var(--tam-icone);
   border-radius: 3px;
   background-color: transparent;
   border: none;
@@ -142,8 +186,8 @@ body {
 }
 
 .platform-icon svg {
-  width: 15px;
-  height: 15px;
+  width: var(--tam-icone-svg);
+  height: var(--tam-icone-svg);
 }
 
 .platform-icon:hover:not(.active) {
@@ -162,7 +206,6 @@ body {
 
 .controls-row {
   display: flex;
-  gap: 8px;
   width: 100%;
 }
 
@@ -176,7 +219,7 @@ body {
   border: 1px solid var(--border-color);
   border-radius: 3px;
   padding: 2px;
-  height: 28px;
+  height: var(--alt-controle);
   box-sizing: border-box;
 }
 
@@ -213,7 +256,7 @@ body {
   background-color: transparent;
   border: 1px solid var(--border-color);
   border-radius: 3px;
-  height: 28px;
+  height: var(--alt-controle);
   box-sizing: border-box;
   overflow: hidden;
   width: 100%;
@@ -265,7 +308,7 @@ body {
   background-color: transparent;
   border: 1px solid var(--border-color);
   border-radius: 3px;
-  padding: 0 10px;
+  padding: 0 var(--esp-dropdown-x);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -314,7 +357,7 @@ body {
 }
 
 .custom-dropdown-item {
-  padding: 6px 8px;
+  padding: var(--esp-item-y) var(--esp-item-x);
   font-family: var(--font-brand-mono);
   font-size: 10px;
   font-weight: 400;
@@ -343,7 +386,7 @@ body {
   background-color: transparent;
   border: none;
   border-radius: 4px;
-  padding: 16px 10px 14px;
+  padding: var(--esp-preview-topo) 10px var(--esp-preview-base);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -351,13 +394,12 @@ body {
      canvas, em vez de virar vazio entre os botões e o rodapé */
   flex: 1;
   justify-content: center;
-  min-height: 132px;
-  gap: 12px;
+  min-height: var(--alt-preview-min);
 }
 
 .preview-stage {
   width: 100%;
-  height: 110px;
+  height: var(--alt-stage);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -401,7 +443,6 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 5px;
   width: 100%;
   border-top: none;
   padding-top: 2px;
@@ -425,7 +466,6 @@ body {
 
 .legend-row {
   display: flex;
-  gap: 12px;
   font-family: var(--font-brand-mono);
   font-size: 8px;
   color: var(--text-muted);
@@ -436,7 +476,6 @@ body {
 .legend-item {
   display: flex;
   align-items: center;
-  gap: 4px;
 }
 
 .dot {
@@ -456,14 +495,13 @@ body {
 .button-group {
   display: flex;
   flex-direction: column;
-  gap: 9px;
   width: 100%;
-  margin-top: 8px;
+  margin-top: var(--esp-acima-botoes);
 }
 
 .btn-primary {
   width: 100%;
-  height: 32px;
+  height: var(--alt-btn-primario);
   background-color: var(--vermelho-raro);
   color: #ffffff;
   border-radius: 3px;
@@ -486,7 +524,7 @@ body {
 
 .btn-secondary {
   width: 100%;
-  height: 28px;
+  height: var(--alt-btn-secundario);
   background-color: transparent;
   color: var(--text-muted);
   border: 1px solid var(--border-color);
@@ -511,7 +549,7 @@ body {
 }
 
 .panel-footer {
-  padding: 14px 12px 14px;
+  padding: var(--esp-rodape) var(--esp-corpo-x) var(--esp-rodape);
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -537,10 +575,10 @@ body {
 }
 
 .color-dot {
-  width: 6px;
-  height: 6px;
-  min-width: 6px;
-  min-height: 6px;
+  width: var(--tam-color-dot);
+  height: var(--tam-color-dot);
+  min-width: var(--tam-color-dot);
+  min-height: var(--tam-color-dot);
   border-radius: 50%;
   cursor: pointer;
   box-sizing: border-box;
@@ -653,19 +691,19 @@ body {
    que deixou os blocos encostados por várias rodadas de ajuste.
    --------------------------------------------------------------------------- */
 
-.panel-body > .platform-container { margin-bottom: 16px; }
-.panel-body > .controls-row       { margin-bottom: 14px; }
-.panel-body > .custom-dropdown    { margin-bottom: 14px; }
-.panel-body > .preview-card       { margin-bottom: 16px; }
+.panel-body > .platform-container { margin-bottom: var(--esp-blocos); }
+.panel-body > .controls-row       { margin-bottom: var(--esp-controles); }
+.panel-body > .custom-dropdown    { margin-bottom: var(--esp-controles); }
+.panel-body > .preview-card       { margin-bottom: var(--esp-preview); }
 
-.platform-strip.extended-strip { margin-top: 8px; }
+.platform-strip.extended-strip { margin-top: var(--esp-fileiras); }
 
 /* o segundo botão se afasta do primeiro */
-.button-group > .btn-secondary { margin-top: 9px; }
+.button-group > .btn-secondary { margin-top: var(--esp-botoes); }
 
 /* dentro das fileiras horizontais */
-.controls-row > .mode-container { margin-right: 8px; }
-.preview-footer .legend-item + .legend-item { margin-left: 12px; }
+.controls-row > .mode-container { margin-right: var(--esp-modo-stepper); }
+.preview-footer .legend-item + .legend-item { margin-left: var(--esp-legenda); }
 
 /* ---------------------------------------------------------------------------
    RODAPÉ: tag menor e tudo na mesma altura de linha.
@@ -675,19 +713,68 @@ body {
   font-size: 7.5px;
   letter-spacing: 0.4px;
   padding: 0 6px;
-  height: 16px;
-  line-height: 16px;
+  height: var(--alt-rodape-itens);
+  line-height: var(--alt-rodape-itens);
   display: inline-block;
   border-radius: 2px;
 }
 
 .panel-footer .footer-brand-label {
-  height: 16px;
-  line-height: 16px;
+  height: var(--alt-rodape-itens);
+  line-height: var(--alt-rodape-itens);
 }
 
 .panel-footer .theme-palette {
-  height: 16px;
+  height: var(--alt-rodape-itens);
   display: flex;
   align-items: center;
 }
+
+
+/* ---------------------------------------------------------------------------
+   STEPPER VERTICAL: número à esquerda, + e - empilhados à direita.
+   Mantém a altura da linha igual à dos botões de modo, então os três controles
+   ficam alinhados. Feito por `order` e `flex-wrap` para não mexer no HTML —
+   a ordem no DOM é menos, número, mais.
+   --------------------------------------------------------------------------- */
+
+.stepper-group { flex: 0 0 52px; }
+
+.stepper-container {
+  flex-wrap: wrap;
+  align-content: center;
+  height: var(--alt-controle);
+  padding: 0;
+}
+
+.stepper-container .stepper-input {
+  order: 1;
+  flex: 1 1 auto;
+  height: var(--alt-controle);
+  font-size: 10.5px;
+}
+
+/* os dois botões ocupam a mesma coluna de 18px e por isso quebram um sob o
+   outro, cada um com metade da altura do controle */
+.stepper-container .stepper-btn {
+  flex: 0 0 18px;
+  width: 18px;
+  height: calc(var(--alt-controle) / 2);
+  min-height: 0;
+  font-size: 11px;
+  line-height: 1;
+}
+
+.stepper-container #btnPlus  { order: 2; }
+.stepper-container #btnMinus { order: 3; }
+
+
+/* ---------------------------------------------------------------------------
+   O que era `gap` virou margin. O UXP ignora gap em flexbox, então todo espaço
+   interno que dependia dele chegava ZERADO no painel: dentro do preview, entre
+   as linhas de texto e entre a bolinha e o rótulo da legenda.
+   --------------------------------------------------------------------------- */
+
+.preview-card > * + *   { margin-top: var(--esp-preview-interno); }
+.preview-footer > * + * { margin-top: var(--esp-footer-linhas); }
+.legend-item > .dot     { margin-right: var(--esp-legenda-dot); }
