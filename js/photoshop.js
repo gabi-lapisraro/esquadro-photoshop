@@ -126,19 +126,23 @@ async function createArtboards(fmt, count) {
         ` — ${qty} prancheta(s) de ${fmt.width}x${fmt.height}, intervalo ${GAP}`
       );
 
-      // 2. Uma prancheta por cópia, lado a lado
+      // 2. Uma prancheta por cópia, lado a lado. As guias vão logo depois de
+      //    cada prancheta, enquanto ela é a ativa: no Photoshop a guia criada
+      //    com prancheta ativa PERTENCE a ela e é medida a partir da borda
+      //    dela, não do canvas. Por isso o offset aqui é ZERO — somar o `left`
+      //    jogava a guia para fora dos limites da prancheta, e o Photoshop
+      //    simplesmente não a desenhava (só a primeira aparecia, onde
+      //    relativo e absoluto coincidem).
       for (let i = 0; i < qty; i++) {
         const left = i * (fmt.width + GAP);
-        const top = 0;
 
-        await _makeArtboard(`${fmt.name} ${i + 1}`, left, top, fmt.width, fmt.height);
+        await _makeArtboard(`${fmt.name} ${i + 1}`, left, 0, fmt.width, fmt.height);
 
-        // 3. Guias verticais desta prancheta
-        _drawVerticalGuides(doc, fmt, left);
+        _drawVerticalGuides(doc, fmt, 0);
+        _drawHorizontalGuides(doc, fmt, 0);
       }
 
-      // 4. Guias horizontais (todas as pranchetas compartilham o topo = 0)
-      _drawHorizontalGuides(doc, fmt, 0);
+      _logGuias(doc);
     }, { commandName: "Criar Pranchetas ESQUADЯO" });
 
     return { ok: true, message: `${qty} prancheta(s) de ${fmt.name} criada(s).` };
@@ -175,14 +179,15 @@ async function applyGuides(fmt) {
 
     await core.executeAsModal(async () => {
       const doc = app.activeDocument;
-      const offset = await _findArtboardOffset(doc);
-      onArtboard = offset !== null;
 
-      const offsetX = offset ? offset.x : 0;
-      const offsetY = offset ? offset.y : 0;
+      // A detecção serve só para a mensagem. O offset é sempre ZERO: com
+      // prancheta ativa a guia é medida a partir da borda dela, e sem
+      // prancheta é medida a partir do canvas — nos dois casos a origem já é
+      // o ponto de partida certo.
+      onArtboard = (await _findArtboardOffset(doc)) !== null;
 
-      _drawVerticalGuides(doc, fmt, offsetX);
-      _drawHorizontalGuides(doc, fmt, offsetY);
+      _drawVerticalGuides(doc, fmt, 0);
+      _drawHorizontalGuides(doc, fmt, 0);
     }, { commandName: "Aplicar Guias de Segurança" });
 
     return {
@@ -194,6 +199,29 @@ async function applyGuides(fmt) {
   } catch (err) {
     console.error("[ESQUADRO] applyGuides:", err);
     return { ok: false, message: _humanError(err) };
+  }
+}
+
+/**
+ * Lista no log as guias que o documento realmente tem.
+ * Serve para saber se a coordenada gravada é relativa à prancheta ou ao canvas
+ * — a olho nu as duas são indistinguíveis na primeira prancheta.
+ */
+function _logGuias(doc) {
+  try {
+    const gs = doc.guides;
+    const total = gs.length;
+    const lista = [];
+    for (let i = 0; i < total; i++) {
+      const g = gs[i];
+      const c = g.coordinate;
+      // coordinate pode vir como número ou como UnitValue
+      const valor = (c && typeof c === "object" && "value" in c) ? c.value : c;
+      lista.push(`${g.direction}@${valor}`);
+    }
+    console.log(`[ESQUADRO] ${total} guia(s) no documento: ${lista.join(", ")}`);
+  } catch (e) {
+    console.log(`[ESQUADRO] não consegui listar as guias: ${e && e.message}`);
   }
 }
 
