@@ -12,6 +12,15 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 
+# Trava se o CSS usar algo que o UXP descarta em silêncio. Sem isso, um `gap`
+# ou um @import remoto entra no pacote e só aparece depois de reiniciar o
+# Photoshop, sem nenhuma pista no log.
+if ! python3 verificar-uxp.py --silencioso; then
+  echo "ABORTADO: o CSS tem propriedade sem suporte no UXP."
+  echo "Rode  python3 verificar-uxp.py  para ver o quê."
+  exit 1
+fi
+
 ID_TESTE="com.lapisraro.esquadro.photoshop.teste"
 EXTERNAL="$HOME/Library/Application Support/Adobe/UXP/Plugins/External"
 DEST="$EXTERNAL/$ID_TESTE"

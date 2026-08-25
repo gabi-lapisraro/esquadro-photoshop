@@ -64,6 +64,7 @@
   --alt-btn-secundario: 29px;   /* Botões | Altura do secundário */
   --esp-botoes: 2px;            /* Botões | Entre os dois */
   --esp-acima-botoes: 0px;      /* Botões | Acima do grupo */
+  --esp-botao-x: 12px;          /* Botões | Recuo horizontal */
 
   --esp-rodape: 20px;           /* Rodapé | Altura */
   --alt-rodape-itens: 20px;     /* Rodapé | Altura dos itens */
@@ -115,7 +116,7 @@ body {
   margin: 0;
   padding: 0;
   width: 100%;
-  min-height: 100vh;
+  min-height: 100vh; /* uxp-ok: o rodapé precisa alcançar a base do painel */
   display: flex;
   justify-content: center;
   align-items: stretch;
@@ -123,7 +124,7 @@ body {
 
 .panel-container {
   width: 100%;
-  min-height: 100vh;
+  min-height: 100vh; /* uxp-ok: idem, o corpo ocupa a altura toda */
   background-color: var(--bg-color);
   display: flex;
   flex-direction: column;
@@ -291,8 +292,6 @@ body {
   box-sizing: border-box;
   overflow: hidden;
   width: 100%;
-  flex-wrap: wrap;
-  align-content: center;
   height: var(--alt-controle);
   padding: 0;
 }
@@ -446,10 +445,11 @@ body {
   border: calc(var(--borda) * 1px) solid rgba(255, 255, 255, 0.6);
   background-color: #161616;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
-  transition: width 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), 
-              height 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), 
-              border-radius 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
-  will-change: width, height;
+  /* Só border-radius anima. Animar width e height obriga o motor a recalcular
+     o layout a cada quadro, e o canvas troca de dimensão a cada formato
+     escolhido. O `will-change` saiu junto: pedia otimização para justamente as
+     duas propriedades que deixaram de animar. */
+  transition: border-radius 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .guide-overlay {
@@ -535,6 +535,8 @@ body {
 }
 
 .btn-primary {
+  /* recuo horizontal: sem ele um rótulo longo encosta na borda */
+  padding: 0 var(--esp-botao-x);
   width: 100%;
   height: var(--alt-btn-primario);
   background-color: var(--vermelho-raro);
@@ -558,6 +560,8 @@ body {
 }
 
 .btn-secondary {
+  /* recuo horizontal: sem ele um rótulo longo encosta na borda */
+  padding: 0 var(--esp-botao-x);
   width: 100%;
   height: var(--alt-btn-secundario);
   background-color: transparent;
