@@ -88,7 +88,7 @@ function checkCapacity(fmt, count) {
  * Cria pranchetas (Artboards) reais no Photoshop usando batchPlay
  * @returns {Promise<{ok: boolean, message: string}>}
  */
-async function createArtboards(fmt, count) {
+async function createArtboards(fmt, count, docName) {
   if (!ps || !ps.app) {
     return { ok: false, message: "Photoshop não disponível (fora do ambiente UXP)." };
   }
@@ -103,6 +103,10 @@ async function createArtboards(fmt, count) {
   const totalWidth = capacity.totalWidth;
   const totalHeight = fmt.height;
 
+  // Nome base do arquivo. Se a UI não mandar, cai no nome do formato — assim a
+  // função continua usável fora do painel.
+  const base = (docName && String(docName).trim()) || `${fmt.name} - ESQUADЯO`;
+
   const { app, core, constants } = ps;
   const { batchPlay } = ps.action;
 
@@ -115,13 +119,13 @@ async function createArtboards(fmt, count) {
         resolution: fmt.resolution || 72,
         mode: _colorMode(fmt.colorMode),
         fill: (constants && constants.DocumentFill && constants.DocumentFill.TRANSPARENT) || "transparent",
-        name: `${fmt.name} - ESQUADЯO`
+        name: base
       });
 
       if (!doc) throw new Error("Não foi possível criar o documento.");
 
       console.log(
-        `[ESQUADRO] doc "${fmt.name}": pedido ${totalWidth}x${totalHeight}` +
+        `[ESQUADRO] doc "${base}": pedido ${totalWidth}x${totalHeight}` +
         ` / obtido ${doc.width}x${doc.height} @ ${doc.resolution}dpi` +
         ` — ${qty} prancheta(s) de ${fmt.width}x${fmt.height}, intervalo ${GAP}`
       );
@@ -136,7 +140,10 @@ async function createArtboards(fmt, count) {
       for (let i = 0; i < qty; i++) {
         const left = i * (fmt.width + GAP);
 
-        await _makeArtboard(`${fmt.name} ${i + 1}`, left, 0, fmt.width, fmt.height);
+        // Prancheta única não leva sufixo; com mais de uma, _1, _2, _3...
+        const nome = qty > 1 ? `${base}_${i + 1}` : base;
+
+        await _makeArtboard(nome, left, 0, fmt.width, fmt.height);
 
         _drawVerticalGuides(doc, fmt, 0);
         _drawHorizontalGuides(doc, fmt, 0);

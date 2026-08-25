@@ -28,6 +28,120 @@ const platformNames = {
   'ooh': 'OOH'
 };
 
+// Abreviação de plataforma usada no nome do arquivo.
+// Padrão: #TAREFA_PLATAFORMA_FORMATO_DDMM  →  #TAREFA_IG_STORY_2508
+// Cada prancheta ganha _1, _2... quando há mais de uma.
+// Editar aqui muda o nome de todo arquivo gerado.
+const PLATFORM_ABBR = {
+  'instagram': 'IG',
+  'facebook': 'FB',
+  'facebook_ads': 'FBADS',
+  'linkedin': 'LKD',
+  'tiktok': 'TKT',
+  'whatsapp': 'WPP',
+  'youtube': 'YT',
+  'youtube_ads': 'YTADS',
+  'meta_ads': 'MADS',
+  'google_ads': 'GADS',
+  'twitter': 'X',
+  'uber': 'UBER',
+  'ifood': 'IFOOD'
+};
+
+// Abreviação de formato. Só os nomes que ficariam ruins na derivação
+// automática entram aqui — o resto sai do próprio nome do formato.
+const FORMAT_ABBR = {
+  'Perfil / Destaques': 'PERFIL',
+  'Capa (Grupos)': 'CAPA',
+  'Capa (Eventos)': 'EVENTOS',
+  'Capa (Thumbnail)': 'CAPA',
+  'Capa Business': 'BUSINESS',
+  'Link (Open Graph tag)': 'LINK',
+  '(Link)': 'LINK',
+  '(Card)': 'CARD',
+  'Overlay (alternativo)': 'OVERLAY2',
+  'Display ad 1': 'DISPLAY1',
+  'Display ad 2': 'DISPLAY2',
+  'Figurinha (Sticker)': 'STICKER',
+  'Story / Reels': 'STORY',
+  'Thumbnail — 2:3': 'THUMB',
+  'Thumbnail — 1:1': 'THUMB',
+  'For You': 'FORYOU',
+  'Leaderboard': 'LEADER',
+  'Banner iFood': 'BANNER',
+  'Retangular': 'RETANG',
+  'Journey Ad · Dispatch (Pedido)': 'DISPATCH',
+  'Journey Ad · En-Route (No trajeto)': 'ENROUTE',
+  'Journey Ad · On-Trip (Em viagem)': 'ONTRIP',
+  'JourneyTV · Exibição estática': 'JTVESTATICO',
+  'JourneyTV · Send to Phone (e-mail)': 'JTVEMAIL'
+};
+
+/** Tira acento, pontuação e espaço, e sobe para maiúsculas. */
+function slug(txt) {
+  return (txt || '')
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^A-Za-z0-9]/g, '')
+    .toUpperCase();
+}
+
+// Quadrado, Retrato e Paisagem são a mesma coisa: peça de feed. O que as separa
+// é a dimensão, não o nome, então viram FEED e o desempate resolve.
+// Vale só nas redes sociais. No Google Ads esses mesmos nomes descrevem display
+// ad, que não é feed, e lá o nome do formato é mantido.
+const NOMES_DE_FEED = ['Quadrado', 'Retrato', 'Paisagem'];
+const PLATAFORMAS_SEM_FEED = ['google_ads'];
+
+/** Abreviação de um formato, sem considerar colisão. */
+function formatAbbr(fmt) {
+  if (!fmt) return '';
+
+  if (NOMES_DE_FEED.indexOf(fmt.name) !== -1) {
+    return PLATAFORMAS_SEM_FEED.indexOf(getActiveDatabaseKey()) === -1
+      ? 'FEED'
+      : slug(fmt.name).slice(0, 12);
+  }
+
+  if (FORMAT_ABBR[fmt.name]) return FORMAT_ABBR[fmt.name];
+  // Pega só o primeiro trecho antes de um separador ("Perfil / Destaques")
+  const base = String(fmt.name).split(/[\/·—–]/)[0];
+  return slug(base).slice(0, 12) || slug(fmt.id).slice(0, 12);
+}
+
+/**
+ * Token de formato que entra no nome do arquivo.
+ *
+ * Não desempata por dimensão. As seis peças de feed do Instagram saem todas
+ * como FEED, e o mesmo vale para as duas capas do Facebook e as duas
+ * thumbnails do WhatsApp. É de propósito: cada clique gera um documento só, e
+ * quem cria renomeia na hora de salvar. Nome curto vale mais que nome único.
+ */
+function formatToken(fmt) {
+  return formatAbbr(fmt);
+}
+
+/** DDMM da data de hoje. */
+function todayDDMM() {
+  const d = new Date();
+  const dia = String(d.getDate()).padStart(2, '0');
+  const mes = String(d.getMonth() + 1).padStart(2, '0');
+  return `${dia}${mes}`;
+}
+
+/**
+ * Nome base do documento: #TAREFA_PLATAFORMA_FORMATO_DDMM
+ * Ex.: #TAREFA_IG_STORY_2508
+ *
+ * O "#TAREFA" é literal e igual para todos — quem cria renomeia na hora de
+ * salvar, com o número do RunRunIt.
+ */
+function buildDocName() {
+  const plat = PLATFORM_ABBR[getActiveDatabaseKey()] || currentPlatform.toUpperCase();
+  const fmt = formatToken(getSelectedFormat());
+  const partes = ['#TAREFA', plat, fmt, todayDDMM()].filter(Boolean);
+  return partes.join('_');
+}
+
 // Cores da paleta claras o bastante para exigir texto escuro por cima.
 // Precisa cobrir toda a paleta de .theme-palette no index.html.
 const LIGHT_THEME_COLORS = ['#a2d2eb', '#fea8fe', '#e5e3d9', '#c5c0b6'];
@@ -199,8 +313,9 @@ function bindEvents() {
     const count = parseInt(els.qtdInput.textContent) || 1;
     if (!createCallback) return;
 
+    const docName = buildDocName();
     showToast(`Criando ${count} prancheta(s)...`, 'info');
-    await runAction(() => createCallback(fmt, count),
+    await runAction(() => createCallback(fmt, count, docName),
       `${count} prancheta(s) criada(s).`);
   });
 
