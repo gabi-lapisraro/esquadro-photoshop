@@ -120,31 +120,18 @@ async function createArtboards(fmt, count) {
 
       if (!doc) throw new Error("Não foi possível criar o documento.");
 
+      console.log(
+        `[ESQUADRO] doc "${fmt.name}": pedido ${totalWidth}x${totalHeight}` +
+        ` / obtido ${doc.width}x${doc.height} @ ${doc.resolution}dpi` +
+        ` — ${qty} prancheta(s) de ${fmt.width}x${fmt.height}, intervalo ${GAP}`
+      );
+
       // 2. Uma prancheta por cópia, lado a lado
       for (let i = 0; i < qty; i++) {
         const left = i * (fmt.width + GAP);
         const top = 0;
 
-        await batchPlay(
-          [
-            {
-              _obj: "make",
-              _target: [{ _ref: "artboardSection" }],
-              using: {
-                _obj: "artboardSection",
-                artboardRect: {
-                  _obj: "classFloatRect",
-                  top: top,
-                  left: left,
-                  bottom: top + fmt.height,
-                  right: left + fmt.width
-                },
-                name: `${fmt.name} ${i + 1}`
-              }
-            }
-          ],
-          { synchronousExecution: true, modalBehavior: "execute" }
-        );
+        await _makeArtboard(`${fmt.name} ${i + 1}`, left, top, fmt.width, fmt.height);
 
         // 3. Guias verticais desta prancheta
         _drawVerticalGuides(doc, fmt, left);
@@ -207,6 +194,101 @@ async function applyGuides(fmt) {
   } catch (err) {
     console.error("[ESQUADRO] applyGuides:", err);
     return { ok: false, message: _humanError(err) };
+  }
+}
+
+/** Retângulo no formato que o batchPlay espera. */
+function _rect(left, top, width, height) {
+  return {
+    _obj: "classFloatRect",
+    top: top,
+    left: left,
+    bottom: top + height,
+    right: left + width
+  };
+}
+
+/** Camada ativa, como alvo de descritor. */
+const _CAMADA_ATIVA = { _ref: "layer", _enum: "ordinal", _value: "targetEnum" };
+
+/**
+ * Cria uma prancheta com posição e tamanho exatos.
+ *
+ * O `artboardRect` precisa vir ANINHADO sob um objeto `artboard` — é a mesma
+ * forma em que o Photoshop devolve na leitura (`res.artboard.artboardRect`).
+ * Passando `artboardRect` solto no `using`, o Photoshop ignora o retângulo em
+ * silêncio, usa o tamanho do documento e empilha as pranchetas adjacentes.
+ *
+ * Depois do `make`, o retângulo é reforçado com `editArtboardEvent`, porque o
+ * `make` também ajusta a prancheta ao conteúdo da camada que ele absorve.
+ *
+ * @returns {Promise<{left:number,top:number,right:number,bottom:number}|null>} rect obtido
+ */
+async function _makeArtboard(nome, left, top, width, height) {
+  const { batchPlay } = ps.action;
+  const opts = { synchronousExecution: true, modalBehavior: "execute" };
+
+  await batchPlay([{
+    _obj: "make",
+    _target: [{ _ref: "artboardSection" }],
+    using: {
+      _obj: "artboardSection",
+      artboard: {
+        _obj: "artboard",
+        artboardRect: _rect(left, top, width, height)
+      },
+      name: nome
+    }
+  }], opts);
+
+  // Reforça posição e tamanho na prancheta recém-criada (que está ativa).
+  try {
+    await batchPlay([{
+      _obj: "editArtboardEvent",
+      _target: [_CAMADA_ATIVA],
+      artboard: {
+        _obj: "artboard",
+        artboardRect: _rect(left, top, width, height)
+      }
+    }], opts);
+  } catch (e) {
+    console.log(`[ESQUADRO] editArtboardEvent falhou em "${nome}": ${e && e.message}`);
+  }
+
+  // Confere o que o Photoshop realmente aplicou — sem isso um desvio de
+  // geometria passa em silêncio, que foi o que aconteceu no teste de 25/08.
+  const obtido = await _lerArtboardRect();
+  if (obtido) {
+    const okPos = Math.abs(obtido.left - left) < 1 && Math.abs(obtido.top - top) < 1;
+    const okTam = Math.abs((obtido.right - obtido.left) - width) < 1 &&
+                  Math.abs((obtido.bottom - obtido.top) - height) < 1;
+    if (!okPos || !okTam) {
+      console.log(
+        `[ESQUADRO] "${nome}" saiu diferente do pedido.` +
+        ` pedido: ${left},${top} ${width}x${height}` +
+        ` obtido: ${obtido.left},${obtido.top} ` +
+        `${obtido.right - obtido.left}x${obtido.bottom - obtido.top}`
+      );
+    }
+  } else {
+    console.log(`[ESQUADRO] não consegui ler o rect de "${nome}".`);
+  }
+  return obtido;
+}
+
+/** Lê o artboardRect da camada ativa, ou null se não for prancheta. */
+async function _lerArtboardRect() {
+  const { batchPlay } = ps.action;
+  try {
+    const [res] = await batchPlay([{
+      _obj: "get",
+      _target: [{ _property: "artboard" }, _CAMADA_ATIVA]
+    }], { synchronousExecution: true });
+    const rect = res && res.artboard && res.artboard.artboardRect;
+    if (!rect) return null;
+    return { left: rect.left, top: rect.top, right: rect.right, bottom: rect.bottom };
+  } catch (e) {
+    return null;
   }
 }
 
