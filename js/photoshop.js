@@ -1,0 +1,309 @@
+// Funções da API do Photoshop (UXP)
+let ps = null;
+
+try {
+  ps = require("photoshop");
+} catch (e) {
+  console.log("Photoshop core não encontrado (rodando no browser/sandbox).");
+}
+
+// Limite de dimensão de um documento PSD. Acima disso o Photoshop recusa a criação.
+const MAX_DOC_DIMENSION = 30000;
+
+const GAP = 200; // Espaçamento entre pranchetas
+
+/** Direção de guia, preferindo a constante da API e caindo para string. */
+function _direction(kind) {
+  const dir = ps && ps.constants && ps.constants.Direction;
+  if (dir) return kind === "horizontal" ? dir.HORIZONTAL : dir.VERTICAL;
+  return kind;
+}
+
+/**
+ * Traduz o `colorMode` do guia de formatos para a constante do UXP,
+ * mantendo a string original como fallback.
+ */
+function _colorMode(raw) {
+  const modes = ps && ps.constants && ps.constants.NewDocumentMode;
+  if (!modes) return raw || "RGBColorMode";
+
+  switch (raw) {
+    case "CMYKColorMode": return modes.CMYK;
+    case "GrayscaleMode": return modes.GRAYSCALE;
+    case "LabColorMode": return modes.LAB;
+    case "BitmapMode": return modes.BITMAP;
+    case "RGBColorMode":
+    default: return modes.RGB;
+  }
+}
+
+/** Valida o formato antes de qualquer chamada à API. */
+function _validateFormat(fmt) {
+  if (!fmt) return "Nenhum formato selecionado.";
+  if (!fmt.width || !fmt.height) {
+    return `O formato "${fmt.name || fmt.id || "?"}" não tem dimensões definidas.`;
+  }
+  return null;
+}
+
+/**
+ * Quantas pranchetas deste formato cabem em um documento, e se `count` cabe.
+ * Função pura — não toca na API do Photoshop.
+ *
+ * @returns {{ok: boolean, maxCount: number, totalWidth: number, message?: string}}
+ */
+function checkCapacity(fmt, count) {
+  const qty = Math.max(1, parseInt(count, 10) || 1);
+
+  if (!fmt || !fmt.width || !fmt.height) {
+    return { ok: false, maxCount: 0, totalWidth: 0, message: "Formato sem dimensões." };
+  }
+
+  if (fmt.height > MAX_DOC_DIMENSION) {
+    return {
+      ok: false,
+      maxCount: 0,
+      totalWidth: 0,
+      message: `A altura de ${fmt.height}px excede o limite do Photoshop (${MAX_DOC_DIMENSION}px).`
+    };
+  }
+
+  // maxCount resolve: n*width + (n-1)*gap <= MAX  ->  n <= (MAX + gap) / (width + gap)
+  const maxCount = Math.max(1, Math.floor((MAX_DOC_DIMENSION + GAP) / (fmt.width + GAP)));
+  const totalWidth = (fmt.width * qty) + (GAP * (qty - 1));
+
+  if (totalWidth > MAX_DOC_DIMENSION) {
+    return {
+      ok: false,
+      maxCount,
+      totalWidth,
+      message: `${qty}× ${fmt.width}px daria ${totalWidth}px, acima do limite do Photoshop (${MAX_DOC_DIMENSION}px). Máximo para este formato: ${maxCount}.`
+    };
+  }
+
+  return { ok: true, maxCount, totalWidth };
+}
+
+/**
+ * Cria pranchetas (Artboards) reais no Photoshop usando batchPlay
+ * @returns {Promise<{ok: boolean, message: string}>}
+ */
+async function createArtboards(fmt, count) {
+  if (!ps || !ps.app) {
+    return { ok: false, message: "Photoshop não disponível (fora do ambiente UXP)." };
+  }
+
+  const invalid = _validateFormat(fmt);
+  if (invalid) return { ok: false, message: invalid };
+
+  const qty = Math.max(1, parseInt(count, 10) || 1);
+  const capacity = checkCapacity(fmt, qty);
+  if (!capacity.ok) return { ok: false, message: capacity.message };
+
+  const totalWidth = capacity.totalWidth;
+  const totalHeight = fmt.height;
+
+  const { app, core, constants } = ps;
+  const { batchPlay } = ps.action;
+
+  try {
+    await core.executeAsModal(async () => {
+      // 1. Documento do tamanho total, começando em (0,0) para as coordenadas baterem
+      const doc = await app.documents.add({
+        width: totalWidth,
+        height: totalHeight,
+        resolution: fmt.resolution || 72,
+        mode: _colorMode(fmt.colorMode),
+        fill: (constants && constants.DocumentFill && constants.DocumentFill.TRANSPARENT) || "transparent",
+        name: `${fmt.name} - ESQUADЯO`
+      });
+
+      if (!doc) throw new Error("Não foi possível criar o documento.");
+
+      // 2. Uma prancheta por cópia, lado a lado
+      for (let i = 0; i < qty; i++) {
+        const left = i * (fmt.width + GAP);
+        const top = 0;
+
+        await batchPlay(
+          [
+            {
+              _obj: "make",
+              _target: [{ _ref: "artboardSection" }],
+              using: {
+                _obj: "artboardSection",
+                artboardRect: {
+                  _obj: "classFloatRect",
+                  top: top,
+                  left: left,
+                  bottom: top + fmt.height,
+                  right: left + fmt.width
+                },
+                name: `${fmt.name} ${i + 1}`
+              }
+            }
+          ],
+          { synchronousExecution: true, modalBehavior: "execute" }
+        );
+
+        // 3. Guias verticais desta prancheta
+        _drawVerticalGuides(doc, fmt, left);
+      }
+
+      // 4. Guias horizontais (todas as pranchetas compartilham o topo = 0)
+      _drawHorizontalGuides(doc, fmt, 0);
+    }, { commandName: "Criar Pranchetas ESQUADЯO" });
+
+    return { ok: true, message: `${qty} prancheta(s) de ${fmt.name} criada(s).` };
+  } catch (err) {
+    console.error("[ESQUADRO] createArtboards:", err);
+    return { ok: false, message: _humanError(err) };
+  }
+}
+
+/**
+ * Aplica guias no documento aberto (prancheta ativa ou documento simples)
+ * @returns {Promise<{ok: boolean, message: string}>}
+ */
+async function applyGuides(fmt) {
+  if (!ps || !ps.app) {
+    return { ok: false, message: "Photoshop não disponível (fora do ambiente UXP)." };
+  }
+
+  const invalid = _validateFormat(fmt);
+  if (invalid) return { ok: false, message: invalid };
+
+  if (!fmt.safe && !fmt.crop) {
+    return { ok: false, message: `"${fmt.name}" não tem guias definidas no guia de formatos.` };
+  }
+
+  const { app, core } = ps;
+
+  if (!app.activeDocument) {
+    return { ok: false, message: "Abra um documento antes de aplicar as guias." };
+  }
+
+  try {
+    let onArtboard = false;
+
+    await core.executeAsModal(async () => {
+      const doc = app.activeDocument;
+      const offset = await _findArtboardOffset(doc);
+      onArtboard = offset !== null;
+
+      const offsetX = offset ? offset.x : 0;
+      const offsetY = offset ? offset.y : 0;
+
+      _drawVerticalGuides(doc, fmt, offsetX);
+      _drawHorizontalGuides(doc, fmt, offsetY);
+    }, { commandName: "Aplicar Guias de Segurança" });
+
+    return {
+      ok: true,
+      message: onArtboard
+        ? "Guias aplicadas na prancheta ativa."
+        : "Guias aplicadas no documento."
+    };
+  } catch (err) {
+    console.error("[ESQUADRO] applyGuides:", err);
+    return { ok: false, message: _humanError(err) };
+  }
+}
+
+/**
+ * Descobre o offset (canto superior esquerdo) da prancheta que contém a camada ativa.
+ *
+ * `layer.kind` do UXP não expõe "artboard" — uma prancheta é um group com a
+ * propriedade `artboard` no descritor. Por isso a leitura é via batchPlay, subindo
+ * a hierarquia até achar uma prancheta (a camada ativa pode estar dentro dela).
+ *
+ * @returns {Promise<{x: number, y: number}|null>} null se não estiver em prancheta
+ */
+async function _findArtboardOffset(doc) {
+  const { batchPlay } = ps.action;
+
+  let layer = null;
+  try {
+    layer = doc.activeLayers && doc.activeLayers[0];
+  } catch (e) {
+    return null;
+  }
+  if (!layer) return null;
+
+  // Sobe no máximo 10 níveis para não arriscar loop em hierarquia inesperada
+  for (let depth = 0; layer && depth < 10; depth++) {
+    try {
+      const [res] = await batchPlay(
+        [
+          {
+            _obj: "get",
+            _target: [
+              { _property: "artboard" },
+              { _ref: "layer", _id: layer.id }
+            ]
+          }
+        ],
+        { synchronousExecution: true }
+      );
+
+      const info = res && res.artboard;
+      const rect = info && info.artboardRect;
+
+      if (info && info.artboardEnabled && rect) {
+        return { x: rect.left, y: rect.top };
+      }
+    } catch (e) {
+      // Camada sem propriedade de prancheta: apenas continua subindo
+    }
+
+    layer = layer.parent;
+  }
+
+  return null;
+}
+
+/** Guias horizontais (safe zone e corte no eixo vertical) */
+function _drawHorizontalGuides(doc, fmt, offsetY) {
+  const height = fmt.height;
+  const h = _direction("horizontal");
+
+  if (fmt.safe) {
+    if (fmt.safe.top) doc.guides.add(h, offsetY + fmt.safe.top);
+    if (fmt.safe.bottom) doc.guides.add(h, offsetY + height - fmt.safe.bottom);
+  }
+
+  if (fmt.crop) {
+    if (fmt.crop.top) doc.guides.add(h, offsetY + fmt.crop.top);
+    if (fmt.crop.bottom) doc.guides.add(h, offsetY + height - fmt.crop.bottom);
+  }
+}
+
+/** Guias verticais (safe zone e corte lateral) */
+function _drawVerticalGuides(doc, fmt, offsetX) {
+  const width = fmt.width;
+  const v = _direction("vertical");
+
+  if (fmt.safe) {
+    if (fmt.safe.left) doc.guides.add(v, offsetX + fmt.safe.left);
+    if (fmt.safe.right) doc.guides.add(v, offsetX + width - fmt.safe.right);
+  }
+
+  if (fmt.crop && fmt.crop.lateral) {
+    doc.guides.add(v, offsetX + fmt.crop.lateral);
+    doc.guides.add(v, offsetX + width - fmt.crop.lateral);
+  }
+}
+
+/** Mensagem de erro legível a partir do que a API do UXP devolve. */
+function _humanError(err) {
+  if (!err) return "Erro desconhecido.";
+  if (typeof err === "string") return err;
+  if (err.message) return err.message;
+  return String(err);
+}
+
+module.exports = {
+  createArtboards,
+  applyGuides,
+  checkCapacity
+};
