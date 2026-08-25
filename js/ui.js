@@ -139,6 +139,43 @@ function ordemDeUso(fmt) {
   return ORDEM_DE_USO.length;        // o resto vai para o fim
 }
 
+/* ---------------------------------------------------------------------------
+   Preferências: o painel reabre na última escolha da pessoa.
+   Guarda plataforma, modo, formato e cor de tema. NÃO guarda a quantidade —
+   reabrir pedindo 5 pranchetas por engano é pior que redigitar o número.
+   --------------------------------------------------------------------------- */
+
+const PREFS_CHAVE = 'esquadro.prefs.v1';
+
+/** Formato que populateFormats deve tentar selecionar antes de cair no primeiro. */
+let formatoDesejado = null;
+
+/** Lê as preferências. Devolve objeto vazio se não houver ou se falhar. */
+function lerPrefs() {
+  try {
+    const bruto = localStorage.getItem(PREFS_CHAVE);
+    return bruto ? (JSON.parse(bruto) || {}) : {};
+  } catch (e) {
+    // localStorage pode não existir no UXP dependendo da versão; sem ele o
+    // painel só perde a memória, não quebra.
+    console.log('[ESQUADRO] preferências indisponíveis: ' + (e && e.message));
+    return {};
+  }
+}
+
+function salvarPrefs() {
+  try {
+    localStorage.setItem(PREFS_CHAVE, JSON.stringify({
+      plataforma: currentPlatform,
+      modo: currentMode,
+      formato: selectedFormatId,
+      cor: themeColor
+    }));
+  } catch (e) {
+    /* sem memória disponível: segue sem persistir */
+  }
+}
+
 /** DDMM da data de hoje. */
 function todayDDMM() {
   const d = new Date();
@@ -231,7 +268,18 @@ function init(config) {
   els.modeAds = document.getElementById('modeAds');
 
   bindEvents();
-  selectPlatform(currentPlatform);
+
+  // Restaura a última escolha antes de montar a lista, para o formato salvo
+  // já ser o selecionado em vez de piscar no primeiro da lista.
+  const prefs = lerPrefs();
+  if (prefs.cor) applyTheme(prefs.cor);
+  if (prefs.modo === 'organic' || prefs.modo === 'ads') currentMode = prefs.modo;
+  formatoDesejado = prefs.formato || null;
+
+  const plataformaValida = prefs.plataforma &&
+    document.querySelector(`.platform-icon[data-platform="${prefs.plataforma}"]`);
+
+  selectPlatform(plataformaValida ? prefs.plataforma : currentPlatform);
   updateQtdLabel();
 }
 
@@ -435,6 +483,7 @@ function applyTheme(color) {
 
   // Atualiza preview de guias
   updatePreview();
+  salvarPrefs();
 }
 
 function selectPlatform(plat) {
@@ -453,8 +502,10 @@ function selectPlatform(plat) {
     }
   });
 
+  // adjustModeForPlatform termina em selectMode, que já chama populateFormats.
+  // Chamar de novo aqui remontava a lista e descartava o formato restaurado.
   adjustModeForPlatform();
-  populateFormats();
+  salvarPrefs();
 }
 
 function selectMode(mode) {
@@ -571,6 +622,7 @@ function selectFormat(fmtId) {
 
   els.customDropdown.classList.remove('open');
   updatePreview();
+  salvarPrefs();
 }
 
 function populateFormats() {
@@ -624,8 +676,13 @@ function populateFormats() {
       els.dropdownMenu.appendChild(item);
     });
     
-    // Auto-seleciona o primeiro
-    selectFormat(formats[0].id);
+    // Prefere o formato salvo, se ele existir nesta plataforma. O desejo vale
+    // uma vez: depois disso, trocar de plataforma volta a abrir no primeiro.
+    const salvo = formatoDesejado && formats.some(f => f.id === formatoDesejado)
+      ? formatoDesejado
+      : formats[0].id;
+    formatoDesejado = null;
+    selectFormat(salvo);
   }
 }
 
