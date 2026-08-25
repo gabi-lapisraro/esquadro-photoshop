@@ -130,13 +130,11 @@ async function createArtboards(fmt, count, docName) {
         ` — ${qty} prancheta(s) de ${fmt.width}x${fmt.height}, intervalo ${GAP}`
       );
 
-      // 2. Uma prancheta por cópia, lado a lado. As guias vão logo depois de
-      //    cada prancheta, enquanto ela é a ativa: no Photoshop a guia criada
-      //    com prancheta ativa PERTENCE a ela e é medida a partir da borda
-      //    dela, não do canvas. Por isso o offset aqui é ZERO — somar o `left`
-      //    jogava a guia para fora dos limites da prancheta, e o Photoshop
-      //    simplesmente não a desenhava (só a primeira aparecia, onde
-      //    relativo e absoluto coincidem).
+      // 2. Uma prancheta por cópia, lado a lado.
+      //    A coordenada de guia é ABSOLUTA, medida do canvas, e não relativa à
+      //    prancheta ativa. Confirmado em 25/08/2026: com offset zero, os três
+      //    pares saíram todos em 135/945 e empilharam na primeira prancheta.
+      //    Por isso a guia vertical soma o `left` da prancheta.
       for (let i = 0; i < qty; i++) {
         const left = i * (fmt.width + GAP);
 
@@ -145,9 +143,12 @@ async function createArtboards(fmt, count, docName) {
 
         await _makeArtboard(nome, left, 0, fmt.width, fmt.height);
 
-        _drawVerticalGuides(doc, fmt, 0);
-        _drawHorizontalGuides(doc, fmt, 0);
+        _drawVerticalGuides(doc, fmt, left);
       }
+
+      // Guia horizontal atravessa o canvas inteiro, então uma vez serve para as
+      // três pranchetas: todas começam no topo 0.
+      _drawHorizontalGuides(doc, fmt, 0);
 
       _logGuias(doc);
     }, { commandName: "Criar Pranchetas ESQUADЯO" });
@@ -189,10 +190,8 @@ async function applyGuides(fmt) {
     await core.executeAsModal(async () => {
       const doc = app.activeDocument;
 
-      // As guias vão para a prancheta que contém a camada selecionada. O offset
-      // é ZERO porque, com prancheta ativa, o Photoshop mede a guia a partir da
-      // borda dela; sem prancheta, mede a partir do canvas. Nos dois casos a
-      // origem já é o ponto de partida certo.
+      // As guias vão para a prancheta que contém a camada selecionada. Como a
+      // coordenada é absoluta, o canto dela entra como offset.
       const board = await _findArtboardOffset(doc);
       onArtboard = board !== null;
 
@@ -206,8 +205,8 @@ async function applyGuides(fmt) {
         return;
       }
 
-      _drawVerticalGuides(doc, fmt, 0);
-      _drawHorizontalGuides(doc, fmt, 0);
+      _drawVerticalGuides(doc, fmt, board ? board.x : 0);
+      _drawHorizontalGuides(doc, fmt, board ? board.y : 0);
     }, { commandName: "Aplicar Guias de Segurança" });
 
     if (conflito) return { ok: false, message: conflito };
@@ -354,34 +353,41 @@ async function _lerArtboardRect() {
 async function _findArtboardOffset(doc) {
   const { batchPlay } = ps.action;
 
+  // 1) A camada ativa via targetEnum. É o mesmo caminho usado na criação, que
+  //    já se provou confiável. Não exige `artboardEnabled`: essa flag não vem
+  //    sempre no descritor, e exigir ela fazia a detecção devolver null — a
+  //    guia caía em (0,0), ou seja, na primeira prancheta.
+  const direto = await _lerArtboardRect();
+  if (direto) {
+    console.log(`[ESQUADRO] prancheta ativa: ${direto.left},${direto.top} ` +
+                `${direto.right - direto.left}x${direto.bottom - direto.top}`);
+    return {
+      x: direto.left,
+      y: direto.top,
+      width: direto.right - direto.left,
+      height: direto.bottom - direto.top
+    };
+  }
+
+  // 2) A camada selecionada pode estar DENTRO da prancheta. Sobe a hierarquia.
   let layer = null;
   try {
     layer = doc.activeLayers && doc.activeLayers[0];
   } catch (e) {
     return null;
   }
-  if (!layer) return null;
 
-  // Sobe no máximo 10 níveis para não arriscar loop em hierarquia inesperada
   for (let depth = 0; layer && depth < 10; depth++) {
     try {
-      const [res] = await batchPlay(
-        [
-          {
-            _obj: "get",
-            _target: [
-              { _property: "artboard" },
-              { _ref: "layer", _id: layer.id }
-            ]
-          }
-        ],
-        { synchronousExecution: true }
-      );
+      const [res] = await batchPlay([{
+        _obj: "get",
+        _target: [{ _property: "artboard" }, { _ref: "layer", _id: layer.id }]
+      }], { synchronousExecution: true });
 
-      const info = res && res.artboard;
-      const rect = info && info.artboardRect;
-
-      if (info && info.artboardEnabled && rect) {
+      const rect = res && res.artboard && res.artboard.artboardRect;
+      if (rect && (rect.right - rect.left) > 0) {
+        console.log(`[ESQUADRO] prancheta do ancestral "${layer.name}": ` +
+                    `${rect.left},${rect.top} ${rect.right - rect.left}x${rect.bottom - rect.top}`);
         return {
           x: rect.left,
           y: rect.top,
@@ -390,12 +396,12 @@ async function _findArtboardOffset(doc) {
         };
       }
     } catch (e) {
-      // Camada sem propriedade de prancheta: apenas continua subindo
+      // camada sem propriedade de prancheta: segue subindo
     }
-
     layer = layer.parent;
   }
 
+  console.log("[ESQUADRO] nenhuma prancheta detectada; guias vão para o canvas.");
   return null;
 }
 

@@ -314,9 +314,9 @@ function bindEvents() {
     if (!createCallback) return;
 
     const docName = buildDocName();
-    showToast(`Criando ${count} prancheta(s)...`, 'info');
-    await runAction(() => createCallback(fmt, count, docName),
-      `${count} prancheta(s) criada(s).`);
+    // Sem toast de confirmação: o resultado aparece no próprio documento.
+    // Só falha gera mensagem.
+    await runAction(() => createCallback(fmt, count, docName));
   });
 
   els.btnGuidesOnly.addEventListener('click', async () => {
@@ -328,7 +328,7 @@ function bindEvents() {
     }
     if (!guidesCallback) return;
 
-    await runAction(() => guidesCallback(fmt), 'Guias aplicadas.');
+    await runAction(() => guidesCallback(fmt));
   });
 
   // Paleta de Cores Dinâmica (Theme Switcher Rápido)
@@ -704,17 +704,15 @@ function updatePreview() {
 }
 
 /**
- * Executa uma ação do Photoshop e reporta o resultado real no toast.
- * A ação deve resolver para { ok, message }; qualquer throw é capturado aqui.
+ * Executa uma ação do Photoshop. Só avisa quando dá errado — sucesso é visível
+ * no documento e não precisa de confirmação na tela.
  */
-async function runAction(fn, successMsg) {
+async function runAction(fn) {
   try {
     const result = await fn();
     if (result && result.ok === false) {
       showToast(result.message || 'Não foi possível concluir a ação.', 'error');
-      return;
     }
-    showToast((result && result.message) || successMsg);
   } catch (err) {
     console.error('[ESQUADRO] Falha na ação:', err);
     showToast(`Erro: ${err && err.message ? err.message : err}`, 'error');
