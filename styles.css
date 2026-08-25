@@ -34,45 +34,45 @@
      Comentário no formato "Grupo | Rótulo" — o gerador do playground usa isso.
      Nada de `gap`: o UXP ignora gap em flexbox. */
 
-  --esp-header-topo: 12px;      /* Cabeçalho | Topo */
-  --esp-header-base: 4px;       /* Cabeçalho | Base */
-  --alt-logo-card: 38px;        /* Cabeçalho | Altura da caixa */
-  --alt-logo: 15px;             /* Cabeçalho | Altura do logo */
+  --esp-header-topo: 17px;      /* Cabeçalho | Topo */
+  --esp-header-base: 3px;       /* Cabeçalho | Base */
+  --alt-logo-card: 41px;        /* Cabeçalho | Altura da caixa */
+  --alt-logo: 14px;             /* Cabeçalho | Altura do logo */
 
-  --tam-icone: 28px;            /* Ícones | Área do ícone */
-  --tam-icone-svg: 15px;        /* Ícones | Desenho do ícone */
-  --esp-fileiras: 8px;          /* Ícones | Entre as fileiras */
+  --tam-icone: 27px;            /* Ícones | Área do ícone */
+  --tam-icone-svg: 17px;        /* Ícones | Desenho do ícone */
+  --esp-fileiras: 2px;          /* Ícones | Entre as fileiras */
 
-  --alt-controle: 28px;         /* Controles | Altura */
-  --esp-modo-stepper: 8px;      /* Controles | Modo → stepper */
-  --esp-dropdown-x: 10px;       /* Controles | Recuo do dropdown */
+  --alt-controle: 31px;         /* Controles | Altura */
+  --esp-modo-stepper: 11px;      /* Controles | Modo → stepper */
+  --esp-dropdown-x: 8px;       /* Controles | Recuo do dropdown */
   --esp-item-y: 6px;            /* Controles | Item da lista, vertical */
-  --esp-item-x: 8px;            /* Controles | Item da lista, lateral */
+  --esp-item-x: 7px;            /* Controles | Item da lista, lateral */
 
-  --esp-preview-topo: 16px;     /* Preview | Topo */
-  --esp-preview-base: 14px;     /* Preview | Base */
-  --alt-stage: 110px;           /* Preview | Altura do palco */
-  --alt-preview-min: 132px;     /* Preview | Altura mínima */
-  --esp-preview-interno: 12px;  /* Preview | Entre canvas e textos */
-  --esp-footer-linhas: 5px;     /* Preview | Entre as linhas de texto */
-  --esp-legenda: 12px;          /* Preview | Entre itens da legenda */
-  --esp-legenda-dot: 4px;       /* Preview | Bolinha → rótulo */
+  --esp-preview-topo: 0px;     /* Preview | Topo */
+  --esp-preview-base: 0px;     /* Preview | Base */
+  --alt-stage: 112px;           /* Preview | Altura do palco */
+  --alt-preview-min: 147px;     /* Preview | Altura mínima */
+  --esp-preview-interno: 8px;  /* Preview | Entre canvas e textos */
+  --esp-footer-linhas: 4px;     /* Preview | Entre as linhas de texto */
+  --esp-legenda: 0px;          /* Preview | Entre itens da legenda */
+  --esp-legenda-dot: 5px;       /* Preview | Bolinha → rótulo */
 
-  --alt-btn-primario: 32px;     /* Botões | Altura do primário */
-  --alt-btn-secundario: 28px;   /* Botões | Altura do secundário */
-  --esp-botoes: 9px;            /* Botões | Entre os dois */
-  --esp-acima-botoes: 8px;      /* Botões | Acima do grupo */
+  --alt-btn-primario: 29px;     /* Botões | Altura do primário */
+  --alt-btn-secundario: 29px;   /* Botões | Altura do secundário */
+  --esp-botoes: 2px;            /* Botões | Entre os dois */
+  --esp-acima-botoes: 0px;      /* Botões | Acima do grupo */
 
-  --esp-rodape: 14px;           /* Rodapé | Altura */
-  --alt-rodape-itens: 16px;     /* Rodapé | Altura dos itens */
+  --esp-rodape: 20px;           /* Rodapé | Altura */
+  --alt-rodape-itens: 20px;     /* Rodapé | Altura dos itens */
   --tam-color-dot: 6px;         /* Rodapé | Bolinha de cor */
 
-  --esp-blocos: 16px;           /* Blocos | Plataformas → controles */
-  --esp-controles: 14px;        /* Blocos | Entre controles e preview */
-  --esp-preview: 16px;          /* Blocos | Abaixo do preview */
-  --esp-corpo-x: 12px;          /* Blocos | Margem lateral */
-  --esp-corpo-topo: 10px;       /* Blocos | Topo do corpo */
-  --esp-corpo-base: 14px;       /* Blocos | Base do corpo */
+  --esp-blocos: 10px;           /* Blocos | Plataformas → controles */
+  --esp-controles: 2px;        /* Blocos | Entre controles e preview */
+  --esp-preview: 0px;          /* Blocos | Abaixo do preview */
+  --esp-corpo-x: 15px;          /* Blocos | Margem lateral */
+  --esp-corpo-topo: 12px;       /* Blocos | Topo do corpo */
+  --esp-corpo-base: 13px;       /* Blocos | Base do corpo */
 }
 
 * {
