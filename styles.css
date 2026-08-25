@@ -58,7 +58,6 @@
   --esp-preview-interno: 8px;  /* Preview | Entre canvas e textos */
   --esp-footer-linhas: 4px;     /* Preview | Entre as linhas de texto */
   --esp-legenda: 0px;          /* Preview | Entre itens da legenda */
-  --esp-legenda-dot: 5px;       /* Preview | Bolinha → rótulo */
 
   --alt-btn-primario: 29px;     /* Botões | Altura do primário */
   --alt-btn-secundario: 29px;   /* Botões | Altura do secundário */
@@ -513,20 +512,6 @@ body {
   align-items: center;
 }
 
-.dot {
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-}
-
-.dot-safe {
-  background-color: var(--vermelho-raro);
-}
-
-.dot-crop {
-  background-color: var(--azul-raro);
-}
-
 .button-group {
   display: flex;
   flex-direction: column;
@@ -780,7 +765,6 @@ body {
 
 .preview-card > * + *   { margin-top: var(--esp-preview-interno); }
 .preview-footer > * + * { margin-top: var(--esp-footer-linhas); }
-.legend-item > .dot     { margin-right: var(--esp-legenda-dot); }
 
 
 /* ---------------------------------------------------------------------------
@@ -812,4 +796,13 @@ body {
 .platform-icon.active,
 .btn-toggle-strip.active { color: var(--vermelho-raro); }
 
-.dot-safe { background-color: var(--vermelho-raro); }
+
+
+/* ---------------------------------------------------------------------------
+   LEGENDA: o próprio nome carrega a cor da guia, sem bolinha ao lado.
+   A área segura acompanha o tema (começa no Vermelho Raro); a linha de corte
+   fica no Azul Raro, como a guia desenhada no documento.
+   --------------------------------------------------------------------------- */
+
+.legenda-safe { color: var(--vermelho-raro); }
+.legenda-crop { color: var(--guide-crop); }
