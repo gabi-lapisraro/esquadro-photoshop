@@ -72,6 +72,8 @@ AVISOS = [
      "Só age com wrap, cujo suporte é irregular."),
     (r"filter\s*:", "IRREGULAR",
      "Suporte parcial."),
+    (r"box-shadow\s*:[^;]*\binset\b", "IRREGULAR",
+     "Sombra interna: suporte não confirmado no UXP. Para traço interno use border com box-sizing border-box."),
     (r"position\s*:\s*fixed", "IRREGULAR",
      "`fixed` é parcial no UXP. O tooltip flutuante depende disso."),
     (r"transition\s*:[^;]*\b(?:width|height|padding|margin)\b", "IRREGULAR",

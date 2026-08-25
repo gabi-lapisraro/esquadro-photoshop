@@ -1,5 +1,6 @@
 /* Fonte embarcada. O UXP não busca CSS remoto, então @import do Google Fonts
    cai em silêncio no monospace do sistema. Os .ttf vão dentro do plugin. */
+@font-face { font-family: 'IBM Plex Mono'; font-weight: 300; src: url('fonts/IBMPlexMono-Light.ttf'); }
 @font-face { font-family: 'IBM Plex Mono'; font-weight: 400; src: url('fonts/IBMPlexMono-Regular.ttf'); }
 @font-face { font-family: 'IBM Plex Mono'; font-weight: 500; src: url('fonts/IBMPlexMono-Medium.ttf'); }
 @font-face { font-family: 'IBM Plex Mono'; font-weight: 600; src: url('fonts/IBMPlexMono-SemiBold.ttf'); }
@@ -35,66 +36,73 @@
      Editáveis pelo playground.html, que lê estes mesmos tokens.
      Comentário no formato "Grupo | Rótulo" — o gerador do playground usa isso.
      Nada de `gap`: o UXP ignora gap em flexbox. */
-  --alt-logo: 14px;             /* Cabeçalho | Altura do logo ESQUADЯO */
+  --alt-logo: 12px;             /* Cabeçalho | Altura do logo ESQUADЯO */
 
   --tam-icone: 27px;            /* Ícones | Altura da célula */
   --colunas-icones: 7;          /* Ícones | Colunas (6 redes + o botão +) */
   --tam-icone-svg: 17px;        /* Ícones | Desenho do ícone */
   --esp-fileiras: 2px;          /* Ícones | Entre as fileiras */
 
-  --alt-controle: 31px;         /* Controles | Altura */
-  --esp-modo-stepper: 11px;      /* Controles | Modo → stepper */
-  --esp-dropdown-x: 8px;       /* Controles | Recuo do dropdown */
+  --alt-controle: 25px;         /* Controles | Altura */
+  --esp-modo-stepper: 4px;      /* Controles | Modo → stepper */
+  --esp-dropdown-x: 7.5px;       /* Controles | Recuo do dropdown */
   --esp-item-y: 6px;            /* Controles | Item da lista, vertical */
-  --esp-item-x: 7px;            /* Controles | Item da lista, lateral */
+  --esp-item-x: 10px;            /* Controles | Item da lista, lateral */
 
   --esp-preview-topo: 0px;     /* Preview | Topo */
   --esp-preview-base: 0px;     /* Preview | Base */
-  --alt-stage: 112px;           /* Preview | Altura do palco */
-  --alt-preview-min: 147px;     /* Preview | Altura mínima */
-  --esp-preview-interno: 8px;  /* Preview | Entre canvas e textos */
-  --esp-footer-linhas: 4px;     /* Preview | Entre as linhas de texto */
+  --alt-stage: 107px;           /* Preview | Altura do palco */
+  --alt-preview-min: 0px;     /* Preview | Altura mínima */
+  --esp-preview-interno: 7.5px;  /* Preview | Entre canvas e textos */
+  --esp-footer-linhas: 3.5px;     /* Preview | Entre as linhas de texto */
   --esp-legenda: 0px;          /* Preview | Entre itens da legenda */
 
   --alt-botao: 29px;            /* Botões | Altura */
-  --esp-botoes: 6px;            /* Botões | Entre os dois */
+  --esp-botoes: 4px;            /* Botões | Entre os dois */
   --esp-acima-botoes: 0px;      /* Botões | Acima do grupo */
-  --esp-botao-x: 8px;           /* Botões | Recuo horizontal */
+  --esp-botao-x: 3.5px;           /* Botões | Recuo horizontal */
 
-  --esp-cabecalho: 20px;           /* Cabeçalho | Altura */
-  --alt-cabecalho-itens: 20px;     /* Cabeçalho | Altura dos itens */
-  --tam-color-dot: 6px;         /* Cabeçalho | Bolinha de cor */
+  --esp-cabecalho: 25px;           /* Cabeçalho | Altura */
+  --tam-color-dot: 4.5px;         /* Cabeçalho | Bolinha de cor */
 
   --esp-blocos: 10px;           /* Blocos | Plataformas → controles */
-  --esp-controles: 2px;        /* Blocos | Entre controles e preview */
-  --esp-preview: 0px;          /* Blocos | Abaixo do preview */
-  --esp-corpo-x: 15px;          /* Blocos | Margem lateral */
-  --esp-corpo-topo: 12px;       /* Blocos | Topo do corpo */
-  --esp-corpo-base: 13px;       /* Blocos | Base do corpo */
+  --esp-controles: 3px;        /* Blocos | Entre controles e preview */
+  --esp-preview: 20px;          /* Blocos | Abaixo do preview */
+  --esp-corpo-x: 14px;          /* Blocos | Margem lateral */
+  --esp-corpo-topo: 0px;       /* Blocos | Topo do corpo */
+  --esp-corpo-base: 39px;       /* Blocos | Base do corpo */
 
-  --raio-caixa: 4px;            /* Formas | Cantos das caixas */
-  --raio-controle: 3px;         /* Formas | Cantos dos controles */
-  --raio-item: 2px;             /* Formas | Cantos dos itens */
+  --raio-caixa: 0px;            /* Formas | Cantos das caixas */
+  --raio-controle: 0px;         /* Formas | Cantos dos controles */
+  --raio-item: 0px;             /* Formas | Cantos dos itens */
+  --traco-selecao: 0.5px;       /* Formas | Traço da cor ativa */
   --borda: 1;                   /* Formas | Espessura da borda */
 
-  --fonte-dropdown: 10.5px;     /* Fontes | Formato selecionado */
-  --fonte-item: 10px;           /* Fontes | Item da lista */
-  --fonte-modo: 9.5px;          /* Fontes | Orgânico / Anúncio */
-  --fonte-stepper: 9.5px;       /* Fontes | Número da quantidade */
+  --fonte-dropdown: 11px;     /* Fontes | Formato selecionado */
+  --fonte-item: 9px;           /* Fontes | Item da lista */
+  --fonte-modo: 8.5px;          /* Fontes | Orgânico / Anúncio */
+  --fonte-stepper: 8.5px;       /* Fontes | Número da quantidade */
   --fonte-stepper-sinal: 12px;  /* Fontes | Sinais + e - */
-  --fonte-dim: 9px;             /* Fontes | Dimensão do preview */
-  --fonte-legenda: 8px;         /* Fontes | Legenda do preview */
-  --fonte-fmt-dim: 9px;         /* Fontes | Dimensão no seletor */
-  --esp-fmt-dim: 8px;           /* Controles | Nome → dimensão */
-  --fonte-botao: 9px;           /* Fontes | Botões de ação */
-  --alt-wordmark: 13px;         /* Cabeçalho | Altura do wordmark */
-  --esp-assinatura: 7px;        /* Cabeçalho | Entre as linhas da assinatura */
-  --fonte-rodape: 7px;          /* Cabeçalho | Fonte do texto */
+  --fonte-dim: 8.5px;             /* Fontes | Dimensão do preview */
+  --fonte-legenda: 6.5px;         /* Fontes | Legenda do preview */
+  --fonte-fmt-dim: 11px;         /* Fontes | Dimensão no seletor */
+  --esp-fmt-dim: 5.5px;           /* Controles | Nome → dimensão */
+  --fonte-botao: 10px;           /* Fontes | Botões de ação */
+  --alt-wordmark: 8px;         /* Cabeçalho | Altura do wordmark */
+  --esp-assinatura: 6.5px;        /* Cabeçalho | Entre as linhas da assinatura */
+  --fonte-rodape: 5.5px;          /* Cabeçalho | Fonte do texto */
 
-  --peso-modo: 600;             /* Pesos | Orgânico / Anúncio */
+  --peso-modo: 300;             /* Pesos | Orgânico / Anúncio */
   --peso-modo-ativo: 700;       /* Pesos | Modo ativo */
-  --peso-dropdown: 400;         /* Pesos | Formato selecionado */
-  --peso-botao: 600;            /* Pesos | Botões de ação */
+  --peso-dropdown: 700;         /* Pesos | Formato selecionado */
+  --peso-botao: 400;            /* Pesos | Botões de ação */
+  --peso-stepper-sinal: 400; /* Pesos | Sinais + e - */
+  --peso-item: 400;        /* Pesos | Item da lista */
+  --peso-nota: 400;        /* Pesos | Nota do crop */
+  --peso-tag: 400;         /* Pesos | Tag do cabeçalho */
+  --peso-dim: 500;         /* Pesos | Dimensão do preview */
+  --peso-stepper: 400;     /* Pesos | Número da quantidade */
+  --peso-item-ativo: 700;  /* Pesos | Item ativo da lista */
 }
 
 * {
@@ -257,7 +265,7 @@ body {
   color: var(--text-muted) !important;
   font-family: var(--font-brand-mono);
   font-size: var(--fonte-stepper-sinal);
-  font-weight: 600;
+  font-weight: var(--peso-stepper-sinal);
   cursor: pointer;
   display: flex;
   justify-content: center;
@@ -280,7 +288,7 @@ body {
   font-family: var(--font-brand-mono);
   color: var(--text-main);
   font-size: var(--fonte-stepper);
-  font-weight: 600;
+  font-weight: var(--peso-stepper);
   user-select: none;
 }
 
@@ -347,7 +355,7 @@ body {
   padding: var(--esp-item-y) var(--esp-item-x);
   font-family: var(--font-brand-mono);
   font-size: var(--fonte-item);
-  font-weight: 400;
+  font-weight: var(--peso-item);
   color: var(--text-muted);
   border-radius: var(--raio-item);
   cursor: pointer;
@@ -366,7 +374,7 @@ body {
   background-color: transparent;
   border: calc(var(--borda) * 1px) solid rgba(255, 255, 255, 0.2);
   color: var(--text-main);
-  font-weight: 500;
+  font-weight: var(--peso-item-ativo);
 }
 
 .preview-card {
@@ -439,7 +447,7 @@ body {
 .dim-badge {
   font-family: var(--font-brand-mono);
   font-size: var(--fonte-dim);
-  font-weight: 600;
+  font-weight: var(--peso-dim);
   color: var(--text-main);
   letter-spacing: 0.8px;
 }
@@ -448,7 +456,7 @@ body {
   font-family: var(--font-brand-mono);
   font-size: 8px;
   color: var(--azul-raro);
-  font-weight: 500;
+  font-weight: var(--peso-nota);
   letter-spacing: 0.3px;
 }
 
@@ -508,7 +516,7 @@ body {
   border-radius: var(--raio-controle);
   font-family: var(--font-brand-mono);
   font-size: var(--fonte-botao);
-  font-weight: 600;
+  font-weight: var(--peso-botao);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   display: flex;
@@ -564,7 +572,7 @@ body {
   font-family: var(--font-brand-mono);
   font-size: var(--fonte-rodape);
   line-height: 1;
-  font-weight: 600;
+  font-weight: var(--peso-tag);
   color: var(--text-dim);
   letter-spacing: 0.8px;
   text-transform: uppercase;
@@ -585,15 +593,11 @@ body {
   box-sizing: border-box;
   margin-left: 4px;
   flex-shrink: 0;
-  transition: transform 0.15s ease;
+  transition: opacity 0.15s ease;
 }
 
 .color-dot:first-child {
   margin-left: 0;
-}
-
-.color-dot:hover {
-  transform: scale(1.2);
 }
 
 .floating-tooltip {
@@ -704,13 +708,7 @@ body {
    RODAPÉ: tag menor e tudo na mesma altura de linha.
    --------------------------------------------------------------------------- */
 
-.panel-header .header-brand-label {
-  height: var(--alt-cabecalho-itens);
-  line-height: var(--alt-cabecalho-itens);
-}
-
 .panel-header .theme-palette {
-  height: var(--alt-cabecalho-itens);
   display: flex;
   align-items: center;
 }
@@ -824,19 +822,17 @@ body {
 
 
 /* ---------------------------------------------------------------------------
-   SELETOR DE COR: a seleção se mostra por evidência, não por anel. A cor
-   escolhida fica cheia e um pouco maior; as outras recuam. Substitui o traço
-   branco que existia, que competia com as próprias cores.
+   SELETOR DE COR: a escolhida fica cheia, as outras recuam em opacidade, e a
+   ativa ganha um traço INTERNO fininho. Interno por border com box-sizing
+   border-box, e não por box-shadow inset, cujo suporte no UXP eu não confirmei.
+   Sem mudança de tamanho: o tamanho é o mesmo em todas.
    --------------------------------------------------------------------------- */
 
-.color-dot {
-  opacity: 0.45;
-  transform: scale(0.82);
-}
+.color-dot { opacity: 0.45; }
 
 .color-dot:hover { opacity: 0.8; }
 
 .color-dot.active {
   opacity: 1;
-  transform: scale(1);
+  border: var(--traco-selecao) solid rgba(255, 255, 255, 0.6);
 }
