@@ -23,6 +23,7 @@ const platformNames = {
   'google_ads': 'Google Ads',
   'meta_ads': 'Meta Ads',
   'twitter': 'X',
+  'twitter_ads': 'X Ads',
   'uber': 'Uber',
   'ifood': 'iFood',
   'ooh': 'OOH'
@@ -44,6 +45,7 @@ const PLATFORM_ABBR = {
   'meta_ads': 'MADS',
   'google_ads': 'GADS',
   'twitter': 'X',
+  'twitter_ads': 'XADS',
   'uber': 'UBER',
   'ifood': 'IFOOD'
 };
@@ -466,7 +468,13 @@ function adjustModeForPlatform() {
   const plat = currentPlatform;
   
   const onlyAds = ['google_ads', 'meta_ads', 'uber', 'ifood'];
-  const onlyOrganic = ['twitter', 'ooh'];
+
+  // Sem seção de mídia paga no Guia de Formatos: varri as 87 páginas do deck e
+  // não há menção de Ads nas faixas de LinkedIn (15-22), TikTok (53-57) e
+  // WhatsApp (58-64). Com o botão livre, ele trocava de cor e a lista de
+  // formatos continuava idêntica.
+  // X saiu daqui: as páginas 34 e 35 são de anúncio, agora em twitter_ads.
+  const onlyOrganic = ['linkedin', 'tiktok', 'whatsapp', 'ooh'];
 
   // Habilita ambos por padrão
   els.modeOrganic.classList.remove('is-disabled');
@@ -496,11 +504,13 @@ function getActiveDatabaseKey() {
     if (plat === 'facebook') return 'facebook_ads';
     if (plat === 'youtube') return 'youtube_ads';
     if (plat === 'instagram') return 'meta_ads';
+    if (plat === 'twitter') return 'twitter_ads';
     return plat;
   } else {
     if (plat === 'facebook_ads') return 'facebook';
     if (plat === 'youtube_ads') return 'youtube';
     if (plat === 'meta_ads') return 'instagram';
+    if (plat === 'twitter_ads') return 'twitter';
     return plat;
   }
 }

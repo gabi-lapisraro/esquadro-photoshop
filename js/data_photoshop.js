@@ -371,7 +371,13 @@ const masterPlatforms = {
         "ratio": "16:9",
         "colorMode": "RGBColorMode",
         "resolution": 72
-      },
+      }
+    ]
+  },
+  "twitter_ads": {
+    "name": "X Ads",
+    "_nota": "Peças pagas de X, páginas 34 e 35 do Guia de Formatos. Separadas de \"twitter\" em 25/08/2026, no mesmo padrão de facebook/facebook_ads: na planilha mãe a plataforma é uma só (X ex-Twitter) e o que distingue é o nome da peça conter Ads ou Anúncio.",
+    "formats": [
       {
         "id": "x-ex-twitter-anuncio-de-twitter-link-2-1",
         "name": "(Link)",
