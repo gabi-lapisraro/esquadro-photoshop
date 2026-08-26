@@ -146,7 +146,7 @@ console.log('\n=== H0. a pílula do modo cobre o traço do trilho ===');
         /#modeAds\s*\{[^}]*margin-right/.test(css), true);
 }
 
-console.log('\n=== H. a lista aberta tem altura fixa ===');
+console.log('\n=== H. a lista rola em vez de comprimir ===');
 {
   const fs = require('fs');
   // sem os comentários: senão a palavra `max-height` DENTRO do comentário que
@@ -156,12 +156,17 @@ console.log('\n=== H. a lista aberta tem altura fixa ===');
                 .replace(/\/\*[\s\S]*?\*\//g, '');
   const caixa = (css.match(/\.custom-dropdown-menu\s*\{([^}]*)\}/) || [,''])[1];
   const rola = (css.match(/\.custom-dropdown-rolagem\s*\{([^}]*)\}/) || [,''])[1];
-  // altura FIXA: com max-height a caixa encolhia quando havia poucos formatos,
-  // e a lista mudava de tamanho de plataforma para plataforma
-  check('a caixa tem height, não max-height', /height:\s*var\(--alt-lista\)/.test(caixa), true);
-  check('e nenhum max-height sobrou', /max-height/.test(caixa), false);
-  check('a lista de dentro preenche a caixa', /height:\s*100%/.test(rola), true);
+  // O que tem que ser igual entre as plataformas é a altura do ITEM, não a da
+  // caixa. A caixa abraça o conteúdo e para de crescer no teto; quem garante o
+  // item é o flex-shrink: 0, sem o qual 9 formatos eram COMPRIMIDOS para caber
+  // numa caixa de 180px em vez de rolar.
+  check('a caixa tem teto, não altura fixa', /max-height:\s*var\(--alt-lista\)/.test(caixa), true);
   check('e é ela que rola', /overflow-y:\s*auto/.test(rola), true);
+  const item = (css.match(/\.custom-dropdown-item\s*\{([^}]*)\}/) || [,''])[1];
+  check('o item não encolhe', /flex-shrink:\s*0/.test(item), true);
+  // e o item ativo não pode ficar mais alto: borda transparente na base
+  check('o item já reserva a borda do ativo',
+        /border:\s*calc\(var\(--borda\) \* 1px\) solid transparent/.test(item), true);
   // a barra sai por recorte, não por CSS de barra
   check('a caixa recorta', /overflow:\s*hidden/.test(caixa), true);
   check('a lista passa da borda', /margin-right:\s*-\d/.test(rola), true);

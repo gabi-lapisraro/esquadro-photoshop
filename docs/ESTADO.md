@@ -165,10 +165,25 @@ estado vazio (tratado: botões travam, nada chega ao Photoshop).
 
 ## Regras de lista e de quantidade
 
-**A lista aberta tem altura FIXA** (`--alt-lista`, 180px). Com `max-height` ela
-encolhia quando a plataforma tinha poucos formatos, e o painel mudava de cara de
-uma para outra. Fixa, é sempre a mesma caixa, e rola quando não cabe — sem barra,
-pelo recorte descrito acima.
+**A lista ROLA em vez de comprimir, e o que é igual entre as plataformas é a
+altura do ITEM.**
+
+Eu li errado o pedido na primeira vez e travei a altura da CAIXA. O que estava
+quebrado era outra coisa: o item é filho de um flex column, e `flex-shrink` vale
+1 por padrão — com 9 formatos numa caixa de 180px eles eram **comprimidos** para
+caber em vez de transbordar. Daí a mesma lista parecer compacta no Instagram
+orgânico e folgada no Meta Ads. `flex-shrink: 0` no item resolve: o que não cabe
+transborda, e transbordar é o que a rolagem precisa.
+
+Com isso a caixa volta a ter altura MÁXIMA (`--alt-lista`, 180px): ela abraça o
+conteúdo e para de crescer quando enche. Altura fixa abria um vazio nas listas
+curtas.
+
+Sobrou uma diferença de 2px: o item ativo tem borda, e borda soma na caixa. O
+item base ganhou uma borda **transparente** do mesmo tamanho, então marcar um
+item muda a cor e nada mais — mesmo princípio das bolinhas de cor. Medido: uma
+altura só, 30,5px, nas três listas (9, 5 e 3 formatos), e a caixa em 180, 161 e
+100.
 
 **A ordem de proporção pode ser por plataforma.** `ORDEM_PROPORCAO` é a geral, e
 `ORDEM_PROPORCAO_POR_BASE` sobrepõe por chave de dataset. Hoje só o `meta_ads`

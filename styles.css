@@ -65,7 +65,7 @@
   --alt-controle: 19px;         /* Controles | Altura */
   --esp-modo-stepper: 4px;    /* Controles | Entre as pílulas */
   --alt-seletor: 26px;          /* Controles | Altura do seletor de formato */
-  --alt-lista: 180px;           /* Controles | Altura da lista aberta */
+  --alt-lista: 180px;           /* Controles | Altura máxima da lista */
   --esp-dropdown-x: 12.5px;       /* Controles | Recuo do dropdown */
   --esp-item-y: 8.5px;            /* Controles | Item da lista, vertical */
   --esp-item-x: 9px;            /* Controles | Item da lista, lateral */
@@ -405,10 +405,11 @@ body {
   top: calc(100% + 4px);
   left: 0;
   width: 100%;
-  /* Altura FIXA, não máxima: com `max-height` a caixa encolhia quando havia
-     poucos formatos, e a lista mudava de tamanho de plataforma para
-     plataforma. Fixa, ela é sempre a mesma, e rola quando não cabe. */
-  height: var(--alt-lista);
+  /* Altura MÁXIMA. O que tinha que ser igual entre as plataformas era a altura
+     do ITEM, não a da caixa — e o que quebrava isso era o item encolhendo, não
+     a caixa. Com altura fixa aqui, uma lista de 4 formatos abria um vazio no
+     fim. Máxima: a caixa abraça o conteúdo, e para de crescer quando enche. */
+  max-height: var(--alt-lista);
   /* Recorta o que a lista de dentro deixa passar da borda — e é ali que a barra
      de rolagem vai morar. Confirmado no painel: o UXP ignora `scrollbar-width`
      e ignora `::-webkit-scrollbar`, então esconder a barra estilizando ela não
@@ -439,13 +440,24 @@ body {
 .custom-dropdown-rolagem {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  max-height: var(--alt-lista);
   overflow-y: auto;
   margin-right: -20px;
   padding-right: 20px;
 }
 
 .custom-dropdown-item {
+  /* NÃO encolher é o que faz a lista ROLAR. O item é filho de um flex column, e
+     flex-shrink vale 1 por padrão: com 9 formatos numa caixa de 180px eles eram
+     comprimidos para caber, e a mesma lista mudava de altura de item de uma
+     plataforma para outra. Com 0, o que não cabe transborda — e transbordar é o
+     que a rolagem precisa. */
+  flex-shrink: 0;
+  /* Borda TRANSPARENTE do mesmo tamanho da do item ativo: sem ela o ativo
+     ficava 2px mais alto que os outros, porque a borda soma na caixa. Assim
+     marcar um item muda a cor e nada mais — mesmo princípio das bolinhas de
+     cor, que não mudam de tamanho ao serem escolhidas. */
+  border: calc(var(--borda) * 1px) solid transparent;
   padding: var(--esp-item-y) var(--esp-item-x);
   font-family: var(--font-brand-mono);
   font-size: var(--fonte-item);
