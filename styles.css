@@ -27,7 +27,9 @@
   
   --guide-safe: #E61C00;
   --sobre-acento: #ffffff;   /* cor de texto sobre o acento */
-  --acento-visivel: #E61C00; /* acento em traço, sobre o painel escuro */ 
+  --acento-visivel: #E61C00; /* acento em traço, sobre o painel escuro */
+  --companheira: #a2d2eb;    /* par da cor escolhida */
+  --sobre-companheira: #222222; 
   --guide-crop: #7bbcd9; 
 
   --font-brand-mono: 'IBM Plex Mono', monospace;
@@ -836,3 +838,23 @@ body {
   opacity: 1;
   border: var(--traco-selecao) solid rgba(255, 255, 255, 0.6);
 }
+
+
+/* ---------------------------------------------------------------------------
+   COMBINAÇÕES: cada cor traz sua companheira, lidas dos 4 SVGs de UI.
+   A principal preenche o botão de criar e os sinais do stepper; a companheira
+   marca o modo ativo, o ícone da plataforma ativa, a guia de corte e o
+   wordmark. É o que separa o "onde eu clico" do "o que está selecionado".
+   --------------------------------------------------------------------------- */
+
+.mode-btn.active {
+  background-color: var(--companheira);
+  color: var(--sobre-companheira);
+}
+
+.platform-icon.active,
+.btn-toggle-strip.active { color: var(--companheira); }
+
+.header-wordmark { color: var(--companheira); }
+
+.stepper-btn { color: var(--acento-visivel) !important; }

@@ -435,12 +435,19 @@ function applyTheme(color) {
   // painel escuro e desaparece. A bolinha declara o seu em data-acento.
   const escolhida = document.querySelector(`.color-dot[data-color="${color}"]`);
   const acento = (escolhida && escolhida.getAttribute('data-acento')) || color;
+  // a companheira do par: guia de corte, modo ativo, ícone ativo e wordmark
+  const par = (escolhida && escolhida.getAttribute('data-par')) || null;
 
   const raiz = document.documentElement.style;
   raiz.setProperty('--vermelho-raro', color);
   raiz.setProperty('--acento-visivel', acento);
   raiz.setProperty('--guide-safe', acento);
   raiz.setProperty('--sobre-acento', contrastOn(color));
+  if (par) {
+    raiz.setProperty('--companheira', par);
+    raiz.setProperty('--guide-crop', par);
+    raiz.setProperty('--sobre-companheira', contrastOn(par));
+  }
 
   updatePreview();
   salvarPrefs();
