@@ -58,6 +58,21 @@ def conferir(destino):
     eps = m.get("entrypoints") or []
     v(len(eps) > 0 and eps[0].get("type") == "panel", "entrypoint do tipo panel")
 
+    # Chave errada no manifest é a mesma armadilha do CSS: o Photoshop IGNORA
+    # em silêncio. `preferredDockSize` (sem o "ed") ficou meses aqui sem fazer
+    # nada. Esta lista é a do manifesto v5 para painel.
+    CHAVES = {"type", "id", "label", "minimumSize", "maximumSize",
+              "preferredDockedSize", "preferredFloatingSize", "icons", "commands"}
+    for ep in eps:
+        estranhas = sorted(set(ep) - CHAVES)
+        v(not estranhas,
+          f"entrypoint sem chave desconhecida — {estranhas or ''}"
+          + (" (o Photoshop ignora calado)" if estranhas else ""))
+
+    nome = m.get("name", "")
+    rotulo = (eps[0].get("label") or {}).get("default", "") if eps else ""
+    print(f"  nota   menu: Plugins > {nome} > {rotulo}")
+
     # ---- 2. o main existe ----
     main = m.get("main", "index.html")
     v((destino / main).exists(), f"main existe: {main}")

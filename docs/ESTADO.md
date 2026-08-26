@@ -418,6 +418,25 @@ clareado reprovava com texto branco.
 
 ---
 
+## Como o plugin aparece no Photoshop
+
+```
+Plugins > Lápis Raro > ESQUADЯO
+```
+
+O `name` do manifest é o que vira o item do menu; o `label` do entrypoint é o
+painel dentro dele. Antes eram "ESQUADЯO" e "ESQUADЯO — Lápis Raro", que
+repetiam o nome e enterravam a marca.
+
+**Achado no caminho: `preferredDockSize` não existe.** A chave certa é
+`preferredDockedSize`, com o "ed". A errada ficou no manifest sem fazer nada, e
+o Photoshop **ignorou calada** — a mesma armadilha do CSS, agora no JSON. O
+painel agora abre em 264×476, que é o tamanho em que a UI foi calibrada.
+
+O `validar-pacote.py` passou a conferir as chaves do entrypoint contra a lista
+do manifesto v5, e **trava o empacotamento** se achar uma que não existe. Testei
+recolocando a chave errada: ele pega.
+
 ## Distribuição, que é o próximo passo
 
 O pacote está **validado**: `validar-pacote.py` extrai o zip num diretório
