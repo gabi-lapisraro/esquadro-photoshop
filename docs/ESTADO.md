@@ -135,6 +135,14 @@ Supressão por `/* uxp-ok: motivo */` na linha.
   um objeto `artboard`, senão o Photoshop ignora o retângulo em silêncio.
 - **Coordenada de guia é ABSOLUTA**, medida do canvas. Cheguei a concluir o
   contrário; estava errado. `_drawVerticalGuides` soma o `left` da prancheta.
+- **Fundo da prancheta é PROPRIEDADE DELA**, não do documento. O documento nasce
+  transparente pelo `DocumentFill.TRANSPARENT`, e a prancheta vinha branca de
+  qualquer jeito — é o padrão do Photoshop quando ninguém diz nada. O campo é
+  `artboardBackgroundType`, pedido na criação **e** no `editArtboardEvent` de
+  reforço, porque o `make` pode ignorar. O valor `3` sai da ordem das opções nas
+  Propriedades (Branco, Preto, Transparente, Outro) e **não foi confirmado no
+  painel**: se sair errado, o log diz com que valor a prancheta ficou, e esse
+  número é a resposta.
 - **`artboardEnabled` nem sempre vem** no descritor. Exigir essa flag fazia a
   detecção de prancheta falhar e a guia cair sempre na primeira.
 

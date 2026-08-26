@@ -271,6 +271,20 @@ function _rect(left, top, width, height) {
 const _CAMADA_ATIVA = { _ref: "layer", _enum: "ordinal", _value: "targetEnum" };
 
 /**
+ * Fundo da prancheta: TRANSPARENTE.
+ *
+ * A prancheta tem cor de fundo PRÓPRIA, separada do documento. O documento já
+ * nasce transparente (`DocumentFill.TRANSPARENT` no `documents.add`), mas a
+ * prancheta vinha branca — que é o padrão do Photoshop quando ninguém diz nada.
+ *
+ * `artboardBackgroundType` é o campo, e o valor vai na ordem em que as opções
+ * aparecem nas Propriedades da prancheta: Branco, Preto, Transparente, Outro.
+ * Daí o 3. NÃO CONFIRMADO no painel — se sair errado, o log diz qual valor a
+ * prancheta ficou tendo, e é só trocar aqui.
+ */
+const _FUNDO_TRANSPARENTE = 3;
+
+/**
  * Cria uma prancheta com posição e tamanho exatos.
  *
  * O `artboardRect` precisa vir ANINHADO sob um objeto `artboard` — é a mesma
@@ -294,7 +308,8 @@ async function _makeArtboard(nome, left, top, width, height) {
       _obj: "artboardSection",
       artboard: {
         _obj: "artboard",
-        artboardRect: _rect(left, top, width, height)
+        artboardRect: _rect(left, top, width, height),
+        artboardBackgroundType: _FUNDO_TRANSPARENTE
       },
       name: nome
     }
@@ -307,7 +322,8 @@ async function _makeArtboard(nome, left, top, width, height) {
       _target: [_CAMADA_ATIVA],
       artboard: {
         _obj: "artboard",
-        artboardRect: _rect(left, top, width, height)
+        artboardRect: _rect(left, top, width, height),
+        artboardBackgroundType: _FUNDO_TRANSPARENTE
       }
     }], opts);
   } catch (e) {
@@ -321,6 +337,17 @@ async function _makeArtboard(nome, left, top, width, height) {
     const okPos = Math.abs(obtido.left - left) < 1 && Math.abs(obtido.top - top) < 1;
     const okTam = Math.abs((obtido.right - obtido.left) - width) < 1 &&
                   Math.abs((obtido.bottom - obtido.top) - height) < 1;
+    // O fundo é conferido igual à geometria, e pelo mesmo motivo: pedir não é
+    // obter. Se o valor não for o pedido, o log diz o que a prancheta ficou
+    // tendo — e esse número é a resposta para qual valor usar.
+    if (obtido.fundo !== undefined && obtido.fundo !== _FUNDO_TRANSPARENTE) {
+      console.log(
+        `[ESQUADRO] "${nome}": pedi fundo ${_FUNDO_TRANSPARENTE} (transparente)` +
+        ` e a prancheta ficou com ${obtido.fundo}.` +
+        ` Trocar _FUNDO_TRANSPARENTE para o valor certo em js/photoshop.js.`
+      );
+    }
+
     if (!okPos || !okTam) {
       console.log(
         `[ESQUADRO] "${nome}" saiu diferente do pedido.` +
@@ -345,7 +372,11 @@ async function _lerArtboardRect() {
     }], { synchronousExecution: true });
     const rect = res && res.artboard && res.artboard.artboardRect;
     if (!rect) return null;
-    return { left: rect.left, top: rect.top, right: rect.right, bottom: rect.bottom };
+    return {
+      left: rect.left, top: rect.top, right: rect.right, bottom: rect.bottom,
+      // o fundo vem junto: é o que permite conferir se o transparente pegou
+      fundo: res.artboard.artboardBackgroundType
+    };
   } catch (e) {
     return null;
   }

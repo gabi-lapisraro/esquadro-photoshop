@@ -147,6 +147,21 @@ check('1080px x20 cabe', PS.checkCapacity(quad, 20).ok, true);
 check('formato sem dimensao', PS.checkCapacity({ name: 'X', width: null, height: null }, 1).ok, false);
 check('altura absurda', PS.checkCapacity({ width: 100, height: 40000 }, 1).ok, false);
 
+console.log('\n-- B4a. prancheta com fundo transparente --');
+// Nível de FONTE: criar prancheta precisa do executeAsModal do UXP. O que este
+// teste guarda é o pedido estar nos DOIS lugares — o `make` pode ignorar o campo,
+// e aí quem aplica é o editArtboardEvent que vem depois — e a conferência existir.
+{
+  const fonte = require('fs').readFileSync(path.join(ROOT, 'js/photoshop.js'), 'utf8');
+  check('o fundo transparente é uma constante nomeada',
+        /const _FUNDO_TRANSPARENTE = \d+;/.test(fonte), true);
+  check('pedido na criação e no reforço',
+        (fonte.match(/artboardBackgroundType: _FUNDO_TRANSPARENTE/g) || []).length, 2);
+  check('e a leitura devolve o fundo', /fundo: res\.artboard\.artboardBackgroundType/.test(fonte), true);
+  check('com aviso no log se não pegar',
+        /obtido\.fundo !== _FUNDO_TRANSPARENTE/.test(fonte), true);
+}
+
 console.log('\n-- B4b. corte só na PRIMEIRA prancheta --');
 // Nível de FONTE, e não de comportamento: createArtboards precisa do
 // executeAsModal do UXP, que não existe aqui. O que este teste guarda é a
