@@ -38,6 +38,7 @@ python3 gerar-playground.py # gera playground.html a partir do index/styles reai
 python3 gerar-molduras.py   # deriva as pontas das molduras do desenho
 python3 gerar-molduras.py --verificar   # o código ainda bate com o desenho?
 python3 gerar-pdf.py        # apresentação em PDF, com as fontes embarcadas
+cd docs && node gerar-pptx.js   # apresentação em PPTX, 13 slides
 ```
 
 Instalação manual: copiar a pasta para
@@ -757,6 +758,27 @@ lado de cada slider (digitar acima do máximo ESTICA o slider), o token morto
 `--peso-modo-ativo` ganhou dono, e a cascata do CSS foi consolidada.
 
 ---
+
+## Apresentação em PPTX
+
+```bash
+cd docs && npm install pptxgenjs && node gerar-pptx.js
+```
+
+13 slides, mesma paleta e mesma tipografia do documento online. O `docs/gerar-pptx.js`
+é a fonte: HTML não vira slide sozinho — o documento é uma coluna contínua, o slide
+é uma página com margem —, então o script é a tradução, não uma conversão. Quando o
+conteúdo do `apresentacao.html` mudar, o texto do script precisa acompanhar à mão.
+São dois formatos com ritmos diferentes e não vale amarrar um no outro.
+
+A imagem do painel é `docs/assets/painel.png`, capturada do `playground.html` a 3x
+e recortada na coluna do painel.
+
+**Não deu para conferir com o olho.** Esta máquina não tem PowerPoint, Keynote nem
+LibreOffice, então não houve como renderizar os slides em imagem. O que foi
+conferido: o `validate.py` do pacote passa, o texto está na ordem em todos os 13, e
+uma auditoria de geometria lida do XML não achou caixa fora do slide nem margem
+apertada. **O que falta é o olho dela** — se algum texto estourar a caixa, é aí.
 
 ## Apresentação em PDF
 
