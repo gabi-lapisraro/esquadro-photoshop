@@ -89,8 +89,7 @@
   --esp-corpo-base: 4px;        /* Blocos | Base do corpo */
 
   --raio-caixa: 14.5px;           /* Formas | Cantos das caixas */
-  --raio-controle: 999px;       /* Formas | Cantos dos controles (999 = pílula) */
-  --raio-item: 999px;           /* Formas | Cantos dos itens (999 = pílula) */
+  --raio-item: 12px;            /* Formas | Cantos dos itens da lista */
   --borda: 1;                   /* Formas | Espessura da borda */
 
   --fonte-dropdown: 10px;     /* Fontes | Formato selecionado */
@@ -180,14 +179,17 @@ body {
   flex: 0 0 calc(100% / var(--colunas-icones));
   width: auto;
   height: var(--tam-icone);
-  border-radius: var(--raio-controle);
+  border-radius: calc(var(--tam-icone) / 2);
   background-color: transparent;
   border: none;
-  /* No desenho o ícone é sempre o MESMO desenho na mesma cor: o que muda é a
-     opacidade. Quem não está selecionado recua para 20%; quem está fica cheio
-     e ganha a companheira, na regra de combinação no fim do arquivo. */
-  color: var(--text-main);
-  opacity: 0.2;
+  /* No desenho o ícone é sempre o MESMO desenho: o que muda é quanto ele
+     aparece. Quem não está selecionado fica em 20%; quem está fica cheio e
+     ganha a companheira, na regra de combinação no fim do arquivo.
+
+     O recuo é feito na COR, não em `opacity`: o UXP ignora opacity, e no
+     primeiro teste no painel os seis ícones saíram todos cheios. rgba em
+     `color` funciona, e o desenho do ícone segue por currentColor. */
+  color: rgba(255, 255, 255, 0.2);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -201,18 +203,17 @@ body {
   height: var(--tam-icone-svg);
 }
 
-/* o hover só sobe a opacidade: o ícone continua o mesmo, sem caixa nem cor
+/* o hover só levanta o ícone: continua o mesmo desenho, sem caixa nem cor
    nova, para não competir com o "está selecionado" */
-.platform-icon:hover:not(.active) { opacity: 0.55; }
+.platform-icon:hover:not(.active) { color: rgba(255, 255, 255, 0.55); }
 
 /* O "..." não é plataforma: é o que diz que há MAIS. Fica cheio, como no
-   desenho — apagado a 20% ele sumia justo onde precisa ser notado. */
+   desenho — recuado a 20% ele sumia justo onde precisa ser notado. */
 .btn-toggle-strip,
-.btn-toggle-strip:hover { opacity: 1; }
+.btn-toggle-strip:hover { color: var(--text-main); }
 
 .platform-icon.active {
   background-color: transparent;
-  opacity: 1;
   /* a cor vem da regra de combinação, no fim do arquivo. Aqui havia
      `color: var(--vermelho-raro) !important`, que vencia a cascata e impedia a
      companheira de colorir o ícone ativo. */
@@ -245,7 +246,7 @@ body {
   height: 100%;
   box-sizing: border-box;
   border: calc(var(--borda) * 1px) solid var(--border-color);
-  border-radius: var(--raio-controle);
+  border-radius: calc(var(--alt-controle) / 2);
   font-family: var(--font-brand-mono);
   font-size: var(--fonte-modo);
   font-weight: var(--peso-modo);
@@ -271,7 +272,7 @@ body {
   align-items: center;
   background-color: transparent;
   border: calc(var(--borda) * 1px) solid var(--border-color);
-  border-radius: var(--raio-controle);
+  border-radius: calc(var(--alt-controle) / 2);
   box-sizing: border-box;
   overflow: hidden;
   width: 100%;
@@ -325,7 +326,7 @@ body {
   height: var(--alt-seletor);
   background-color: transparent;
   border: calc(var(--borda) * 1px) solid var(--border-color);
-  border-radius: var(--raio-controle);
+  border-radius: calc(var(--alt-seletor) / 2);
   padding: 0 var(--esp-dropdown-x);
   display: flex;
   justify-content: space-between;
@@ -508,7 +509,7 @@ body {
   height: var(--alt-botao);
   background-color: var(--vermelho-raro);
   color: #ffffff;
-  border-radius: var(--raio-controle);
+  border-radius: calc(var(--alt-botao) / 2);
   font-family: var(--font-brand-mono);
   font-size: var(--fonte-botao);
   font-weight: var(--peso-botao);
@@ -531,7 +532,7 @@ body {
   background-color: transparent;
   color: var(--text-muted);
   border: calc(var(--borda) * 1px) solid var(--border-color);
-  border-radius: var(--raio-controle);
+  border-radius: calc(var(--alt-botao) / 2);
   font-family: var(--font-brand-mono);
   font-size: var(--fonte-botao);
   font-weight: var(--peso-botao);
@@ -709,7 +710,7 @@ body {
   color: #f5f5f5;
   border: calc(var(--borda) * 1px) solid rgba(255, 255, 255, 0.2);
   padding: 3px 6px;
-  border-radius: var(--raio-controle);
+  border-radius: var(--raio-caixa);
   font-family: var(--font-brand-mono);
   font-size: 8.5px;
   font-weight: 600;
@@ -756,12 +757,29 @@ body {
    formato anterior na tela e o toast de erro fica verde.
    --------------------------------------------------------------------------- */
 
-/* Sem formato disponível: ação bloqueada. Usa opacity para não brigar com a
-   cor inline que o tema aplica no botão primário. */
+/* Sem formato disponível: ação bloqueada.
+
+   O `opacity` fica porque não custa nada onde funciona, mas ele NÃO é o que
+   segura o estado: o UXP ignora opacity — foi assim que os ícones não
+   selecionados saíram todos cheios no primeiro teste no painel. Quem diz
+   "bloqueado" é a COR, abaixo. E quem impede o clique de valer é o JS, com
+   actionsEnabled: `pointer-events` também é duvidoso lá dentro. */
 .is-disabled {
   opacity: 0.35;
   pointer-events: none;
   cursor: default;
+}
+
+.btn-primary.is-disabled {
+  background-color: rgba(255, 255, 255, 0.10);
+  border-color: rgba(255, 255, 255, 0.10);
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.btn-secondary.is-disabled {
+  background-color: transparent;
+  border-color: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.35);
 }
 
 /* Nenhum formato: moldura vazia, sem sugerir dimensão */

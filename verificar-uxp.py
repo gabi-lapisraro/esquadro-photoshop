@@ -14,6 +14,10 @@ Em 25/08/2026 esse buraco custou o dia:
   - `outline` não seguindo border-radius: anel quadrado num elemento redondo.
   - fonte por @import remoto: caía calada no monospace do sistema.
 
+Em 26/08, no primeiro teste do redesenho no painel:
+  - `border-radius: 999px` virando elipse: o UXP encolhe os dois raios
+    separadamente, então o botão saiu oval e o texto vazou para fora.
+
 Uso:
     python3 verificar-uxp.py             verifica e lista
     python3 verificar-uxp.py --silencioso  só o código de saída
@@ -39,6 +43,10 @@ ERROS = [
      "O UXP não busca CSS remoto. Embarque o arquivo e use @font-face local."),
     (r"url\(\s*['\"]?https?://", "CONFIRMADO",
      "Recurso remoto não carrega. Embarque no pacote."),
+    (r"border-radius\s*:[^;]*?(?<![.\d])\d{3,}px", "CONFIRMADO",
+     "border-radius gigante (o truque do 999px) vira ELIPSE no UXP: ele encolhe "
+     "os dois raios separadamente, e sai rx=largura/2 com ry=altura/2. Para "
+     "pílula, use metade da ALTURA do próprio elemento."),
     (r"outline\s*:", "CONFIRMADO",
      "`outline` não segue border-radius: sai quadrado em elemento redondo. Use box-shadow."),
     (r"display\s*:\s*(?:inline-)?grid", "DOCUMENTADO",

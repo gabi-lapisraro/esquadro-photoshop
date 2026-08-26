@@ -60,8 +60,19 @@ em navegador, Figma ou playground, porque lá o CSS funciona inteiro.
 | `gap` em flexbox é ignorado | "ainda está tudo colado", 3 rodadas | espaçamento só por `margin` |
 | `outline` não segue `border-radius` | anel quadrado em bolinha redonda | `box-shadow`, ou `border` com `border-box` |
 | CSS remoto não carrega | fonte da marca sumia | `@font-face` local, `.ttf` embarcado |
+| `border-radius: 999px` vira ELIPSE | botão oval, texto vazando para fora | raio = METADE DA ALTURA do elemento |
+| `opacity` é ignorado | os 6 ícones apagados saíram todos cheios | recuar na COR, com `rgba()` |
 
-Também sem suporte: **CSS Grid**, `::before`/`::after`, `float`, `clip-path`,
+As duas últimas apareceram em 26/08, no primeiro teste do redesenho no painel.
+O `999px` é o truque padrão de pílula na web: o CSS de verdade encolhe os dois
+raios **pelo mesmo fator** quando não cabem, e sai pílula. O UXP encolhe cada
+eixo **por conta**, e sai `rx = largura/2` com `ry = altura/2` — uma elipse.
+
+`opacity` sendo ignorado derruba mais coisa do que parece: onde o estado era
+dito por opacidade, ele passou a ser dito por cor. O `.is-disabled` mantém o
+`opacity` porque não custa, mas quem carrega o "bloqueado" agora é `rgba()`.
+
+Também sem suporte: **`opacity`**, **CSS Grid**, `::before`/`::after`, `float`, `clip-path`,
 `aspect-ratio`, `:has()`. Irregulares: `flex-wrap`, `position: fixed`.
 
 `verificar-uxp.py` varre o CSS **e o HTML** procurando tudo isso e **trava o
@@ -141,7 +152,7 @@ Ads, onde descrevem display ad.
 
 ## UI: onde parou
 
-O CSS é dirigido por **60 tokens** com comentário `/* Grupo | Rótulo */`, que o
+O CSS é dirigido por **59 tokens** com comentário `/* Grupo | Rótulo */`, que o
 `gerar-playground.py` lê para montar os controles. O `playground.html` roda o
 painel **de verdade** (JS real, embrulhado num `require` de mentira) e só mexe
 em propriedades que o UXP suporta.

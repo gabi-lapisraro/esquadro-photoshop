@@ -73,11 +73,18 @@ console.log('\n=== E. opacidade: ícone apagado, bolinha cheia ===');
   const w = new JSDOM(html).window;
   const op = sel => w.getComputedStyle(w.document.querySelector(sel)).opacity;
 
-  check('ícone não selecionado fica em 20%', op('.platform-icon[data-platform="facebook"]'), '0.2');
+  // O recuo é na COR, não em `opacity`: o UXP ignora opacity, e no primeiro
+  // teste no painel os seis ícones saíram todos cheios.
+  const cor = sel => w.getComputedStyle(w.document.querySelector(sel)).color;
+  check('ícone não selecionado recua na cor',
+        cor('.platform-icon[data-platform="facebook"]'), 'rgba(255, 255, 255, 0.2)');
   // o "..." não é plataforma: é o que avisa que há mais, e fica cheio
-  check('o "..." fica cheio', op('#btnToggleStrip'), '1');
-  // o índex já abre com o Instagram marcado
-  check('ícone selecionado fica cheio', op('.platform-icon.active'), '1');
+  // o jsdom não resolve var() em `color`, então aqui basta: o "..." NÃO usa a
+  // cor recuada dos ícones
+  check('o "..." não fica recuado como os ícones',
+        cor('#btnToggleStrip') === cor('.platform-icon[data-platform="facebook"]'), false);
+  check('nada de ícone se escondendo por opacity',
+        op('.platform-icon[data-platform="facebook"]'), '1');
 
   // as bolinhas só podem diferir na cor de fundo: opacidade e traço iguais
   const dots = [...w.document.querySelectorAll('.color-dot')].map(d => {
