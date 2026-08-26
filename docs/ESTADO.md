@@ -7,6 +7,37 @@ Projeto: `~/Downloads/esquadro-photoshop`, git com histórico completo.
 
 ---
 
+## Por onde continuar — 26/08, fim do dia
+
+Tudo o que está aqui embaixo é contexto. Isto é o estado.
+
+**Fechado nesta sessão:** o redesenho inteiro da UI, testado no painel; o pacote
+`dist/ESQUADRO-1.0.0.{zip,ccx}` (448 KB), validado; a apresentação em três
+formatos (artifact publicado, PDF e PPTX); e o `INSTALAR.md` com o Windows passo
+a passo.
+
+**Esperando resposta do Photoshop — uma coisa só:**
+
+- **A prancheta nasce transparente?** Último commit. O valor `3` de
+  `artboardBackgroundType` foi deduzido, não confirmado. Se sair branca, o log
+  diz com que valor ela ficou e é trocar `_FUNDO_TRANSPARENTE` em
+  `js/photoshop.js`. Ver "Bugs que já foram corrigidos".
+
+**Aberto, em ordem de valor:**
+
+1. **Instalar numa segunda máquina.** É o que falta para distribuir. "Funciona
+   aqui" não é "instala no computador do colega" — ver "Distribuição".
+2. **O gerador `planilha → js/data_photoshop.js`.** Enquanto não existir, editar
+   a planilha não muda o plugin. As regras já estão escritas e conferidas; falta
+   o invólucro. Ver "Dados".
+3. **Formatos diferentes no mesmo arquivo.** Em estudo; a pergunta que abre é de
+   interface, não de código. Ver "Em estudo".
+
+**Antes de mexer em qualquer coisa**, leia "As armadilhas do UXP". Elas explicam
+metade dos commits, e o motor descarta em silêncio o que não entende.
+
+---
+
 ## O que é
 
 Plugin UXP para Photoshop que cria pranchetas e guias dos formatos de mídia
@@ -59,7 +90,7 @@ antes, rode depois, e compare com `diff`.
 
 ---
 
-## As três armadilhas do UXP que custaram o dia
+## As armadilhas do UXP — leia antes de mexer
 
 Estas explicam metade dos commits. O motor do UXP entende um **subconjunto** do
 CSS e **descarta o resto em silêncio**: sem erro, sem log. E nada disso aparece
