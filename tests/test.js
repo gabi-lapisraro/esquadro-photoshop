@@ -260,6 +260,15 @@ for (const [pk, pv] of Object.entries(masterPlatforms)) {
 }
 check('todos os nomes bem formados', ruins, 0);
 
+console.log('\n-- D4a. o sinal - so fica apagado com 1 prancheta --');
+d.pick('instagram'); d.click(d.$('modeOrganic'));
+check('com 1, o - esta travado', d.$('btnMinus').classList.contains('is-disabled'), true);
+check('e o + nao', d.$('btnPlus').classList.contains('is-disabled'), false);
+d.click(d.$('btnPlus'));
+check('com 2, o - destrava', d.$('btnMinus').classList.contains('is-disabled'), false);
+d.click(d.$('btnMinus'));
+check('de volta a 1, trava de novo', d.$('btnMinus').classList.contains('is-disabled'), true);
+
 console.log('\n-- D4b. Meta Ads: ordem propria e Retrato de peca unica --');
 d.pick('instagram'); d.click(d.$('modeAds'));
 check('ordem quadrado, retrato, story',

@@ -328,10 +328,10 @@ body {
 .stepper-btn {
   width: 20px;
   height: 100%;
-  background: transparent !important;
-  border: none !important;
+  background-color: transparent;
+  border: none;
   /* os sinais + e - usam a PRINCIPAL, como nos SVGs de referência */
-  color: var(--acento-visivel) !important;
+  color: var(--acento-visivel);
   font-family: var(--font-brand-mono);
   font-size: var(--fonte-stepper-sinal);
   font-weight: var(--peso-stepper-sinal);
@@ -339,20 +339,32 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: all 0.15s ease;
+  /* SEM transição nenhuma. A cor aqui não é enfeite, é ESTADO: diz se o sinal
+     ainda faz algo. No painel a transição de cor não completa — o sinal ficava
+     preso no cinza de travado mesmo com 2 pranchetas, porque a classe saía e a
+     cor não acompanhava. E fundo, que era o único animável sem risco, não existe
+     mais: o hover muda só a cor.
+
+     Os `!important` também saíram: existiam para vencer uma cor inline que o JS
+     escrevia, e ele não escreve mais desde a refatoração. `!important` de mais
+     é como o motor do UXP acaba surpreendendo. */
   user-select: none;
 }
 
-/* Sinal travado: o formato não admite mais pranchetas. Cor, e não opacity —
-   o UXP ignora opacity. O !important acompanha o da regra base, que existe para
-   vencer a cor do tema. */
+/* Sinal travado: o formato não admite mais pranchetas, ou já está em 1 e não há
+   de onde tirar. Cor, e não opacity — o UXP ignora opacity. */
 .stepper-btn.is-disabled {
-  color: rgba(229, 227, 217, 0.18) !important;
+  color: rgba(229, 227, 217, 0.18);
 }
 
-.stepper-btn:hover {
-  background-color: rgba(255, 255, 255, 0.08) !important;
-  color: var(--text-main) !important;
+/* No hover muda só a COR do sinal. Não há fundo: o fundo era um retângulo
+   arredondado recortado pela pílula do stepper, e saía como um meio-círculo
+   colado na ponta.
+
+   `:not(.is-disabled)` porque esta regra vem DEPOIS da do travado e tem a mesma
+   especificidade: sem isso, passar o mouse acendia um sinal que não faz nada. */
+.stepper-btn:hover:not(.is-disabled) {
+  color: var(--text-main);
 }
 
 .stepper-input {

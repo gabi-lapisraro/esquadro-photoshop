@@ -207,6 +207,25 @@ console.log('\n=== H. a lista desloca em vez de comprimir ===');
         /barra-rolagem|custom-dropdown-veu|scrollbar/.test(css), false);
 }
 
+console.log('\n=== I. o estado do stepper não depende de transição ===');
+{
+  const fs = require('fs');
+  const css = fs.readFileSync(path.join(ROOT, 'styles.css'), 'utf8')
+                .replace(/\/\*[\s\S]*?\*\//g, '');
+  const st = (css.match(/\.stepper-btn\s*\{([^}]*)\}/) || [,''])[1];
+  // A cor aqui é ESTADO, não enfeite: diz se o sinal ainda faz algo. No painel a
+  // transição de cor não completa, e o sinal ficava preso no cinza de travado
+  // mesmo com 2 pranchetas.
+  check('não há transição no stepper', /transition/.test(st), false);
+  // e o hover muda só a cor: o fundo saía como um meio-círculo na ponta da pílula
+  const hv = (css.match(/\.stepper-btn:hover:not\(\.is-disabled\)\s*\{([^}]*)\}/) || [,''])[1];
+  check('o hover não pinta fundo', /background/.test(hv), false);
+  check('e muda a cor do sinal', /color:\s*var\(--text-main\)/.test(hv), true);
+  check('e nenhum !important sobrou no stepper', /!important/.test(st), false);
+  check('o hover não acende sinal travado',
+        /\.stepper-btn:hover:not\(\.is-disabled\)/.test(css), true);
+}
+
 const f = failCount();
 console.log(`\n=== ${f === 0 ? 'TODOS OS TESTES PASSARAM' : f + ' FALHA(S)'} ===`);
 process.exit(f === 0 ? 0 : 1);

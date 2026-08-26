@@ -72,6 +72,8 @@ em navegador, Figma ou playground, porque lá o CSS funciona inteiro.
 | raio maior que metade da menor dimensão vira ELIPSE | botão oval com texto vazando; tooltip ovalado | raio ≤ METADE DA MENOR DIMENSÃO |
 | `opacity` é ignorado | os 6 ícones apagados saíram todos cheios | recuar na COR, com `rgba()` |
 | `text-transform` é ignorado | "Orgânico" em caixa mista | texto já em MAIÚSCULA na origem |
+| transição de cor não completa | o sinal `−` ficou cinza com 2 pranchetas | não animar o que carrega ESTADO |
+| `overflow: hidden` não rola | a lista de formatos não descia | deslocar por `margin-top` |
 
 As duas últimas apareceram em 26/08, no primeiro teste do redesenho no painel.
 O `999px` é o truque padrão de pílula na web: o CSS de verdade encolhe os dois
@@ -87,6 +89,18 @@ menor dimensão**.
 `opacity` sendo ignorado derruba mais coisa do que parece: onde o estado era
 dito por opacidade, ele passou a ser dito por cor. O `.is-disabled` mantém o
 `opacity` porque não custa, mas quem carrega o "bloqueado" agora é `rgba()`.
+
+**Transição de cor não completa no painel.** O sinal `−` do stepper ficava preso
+no cinza de travado mesmo com 2 pranchetas: a classe saía e a cor não
+acompanhava. A regra que sai daí é maior que o caso: **não animar o que carrega
+ESTADO.** Cor que diz "isto está travado" não pode depender de transição. O
+stepper anima só `background-color`, que não carrega estado nenhum.
+
+Junto saíram três `!important` do stepper. Eles existiam para vencer uma cor
+inline que o JS escrevia, e ele não escreve mais desde a refatoração — e
+`!important` a mais é como o cascade do UXP acaba surpreendendo. O hover ganhou
+`:not(.is-disabled)`, porque vinha depois com a mesma especificidade e acendia
+sinal travado.
 
 `text-transform` é do mesmo tipo: some sem avisar, e a regra continua no CSS
 porque não custa e mantém o playground igual ao painel. Quem garante a caixa
