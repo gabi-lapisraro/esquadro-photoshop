@@ -779,10 +779,15 @@ Plugins > ESQUADЯO > Lápis Яaro
 ```
 
 O `name` do manifest é o que vira o item do menu; o `label` do entrypoint é o
-painel dentro dele. Passou por três versões: primeiro "ESQUADЯO" com
-"ESQUADЯO — Lápis Raro" dentro, que repetia o nome; depois a marca fora e o
-produto dentro; e agora o inverso, a pedido dela — o produto é o que se procura
-no menu, e a marca assina o painel.
+painel dentro dele.
+
+**Não existe como tirar o nível do meio.** O manifesto v5 não tem chave para
+isso: o Photoshop monta `Plugins > nome do plugin > painel` por conta. Ela pediu
+só `Plugins > Lápis Raro`, e o que dá é escolher qual palavra fica em cada
+nível — a marca ficou no primeiro. **A confirmar no painel:** se o Photoshop
+achatar plugin de um painel só, sai exatamente `Plugins > Lápis RAЯO`; se não,
+sai com o ESQUADЯO dentro. De um jeito ou de outro, o primeiro nível é o que ela
+pediu, e é por isso que a apresentação cita só ele.
 
 O `Я` é o cirílico U+042F, como no nome dos arquivos, e aparece **nos dois**:
 no ESQUADЯO e em "RaЯo".

@@ -1,7 +1,7 @@
 {
   "manifestVersion": 5,
   "id": "com.lapisraro.esquadro.photoshop",
-  "name": "ESQUADЯO",
+  "name": "Lápis RAЯO",
   "version": "1.0.0",
   "main": "index.html",
   "host": {
@@ -13,7 +13,7 @@
       "type": "panel",
       "id": "esquadroPanel",
       "label": {
-        "default": "Lápis RAЯO"
+        "default": "ESQUADЯO"
       },
       "minimumSize": {
         "width": 240,
