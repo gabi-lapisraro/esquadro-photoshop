@@ -37,6 +37,7 @@ python3 validar-pacote.py   # extrai o zip num diretório limpo e confere tudo
 python3 gerar-playground.py # gera playground.html a partir do index/styles reais
 python3 gerar-molduras.py   # deriva as pontas das molduras do desenho
 python3 gerar-molduras.py --verificar   # o código ainda bate com o desenho?
+python3 gerar-pdf.py        # apresentação em PDF, com as fontes embarcadas
 ```
 
 Instalação manual: copiar a pasta para
@@ -756,6 +757,37 @@ lado de cada slider (digitar acima do máximo ESTICA o slider), o token morto
 `--peso-modo-ativo` ganhou dono, e a cascata do CSS foi consolidada.
 
 ---
+
+## Apresentação em PDF
+
+Para ela editar no Illustrator e remontar no Google Docs:
+
+```bash
+python3 gerar-pdf.py     # sai em docs/ESQUADRO-apresentacao.pdf
+```
+
+Sai em `docs/`, e **não em `dist/`**: o `empacotar.sh` faz `rm -rf dist` antes de
+montar o pacote, então um PDF ali dura até o próximo empacotamento. Aconteceu.
+
+Duas coisas quebram esse PDF, e as duas em silêncio:
+
+- **As fontes.** O `apresentacao.html` busca o Plex do Google Fonts, que é o certo
+  para a página publicada. Mas o Chrome headless sem rede não busca nada, e o PDF
+  sai **todo em Menlo**. O script gera uma CÓPIA do HTML com as fontes em data
+  URI, lidas de `~/Library/Fonts`, e deixa o arquivo original intocado. A dica
+  `format('truetype')` é necessária — sem ela o Chrome recusa.
+- **A cor de fundo.** O navegador a descarta ao imprimir. É o que o bloco
+  `@media print` do `apresentacao.html` resolve: liga `print-color-adjust: exact`,
+  força o tema claro (fundo escuro em papel gasta tinta e some no Illustrator) e
+  impede seção cortada no meio da página, o que importa para quem vai remontar.
+
+O script confere o resultado e **avisa se sobrou Menlo**, que é o sintoma de
+fonte que não embarcou. Hoje sobra uma, e é conhecida: o `Milo`.
+
+**O `Milo` nunca funcionou, nem na web.** O CSS pede a família `'Milo'`, e a
+instalada chama **`Milo OT`** — nome diferente, então o corpo do texto sempre caiu
+no Plex. Não foi corrigido a pedido dela ("não precisa de preciosismo com a
+fonte"), e fica anotado porque é de uma linha: trocar o nome no `--sans`.
 
 ## Apresentação
 
