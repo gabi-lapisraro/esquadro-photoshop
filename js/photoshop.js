@@ -147,11 +147,17 @@ async function createArtboards(fmt, count, docName) {
 
         await _makeArtboard(nome, left, 0, fmt.width, fmt.height);
 
-        _drawVerticalGuides(doc, fmt, left);
+        // A ÁREA SEGURA vai em todas as pranchetas; a LINHA DE CORTE, só na
+        // primeira. O corte serve para conferir o enquadramento uma vez — nas
+        // cópias ele só polui, e quem quiser em outra usa o "Aplicar Guias",
+        // que é livre.
+        _drawVerticalGuides(doc, fmt, left, i === 0);
       }
 
       // Guia horizontal atravessa o canvas inteiro, então uma vez serve para as
-      // três pranchetas: todas começam no topo 0.
+      // três pranchetas: todas começam no topo 0. Por isso ela não tem como ser
+      // "só na primeira" — e não precisa: nenhum dos formatos com corte usa
+      // corte horizontal, são todos laterais.
       _drawHorizontalGuides(doc, fmt, 0);
 
       _logGuias(doc);
@@ -410,7 +416,7 @@ async function _findArtboardOffset(doc) {
 }
 
 /** Guias horizontais (safe zone e corte no eixo vertical) */
-function _drawHorizontalGuides(doc, fmt, offsetY) {
+function _drawHorizontalGuides(doc, fmt, offsetY, comCorte = true) {
   const height = fmt.height;
   const h = _direction("horizontal");
 
@@ -419,14 +425,14 @@ function _drawHorizontalGuides(doc, fmt, offsetY) {
     if (fmt.safe.bottom) doc.guides.add(h, offsetY + height - fmt.safe.bottom);
   }
 
-  if (fmt.crop) {
+  if (comCorte && fmt.crop) {
     if (fmt.crop.top) doc.guides.add(h, offsetY + fmt.crop.top);
     if (fmt.crop.bottom) doc.guides.add(h, offsetY + height - fmt.crop.bottom);
   }
 }
 
 /** Guias verticais (safe zone e corte lateral) */
-function _drawVerticalGuides(doc, fmt, offsetX) {
+function _drawVerticalGuides(doc, fmt, offsetX, comCorte = true) {
   const width = fmt.width;
   const v = _direction("vertical");
 
@@ -435,7 +441,7 @@ function _drawVerticalGuides(doc, fmt, offsetX) {
     if (fmt.safe.right) doc.guides.add(v, offsetX + width - fmt.safe.right);
   }
 
-  if (fmt.crop && fmt.crop.lateral) {
+  if (comCorte && fmt.crop && fmt.crop.lateral) {
     doc.guides.add(v, offsetX + fmt.crop.lateral);
     doc.guides.add(v, offsetX + width - fmt.crop.lateral);
   }

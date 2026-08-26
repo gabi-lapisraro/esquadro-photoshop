@@ -38,9 +38,8 @@
   /* AS DUAS GUIAS — área segura e linha de corte — usam a mesma cor: a
      SECUNDÁRIA do tema. Elas nunca aparecem juntas (só margem lateral = corte;
      tem topo ou base = área segura), então não precisam se distinguir por cor.
-     Quem escreve isto é o ui.js, de data-corte ou, na falta dele, da
-     companheira. Antes a área segura ia na principal e o corte num azul fixo,
-     que não acompanhava o tema. */
+     Quem escreve isto é o ui.js, sempre da companheira. Antes a área segura ia
+     na principal e o corte num azul fixo, que não acompanhava o tema. */
   --guide-crop: #a2d2eb;
 
   --font-brand-mono: 'IBM Plex Mono', monospace;
@@ -1011,7 +1010,7 @@ body {
    diz qual tema está no ar é o painel inteiro, que muda de cor junto.
 
    Por isso a classe `.active` continua sendo posta pelo JS, mas não pinta
-   nada aqui. Ela ainda serve para o JS saber de quem ler data-par e data-corte.
+   nada aqui. Ela ainda serve para o JS saber de qual bolinha ler o data-par.
    --------------------------------------------------------------------------- */
 
 /* ---------------------------------------------------------------------------

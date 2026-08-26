@@ -170,6 +170,17 @@ estado vazio (tratado: botões travam, nada chega ao Photoshop).
 1  2  3                pranchetas, uma por cópia pedida
 ```
 
+**A LINHA DE CORTE sai só na PRIMEIRA prancheta.** A área segura vai em todas.
+O corte serve para conferir o enquadramento uma vez; nas cópias ele só polui.
+Quem quiser em outra prancheta usa o **Aplicar Guias**, que é livre e continua
+desenhando tudo onde estiver.
+
+Isso vale só no `createArtboards`: `_drawVerticalGuides` e
+`_drawHorizontalGuides` ganharam um `comCorte` (padrão `true`), e o laço passa
+`i === 0`. A horizontal não tem como ser por prancheta — guia horizontal
+atravessa o canvas inteiro —, e não precisa: nenhum dos 7 formatos com corte usa
+corte horizontal, são todos laterais.
+
 **A nomenclatura vale só para o DOCUMENTO.** É o nome do arquivo que circula;
 repetido em cada prancheta ele só enchia a paleta de camadas de linha longa e
 igual. Quem procura uma prancheta procura pela ordem dela. Vale também quando
@@ -195,16 +206,20 @@ qualquer regra de CSS e desfazia todo ajuste no `styles.css`.
 
 **Combinações de cor** (lidas dos 4 SVGs em `UI Illustrator/`):
 
-| Principal | Companheira | Guia de corte |
-|---|---|---|
-| Vermelho | **Nude** | **Azul** |
-| Azul | Vermelho | Vermelho |
-| Rosa | Azul | Azul |
-| Nude | Rosa | Rosa |
+| Principal | Companheira (= as duas guias) |
+|---|---|
+| Vermelho | Nude |
+| Azul | Vermelho |
+| Rosa | Azul |
+| Nude | Rosa |
 
 A principal preenche o botão de criar e os sinais do stepper. A companheira
-marca o modo ativo, o ícone da plataforma ativa e o wordmark. A guia de corte é
-a companheira em três dos quatro temas — o Vermelho é a exceção.
+marca o modo ativo, o ícone da plataforma ativa, o wordmark **e as duas guias**.
+
+Houve uma exceção que **foi desfeita**: o `1.svg` desenha a guia de corte do
+tema Vermelho em Azul, e por um tempo o código tinha um `data-corte` por bolinha
+para isso. Ela decidiu que não — no Vermelho a guia é Nude como o resto. O
+atributo saiu; se a exceção voltar, é por ali.
 
 **As duas guias — área segura e linha de corte — saem na mesma cor: a
 secundária do tema.** Elas nunca aparecem juntas (só margem lateral = linha de

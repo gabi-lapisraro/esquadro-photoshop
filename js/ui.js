@@ -453,10 +453,9 @@ function applyTheme(color) {
   // ativa e wordmark. Em data-par.
   const par = (escolhida && escolhida.getAttribute('data-par')) || null;
   // AS DUAS GUIAS — área segura e linha de corte — saem daqui, na mesma cor: a
-  // secundária do tema. Quase sempre é a companheira; no Vermelho, que marca a
-  // escolha em Nude, o desenho pede Azul para a guia (ver 1.svg). Por isso a
-  // bolinha pode declarar um data-corte próprio; sem ele, vale a companheira.
-  const corte = (escolhida && escolhida.getAttribute('data-corte')) || par;
+  // COMPANHEIRA, sem exceção. Chegou a existir um data-corte por bolinha, porque
+  // o 1.svg desenha o corte do tema Vermelho em Azul; ela decidiu que não, é
+  // Nude como o resto. Se a exceção voltar, o caminho é esse atributo.
 
   const raiz = document.documentElement.style;
   raiz.setProperty('--vermelho-raro', color);
@@ -466,7 +465,7 @@ function applyTheme(color) {
     raiz.setProperty('--companheira', par);
     raiz.setProperty('--sobre-companheira', contrastOn(par));
   }
-  if (corte) raiz.setProperty('--guide-crop', corte);
+  if (par) raiz.setProperty('--guide-crop', par);
 
   updatePreview();
   salvarPrefs();

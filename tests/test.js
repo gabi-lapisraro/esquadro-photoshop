@@ -91,11 +91,11 @@ check('Vermelho + Nude',  comb('#E61C00').join('|'), '#E61C00|#e5e3d9');
 check('Azul + Vermelho',  comb('#a2d2eb').join('|'), '#a2d2eb|#E61C00');
 check('Rosa + Azul',      comb('#fea8fe').join('|'), '#fea8fe|#a2d2eb');
 check('Nude + Rosa',      comb('#e5e3d9').join('|'), '#e5e3d9|#fea8fe');
-// a guia de corte quase sempre é a companheira...
+// as duas guias são a companheira, em TODOS os temas. Houve uma exceção para o
+// Vermelho, lida do 1.svg, que ela desfez: é Nude como o resto.
 check('guia de corte segue a companheira', corte(), '#fea8fe');
-// ...menos no Vermelho, que marca a escolha em Nude e corta em Azul (1.svg)
 comb('#E61C00');
-check('no Vermelho a guia destoa da companheira', corte(), '#a2d2eb');
+check('no Vermelho também', corte(), '#e5e3d9');
 a.click(document.querySelector('.color-dot[data-color="#E61C00"]'));
 
 console.log('\n=== B. estado vazio e dados invalidos ===');
@@ -142,6 +142,24 @@ check('mensagem cita o maximo', /Máximo para este formato: 2/.test(PS.checkCapa
 check('1080px x20 cabe', PS.checkCapacity(quad, 20).ok, true);
 check('formato sem dimensao', PS.checkCapacity({ name: 'X', width: null, height: null }, 1).ok, false);
 check('altura absurda', PS.checkCapacity({ width: 100, height: 40000 }, 1).ok, false);
+
+console.log('\n-- B4b. corte só na PRIMEIRA prancheta --');
+// Nível de FONTE, e não de comportamento: createArtboards precisa do
+// executeAsModal do UXP, que não existe aqui. O que este teste guarda é a
+// decisão — a área segura vai em todas as pranchetas, a linha de corte só na
+// primeira, e o "Aplicar Guias" fica livre. Se alguém tirar o `i === 0`, cai.
+{
+  const fonte = require('fs').readFileSync(path.join(ROOT, 'js/photoshop.js'), 'utf8');
+  const naCriacao = /_drawVerticalGuides\(doc, fmt, left, ([^)]+)\)/.exec(fonte);
+  check('a criação passa o corte condicionado', naCriacao && naCriacao[1].trim(), 'i === 0');
+  check('as funções aceitam o parâmetro',
+        /_drawVerticalGuides\(doc, fmt, offsetX, comCorte = true\)/.test(fonte), true);
+  check('e só desenham o corte quando pedido',
+        /if \(comCorte && fmt\.crop && fmt\.crop\.lateral\)/.test(fonte), true);
+  // aplicar guias continua livre: chama sem condição
+  check('aplicar guias fica livre',
+        /_drawVerticalGuides\(doc, fmt, board \? board\.x : 0\);/.test(fonte), true);
+}
 
 // ---------- D. nomenclatura do arquivo ----------
 console.log('\n=== D. nome do arquivo ===');
