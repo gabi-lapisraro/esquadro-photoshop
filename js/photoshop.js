@@ -138,8 +138,12 @@ async function createArtboards(fmt, count, docName) {
       for (let i = 0; i < qty; i++) {
         const left = i * (fmt.width + GAP);
 
-        // Prancheta única não leva sufixo; com mais de uma, _1, _2, _3...
-        const nome = qty > 1 ? `${base}_${i + 1}` : base;
+        // A prancheta leva só o NÚMERO dela. A nomenclatura inteira
+        // (#TAЯEFA_IG_FEED_2508) fica no nome do DOCUMENTO, onde ela importa:
+        // é o nome do arquivo que vai circular. Repeti-la em cada prancheta só
+        // enchia a paleta de camadas de linha longa e igual, e quem procura uma
+        // prancheta procura pela ordem dela, não pelo nome da tarefa.
+        const nome = String(i + 1);
 
         await _makeArtboard(nome, left, 0, fmt.width, fmt.height);
 

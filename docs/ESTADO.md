@@ -139,9 +139,14 @@ estado vazio (tratado: botões travam, nada chega ao Photoshop).
 ## Nomenclatura dos arquivos
 
 ```
-#TAЯEFA_IG_FEED_2508          documento
-#TAЯEFA_IG_FEED_2508_1 _2 _3  pranchetas, quando há mais de uma
+#TAЯEFA_IG_FEED_2508   documento
+1  2  3                pranchetas, uma por cópia pedida
 ```
+
+**A nomenclatura vale só para o DOCUMENTO.** É o nome do arquivo que circula;
+repetido em cada prancheta ele só enchia a paleta de camadas de linha longa e
+igual. Quem procura uma prancheta procura pela ordem dela. Vale também quando
+há uma só: ela se chama `1`.
 
 `Я` é o cirílico U+042F, referência à marca. Data é DDMM **do dia da criação**.
 `PLATFORM_ABBR` e `FORMAT_ABBR` em `js/ui.js` controlam as abreviações.
