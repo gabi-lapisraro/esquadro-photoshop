@@ -285,6 +285,8 @@ function init(config) {
   els.dropdownCurrentLabel = document.getElementById('dropdownCurrentLabel');
   els.dropdownCurrentDim = document.getElementById('dropdownCurrentDim');
   els.dropdownMenu = document.getElementById('dropdownMenu');
+  els.dropdownCaixa = document.getElementById('dropdownCaixa');
+  els.buttonGroup = document.querySelector('.button-group');
   
   els.qtdInput = document.getElementById('qtdInput');
   els.btnMinus = document.getElementById('btnMinus');
@@ -392,6 +394,8 @@ function bindEvents() {
   els.dropdownTrigger.addEventListener('click', (e) => {
     e.stopPropagation();
     els.customDropdown.classList.toggle('open');
+    // nesta ordem: o limite muda se a lista rola, e é a altura que decide isso
+    limitarLista();
     medirBarraDeRolagem();
   });
 
@@ -613,6 +617,31 @@ function selectFormat(fmtId) {
   // para o teto do formato novo, e ele chama o preview no fim.
   updateQtdLabel();
   salvarPrefs();
+}
+
+/**
+ * Limita a lista aberta ao espaço que existe ATÉ OS BOTÕES.
+ *
+ * `--alt-lista` é a altura que ela quer, não a que cabe. A lista é
+ * `position: absolute`, então abrir não empurra nada: ela simplesmente passa por
+ * cima do que vier depois. Num painel mais baixo que o simulado no playground —
+ * e o do Photoshop é —, os 268px do token cobriam os botões e o rodapé.
+ *
+ * Então o token vale como TETO DE PREFERÊNCIA, e aqui entra o teto FÍSICO. Vence
+ * o menor dos dois.
+ */
+function limitarLista() {
+  const caixa = els.dropdownCaixa, botoes = els.buttonGroup;
+  if (!caixa || !botoes) return;
+  const topo = caixa.getBoundingClientRect().top;
+  const limiteBotoes = botoes.getBoundingClientRect().top;
+  // 4px de respiro para a lista não encostar no botão
+  const cabe = Math.round(limiteBotoes - topo - 4);
+  // Piso: num painel muito baixo, é melhor uma lista curta que rola do que uma
+  // fatia inútil de dois pixels.
+  const alt = Math.max(60, cabe);
+  caixa.style.maxHeight = alt + 'px';
+  els.dropdownMenu.style.maxHeight = alt + 'px';
 }
 
 /**

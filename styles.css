@@ -70,8 +70,8 @@
   --esp-item-y: 6.5px;            /* Controles | Item da lista, vertical */
   --esp-item-x: 10.5px;            /* Controles | Item da lista, lateral */
 
-  --esp-preview-topo: 25px;     /* Preview | Topo */
-  --esp-preview-base: 20px;     /* Preview | Base */
+  --esp-preview-topo: 27px;     /* Preview | Topo */
+  --esp-preview-base: 13px;     /* Preview | Base */
   --alt-stage: 450px;           /* Preview | Altura do palco */
   --alt-preview-min: 0px;     /* Preview | Altura mínima */
   --alt-preview-max: 590px;   /* Preview | Altura máxima */
@@ -407,7 +407,11 @@ body {
   /* Altura MÁXIMA. O que tinha que ser igual entre as plataformas era a altura
      do ITEM, não a da caixa — e o que quebrava isso era o item encolhendo, não
      a caixa. Com altura fixa aqui, uma lista de 4 formatos abria um vazio no
-     fim. Máxima: a caixa abraça o conteúdo, e para de crescer quando enche. */
+     fim. Máxima: a caixa abraça o conteúdo, e para de crescer quando enche.
+
+     Este é o teto de PREFERÊNCIA. O teto FÍSICO — o espaço que existe até os
+     botões — o `limitarLista` do ui.js escreve por cima, ao abrir. A lista é
+     `position: absolute`: abrir não empurra nada, ela passa por cima. */
   max-height: var(--alt-lista);
   /* Recorta o que a lista de dentro deixa passar da borda — e é ali que a barra
      de rolagem vai morar. Confirmado no painel: o UXP ignora `scrollbar-width`

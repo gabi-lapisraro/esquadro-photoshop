@@ -175,9 +175,20 @@ caber em vez de transbordar. Daí a mesma lista parecer compacta no Instagram
 orgânico e folgada no Meta Ads. `flex-shrink: 0` no item resolve: o que não cabe
 transborda, e transbordar é o que a rolagem precisa.
 
-Com isso a caixa volta a ter altura MÁXIMA (`--alt-lista`, 180px): ela abraça o
-conteúdo e para de crescer quando enche. Altura fixa abria um vazio nas listas
-curtas.
+Com isso a caixa volta a ter altura MÁXIMA (`--alt-lista`): ela abraça o conteúdo
+e para de crescer quando enche. Altura fixa abria um vazio nas listas curtas.
+
+**E o token é só o teto de PREFERÊNCIA.** O teto físico é o espaço que existe
+até os botões, e quem escreve é o `limitarLista` do `ui.js`, ao abrir. A lista é
+`position: absolute`: abrir não empurra nada, ela passa por cima do que vem
+depois. No painel do Photoshop, mais baixo que o simulado no playground, os
+268px do token cobriam os botões e o rodapé — e o playground não mostrava,
+porque lá cabia.
+
+Vence o menor dos dois, com 4px de respiro e piso de 60px (num painel muito
+baixo, lista curta que rola é melhor que uma fatia de dois pixels). Medido de
+380 a 700px de altura: a lista dá 130, 190, 228 e depois para no conteúdo, e em
+nenhuma altura ela invade os botões ou passa da borda.
 
 Sobrou uma diferença de 2px: o item ativo tem borda, e borda soma na caixa. O
 item base ganhou uma borda **transparente** do mesmo tamanho, então marcar um

@@ -161,6 +161,12 @@ console.log('\n=== H. a lista rola em vez de comprimir ===');
   // item é o flex-shrink: 0, sem o qual 9 formatos eram COMPRIMIDOS para caber
   // numa caixa de 180px em vez de rolar.
   check('a caixa tem teto, não altura fixa', /max-height:\s*var\(--alt-lista\)/.test(caixa), true);
+  // e o teto FÍSICO vem do JS: a lista é absolute, então abrir não empurra os
+  // botões — sem esse limite ela passava por cima deles em painel mais baixo
+  const ui = fs.readFileSync(path.join(ROOT, 'js/ui.js'), 'utf8');
+  check('o ui.js limita a lista pelos botões',
+        /function limitarLista\(\)/.test(ui) && /els\.buttonGroup/.test(ui), true);
+  check('e limita ao ABRIR', /limitarLista\(\);/.test(ui), true);
   check('e é ela que rola', /overflow-y:\s*auto/.test(rola), true);
   const item = (css.match(/\.custom-dropdown-item\s*\{([^}]*)\}/) || [,''])[1];
   check('o item não encolhe', /flex-shrink:\s*0/.test(item), true);
