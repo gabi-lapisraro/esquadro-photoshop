@@ -64,7 +64,7 @@
   --esp-modo-stepper: 4px;    /* Controles | Entre as pílulas */
   --alt-seletor: 26px;          /* Controles | Altura do seletor de formato */
   --esp-dropdown-x: 12.5px;       /* Controles | Recuo do dropdown */
-  --esp-item-y: 6px;            /* Controles | Item da lista, vertical */
+  --esp-item-y: 8.5px;            /* Controles | Item da lista, vertical */
   --esp-item-x: 9px;            /* Controles | Item da lista, lateral */
 
   --esp-preview-topo: 25px;     /* Preview | Topo */
@@ -105,10 +105,10 @@
   --fonte-stepper-sinal: 10px;  /* Fontes | Sinais + e - */
   --fonte-legenda: 6.5px;         /* Fontes | Legenda do preview */
   --fonte-fmt-dim: 9px;         /* Fontes | Dimensão no seletor */
-  --esp-fmt-dim: 5.5px;           /* Controles | Nome → dimensão */
-  --fonte-botao: 9px;           /* Fontes | Botões de ação */
+  --esp-fmt-dim: 5px;           /* Controles | Nome → dimensão */
+  --fonte-botao: 8px;           /* Fontes | Botões de ação */
   --alt-wordmark: 6px;         /* Cabeçalho | Altura do wordmark */
-  --esp-assinatura: 4px;        /* Cabeçalho | Entre as linhas da assinatura */
+  --esp-assinatura: 3px;        /* Cabeçalho | Entre as linhas da assinatura */
   --fonte-rodape: 5px;          /* Cabeçalho | Fonte do texto */
 
   --peso-modo: 300;             /* Pesos | Orgânico / Anúncio */
