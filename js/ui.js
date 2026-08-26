@@ -633,13 +633,40 @@ function selectFormat(fmtId) {
 function limitarLista() {
   const caixa = els.dropdownCaixa, botoes = els.buttonGroup;
   if (!caixa || !botoes) return;
-  const topo = caixa.getBoundingClientRect().top;
+
+  // O topo sai do GATILHO, não da caixa. A caixa acabou de sair do
+  // `display: none`, e no UXP a medida dela volta ZERO — o layout ainda não foi
+  // recalculado. Com topo zero, o espaço "disponível" virava a distância do
+  // alto do painel até os botões, um número grande demais, e a lista abria
+  // inteira por cima deles. Foi esse o bug. O gatilho está sempre visível.
+  const gatilho = els.customDropdown.getBoundingClientRect();
+  const topo = gatilho.bottom + 4;                 // o mesmo 4px do CSS
   const limiteBotoes = botoes.getBoundingClientRect().top;
-  // 4px de respiro para a lista não encostar no botão
   const cabe = Math.round(limiteBotoes - topo - 4);
+
+  console.log(`[ESQUADRO] lista: gatilho termina em ${Math.round(gatilho.bottom)}` +
+              `, botões começam em ${Math.round(limiteBotoes)}, cabe ${cabe}px`);
+
+  // Medida sem sentido (zero, negativa): melhor não mexer e deixar o teto do
+  // CSS valer, do que impor um número inventado.
+  if (!isFinite(cabe) || cabe <= 0) return;
+
+  // Vence o MENOR dos dois tetos: o físico, que é `cabe`, e o de preferência,
+  // que é --alt-lista. Sem isso, em painel alto o inline passava por cima do
+  // token e a lista crescia além do que ela pediu.
+  //
+  // Ler variável de CSS por getComputedStyle é irregular no UXP, daí o
+  // try/catch: falhando, sobra o teto físico — que é o seguro, só pode ficar
+  // maior do que a preferência, nunca invadir os botões.
+  let teto = 0;
+  try {
+    teto = parseFloat(getComputedStyle(document.documentElement)
+                        .getPropertyValue('--alt-lista')) || 0;
+  } catch (e) { /* sem leitura: vale só o físico */ }
+
   // Piso: num painel muito baixo, é melhor uma lista curta que rola do que uma
   // fatia inútil de dois pixels.
-  const alt = Math.max(60, cabe);
+  const alt = Math.max(60, teto > 0 ? Math.min(cabe, teto) : cabe);
   caixa.style.maxHeight = alt + 'px';
   els.dropdownMenu.style.maxHeight = alt + 'px';
 }
@@ -656,10 +683,16 @@ function limitarLista() {
  * zero é resposta válida — quando a lista não rola, não há barra.
  */
 function medirBarraDeRolagem() {
-  const r = els.dropdownMenu;
-  if (!r || !r.offsetWidth) return;
-  const largura = r.offsetWidth - r.clientWidth;
-  document.documentElement.style.setProperty('--barra-rolagem', largura + 'px');
+  // No PRÓXIMO passo: a lista acabou de sair do `display: none`, e medir agora
+  // devolve zero. Zero fazia a medição desistir, o CSS cair no valor de reserva
+  // e a lista ficar mais larga que a caixa — o texto saía cortado à direita.
+  setTimeout(() => {
+    const r = els.dropdownMenu;
+    if (!r) return;
+    const largura = Math.max(0, (r.offsetWidth || 0) - (r.clientWidth || 0));
+    document.documentElement.style.setProperty('--barra-rolagem', largura + 'px');
+    console.log(`[ESQUADRO] barra de rolagem: ${largura}px`);
+  }, 0);
 }
 
 function populateFormats() {

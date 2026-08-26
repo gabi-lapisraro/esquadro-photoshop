@@ -186,9 +186,34 @@ depois. No painel do Photoshop, mais baixo que o simulado no playground, os
 porque lá cabia.
 
 Vence o menor dos dois, com 4px de respiro e piso de 60px (num painel muito
-baixo, lista curta que rola é melhor que uma fatia de dois pixels). Medido de
-380 a 700px de altura: a lista dá 130, 190, 228 e depois para no conteúdo, e em
-nenhuma altura ela invade os botões ou passa da borda.
+baixo, lista curta que rola é melhor que uma fatia de dois pixels).
+
+**A primeira versão não funcionou no painel, e a causa vale guardar: eu medi
+elementos invisíveis.** A caixa da lista acabou de sair do `display: none`, e no
+UXP a medida dela volta ZERO — o layout ainda não foi recalculado. Com o topo em
+zero, o "espaço disponível" virava a distância do alto do painel até os botões,
+grande demais, e a lista abria inteira por cima deles.
+
+O mesmo erro cortava o texto à direita: `medirBarraDeRolagem` também media a
+caixa recém-aberta, desistia no zero, e o CSS caía num valor de reserva de 15px
+que deslocava a lista.
+
+As duas correções são a mesma ideia:
+
+- **Medir de quem está sempre visível.** O topo da lista sai do GATILHO
+  (`gatilho.bottom + 4`), não da caixa.
+- **Medir no passo seguinte**, quando é a própria caixa que precisa ser medida.
+  `medirBarraDeRolagem` virou `setTimeout(…, 0)`.
+- **Valor de reserva ZERO, não palpite.** Sem medição a barra volta a aparecer —
+  feio, mas inteiro. Com palpite, o que sobra dele corta o texto: some
+  informação em vez de aparecer enfeite.
+- **Medida sem sentido não vira decisão.** `cabe <= 0` desiste e deixa o teto do
+  CSS valer.
+
+Medido de 400 a 700px de painel, com o token em 268 e em 120: a lista dá 150,
+218, 247 (o conteúdo) e 120, e em nenhum caso invade os botões ou passa da borda.
+Há `console.log` em ambas as funções — se voltar a passar, o log do UXP diz onde
+o gatilho termina, onde os botões começam e quanto ela achou que cabia.
 
 Sobrou uma diferença de 2px: o item ativo tem borda, e borda soma na caixa. O
 item base ganhou uma borda **transparente** do mesmo tamanho, então marcar um

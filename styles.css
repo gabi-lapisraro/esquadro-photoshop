@@ -444,14 +444,16 @@ body {
    fixos, e a barra não tem 20px — a diferença virou um vão à direita de todo
    item. Cada motor tem a sua medida, e o do UXP não é o do navegador.
 
-   O 15px do fallback é só para o caso de a medição não rodar; aí o vão volta,
-   menor. */
+   O valor de reserva é ZERO, e não um palpite. Se a medição não rodar, a barra
+   volta a aparecer — feio, mas inteiro. Com um palpite, o que sobrava dele
+   deslocava a lista e CORTAVA o texto à direita, que é pior: some informação em
+   vez de aparecer enfeite. */
 .custom-dropdown-rolagem {
   display: flex;
   flex-direction: column;
   max-height: var(--alt-lista);
   overflow-y: auto;
-  margin-right: calc(var(--barra-rolagem, 15px) * -1);
+  margin-right: calc(var(--barra-rolagem, 0px) * -1);
 }
 
 .custom-dropdown-item {
