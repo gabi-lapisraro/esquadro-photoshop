@@ -122,8 +122,15 @@
           <span id="dropdownCurrentLabel">Carregando...</span>
           <span id="dropdownCurrentDim" class="fmt-dim"></span>
         </div>
-        <div class="custom-dropdown-menu" id="dropdownMenu">
-          <!-- Preenchido dinamicamente -->
+        <!-- Duas camadas de propósito: a de fora RECORTA, a de dentro ROLA.
+             O UXP ignora `scrollbar-width` e o pseudo-elemento do WebKit, então
+             não dá para esconder a barra estilizando ela. O que dá é jogá-la
+             fora da área visível: a lista fica mais larga que a caixa, por
+             margem negativa, e a caixa corta o que sobra — inclusive a barra. -->
+        <div class="custom-dropdown-menu" id="dropdownCaixa">
+          <div class="custom-dropdown-rolagem" id="dropdownMenu">
+            <!-- Preenchido dinamicamente -->
+          </div>
         </div>
       </div>
 

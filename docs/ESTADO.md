@@ -389,6 +389,30 @@ alto, e comprime num painel baixo. Medido no playground, o rodapé cabe em todas
 então crescia e escondia justo o defeito que interessa ver. Agora ele tem altura
 fixa e `overflow: hidden`, como um painel encaixado de verdade.
 
+### A lista de formatos rola sem barra
+
+**O UXP ignora `scrollbar-width` E ignora `::-webkit-scrollbar`.** Testei os
+dois no painel: a barra continuou aparecendo. Não dá para esconder a barra
+estilizando a barra.
+
+O que dá é **tirá-la de vista**. A lista virou duas camadas:
+
+```
+.custom-dropdown-menu     overflow: hidden          ← RECORTA
+  .custom-dropdown-rolagem  overflow-y: auto        ← ROLA
+                            margin-right: -20px
+                            padding-right: 20px
+```
+
+A camada de dentro é 20px mais larga que a de fora, por margem negativa, e
+devolve os mesmos 20px em padding para o texto não deslocar. A barra nasce nessa
+faixa a mais, e a camada de fora a recorta. Só `overflow`, margem negativa e
+padding — três coisas que já sabemos que o UXP entende.
+
+O `id="dropdownMenu"` mudou de elemento: agora é a camada que ROLA, que é quem
+recebe os itens. A de fora ganhou `id="dropdownCaixa"`. O `ui.js` não precisou
+mudar porque só fala com o id.
+
 ### O preview era "travado": o vazio estava DENTRO dele
 
 Ela não conseguia mudar a distância do preview para o seletor, e nenhum

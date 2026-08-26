@@ -384,7 +384,11 @@ body {
   left: 0;
   width: 100%;
   max-height: 180px;
-  overflow-y: auto;
+  /* Recorta o que a lista de dentro deixa passar da borda — e é ali que a barra
+     de rolagem vai morar. Confirmado no painel: o UXP ignora `scrollbar-width`
+     e ignora `::-webkit-scrollbar`, então esconder a barra estilizando ela não
+     funciona. Tirá-la de vista funciona. */
+  overflow: hidden;
   /* mesmo fundo do painel: quem separa a lista é só o traço da borda. Sem
      sombra e sem fundo próprio, a lista não parece uma janela por cima — ela
      parece o painel se abrindo. */
@@ -401,6 +405,19 @@ body {
 
 .custom-dropdown.open .custom-dropdown-menu {
   display: flex;
+}
+
+/* A lista rola aqui dentro. Ela é 20px mais larga que a caixa, por margem
+   negativa, e devolve os mesmos 20px em padding para o texto não deslocar. A
+   barra de rolagem cai nessa faixa a mais, que a caixa recorta. 20px é folga de
+   sobra — barra de UXP é fina —, e sobrar não custa nada aqui. */
+.custom-dropdown-rolagem {
+  display: flex;
+  flex-direction: column;
+  max-height: 180px;
+  overflow-y: auto;
+  margin-right: -20px;
+  padding-right: 20px;
 }
 
 .custom-dropdown-item {

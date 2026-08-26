@@ -19,6 +19,8 @@ Em 26/08, no primeiro teste do redesenho no painel:
     separadamente, então o botão saiu oval e o texto vazou para fora.
   - `opacity` ignorado: os seis ícones apagados saíram todos cheios.
   - `text-transform: uppercase` ignorado: "Orgânico" ficou em caixa mista.
+  - `scrollbar-width` e `::-webkit-scrollbar` ignorados: a barra da lista não
+    sumia por CSS. Só recortando ela para fora da área visível.
 
 Uso:
     python3 verificar-uxp.py             verifica e lista
@@ -79,6 +81,11 @@ ERROS = [
 ]
 
 AVISOS = [
+    (r"scrollbar-width\s*:|::-webkit-scrollbar", "CONFIRMADO",
+     "O UXP ignora os dois: a barra de rolagem não sai por CSS. Para escondê-la, "
+     "ponha o elemento que rola dentro de um que RECORTA, e deixe o de dentro "
+     "mais largo por margem negativa — a barra cai na faixa recortada. É o que a "
+     "lista de formatos faz."),
     (r"flex-wrap\s*:", "IRREGULAR",
      "Suporte de flex-wrap varia. Confirme no painel antes de depender dele."),
     (r"align-content\s*:", "IRREGULAR",
