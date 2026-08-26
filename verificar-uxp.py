@@ -19,8 +19,8 @@ Em 26/08, no primeiro teste do redesenho no painel:
     separadamente, então o botão saiu oval e o texto vazou para fora.
   - `opacity` ignorado: os seis ícones apagados saíram todos cheios.
   - `text-transform: uppercase` ignorado: "Orgânico" ficou em caixa mista.
-  - `scrollbar-width` e `::-webkit-scrollbar` ignorados: a barra da lista não
-    sumia por CSS. Só recortando ela para fora da área visível.
+  - a barra de rolagem não SOME por CSS, e nem recortando: no UXP ela é
+    flutuante e ocupa zero de layout. Resta estilizar, fina e discreta.
 
 Uso:
     python3 verificar-uxp.py             verifica e lista
@@ -81,11 +81,12 @@ ERROS = [
 ]
 
 AVISOS = [
-    (r"scrollbar-width\s*:|::-webkit-scrollbar", "CONFIRMADO",
-     "O UXP ignora os dois: a barra de rolagem não sai por CSS. Para escondê-la, "
-     "ponha o elemento que rola dentro de um que RECORTA, e deixe o de dentro "
-     "mais largo por margem negativa — a barra cai na faixa recortada. É o que a "
-     "lista de formatos faz."),
+    (r"scrollbar-width\s*:\s*none|::-webkit-scrollbar\s*\{[^}]*width\s*:\s*0", "CONFIRMADO",
+     "SUMIR com a barra por CSS não funciona no UXP: `scrollbar-width: none` e "
+     "`::-webkit-scrollbar { width: 0 }` foram testados no painel e ignorados. "
+     "Recortar também não pega: no UXP a barra é FLUTUANTE, ocupa zero de "
+     "layout, então não há faixa a mais para esconder. O que resta é ESTILIZAR "
+     "— fina, trilho na cor do painel — e é o que a lista de formatos faz."),
     (r"flex-wrap\s*:", "IRREGULAR",
      "Suporte de flex-wrap varia. Confirme no painel antes de depender dele."),
     (r"align-content\s*:", "IRREGULAR",

@@ -537,37 +537,42 @@ alto, e comprime num painel baixo. Medido no playground, o rodapé cabe em todas
 então crescia e escondia justo o defeito que interessa ver. Agora ele tem altura
 fixa e `overflow: hidden`, como um painel encaixado de verdade.
 
-### A lista de formatos rola sem barra
+### A lista de formatos ROLA SEM INDICADOR, e não é por preguiça
 
-**O UXP ignora `scrollbar-width` E ignora `::-webkit-scrollbar`.** Testei os
-dois no painel: a barra continuou aparecendo. Não dá para esconder a barra
-estilizando a barra.
+**Seis versões de barra, nenhuma boa.** Vale a lista inteira, para ninguém
+recomeçar:
 
-O que dá é **tirá-la de vista**. A lista virou duas camadas:
+| Tentativa | Por que caiu |
+|---|---|
+| `scrollbar-width: none`, `::-webkit-scrollbar { width: 0 }` | o UXP ignora as duas |
+| Recortar a barra para fora da caixa | no UXP ela é FLUTUANTE: `offsetWidth - clientWidth` dá zero, não ocupa layout, não há faixa a recortar |
+| Estilizar fina e discreta | ignorado também |
+| Véu opaco por cima | ela pinta acima de qualquer elemento posicionado |
+| Setas nas pontas | funcionava, e era feia |
+| Barra desenhada por nós, 3px | funcionava, e ela não quis barra nenhuma |
 
-```
-.custom-dropdown-menu     overflow: hidden          ← RECORTA
-  .custom-dropdown-rolagem  overflow-y: auto        ← ROLA
-                            margin-right: -20px
-                            padding-right: 20px
-```
+**E a armadilha maior:** `overflow: hidden` com `scrollTop` no JS — que era a
+base das duas últimas — **não rola no painel**. O UXP trata `overflow: hidden`
+como "não há área rolável", e `scrollTop` simplesmente não anda. No navegador
+anda, então isso passa batido até alguém abrir o Photoshop.
 
-A camada de dentro é mais larga que a de fora **exatamente a largura da barra**,
-que vem MEDIDA (`--barra-rolagem`, escrita pelo `ui.js` ao abrir a lista). A
-barra nasce nessa faixa a mais, e a camada de fora a recorta.
+Por isso a lista **não rola: ela se DESLOCA.** A camada de dentro cresce à altura
+de todos os itens, e o `ui.js` a sobe com `margin-top` negativo; a de fora
+recorta. Margem negativa e recorte são duas coisas que o painel já provou
+entender — as pontas das molduras dependem da primeira.
 
-A primeira versão usava 20px fixos e devolvia 20px em padding. Parecia dar no
-mesmo e não dava: a barra não tem 20px, e o que sobrava do palpite virava um
-**vão à direita de todo item**. Cada motor tem a sua medida — no navegador do
-macOS a barra é flutuante e mede 0; no UXP não se sabe, e é justamente por isso
-que se mede em vez de adivinhar.
+Dois gestos movem, e a escolha não é redundância:
 
-Medir só funciona com a lista ABERTA: fechada ela é `display: none` e tudo dá
-zero. E zero é resposta legítima — lista que não rola não tem barra.
+- **A roda**, que é o natural.
+- **Arrastar a própria lista**, que é a garantia: a roda é a única parte disso
+  que não se confirmou no UXP, e `mousedown` sim — o painel inteiro depende de
+  clique. O arrasto só vale depois de 4px e, a partir daí, **cancela o clique**:
+  arrastar não pode escolher um formato sem querer.
 
-O `id="dropdownMenu"` mudou de elemento: agora é a camada que ROLA, que é quem
-recebe os itens. A de fora ganhou `id="dropdownCaixa"`. O `ui.js` não precisou
-mudar porque só fala com o id.
+Medido num painel de 420px com 9 formatos: roda de 500px para baixo para em
+-77px, que é o máximo, com o último item à vista; -500 volta a zero; arrastar 80px
+faz o mesmo; e num painel de 700, onde tudo cabe, o deslocamento fica em zero.
+Nenhuma barra em nenhum momento.
 
 ### O preview era "travado": o vazio estava DENTRO dele
 

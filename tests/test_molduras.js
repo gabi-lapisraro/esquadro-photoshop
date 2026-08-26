@@ -40,7 +40,7 @@ check('assinatura no miolo de baixo',
 check('wordmark na assinatura',
       !!document.querySelector('.assinatura .header-wordmark'), true);
 check('bolinhas de cor na assinatura',
-      !!document.querySelector('.assinatura #themePalette'), true);
+      !!document.querySelector('.assinatura .theme-palette'), true);
 check('o cabeçalho antigo não existe mais',
       !!document.querySelector('.panel-header'), false);
 
@@ -146,7 +146,7 @@ console.log('\n=== H0. a pílula do modo cobre o traço do trilho ===');
         /#modeAds\s*\{[^}]*margin-right/.test(css), true);
 }
 
-console.log('\n=== H. a lista rola em vez de comprimir ===');
+console.log('\n=== H. a lista desloca em vez de comprimir ===');
 {
   const fs = require('fs');
   // sem os comentários: senão a palavra `max-height` DENTRO do comentário que
@@ -167,8 +167,12 @@ console.log('\n=== H. a lista rola em vez de comprimir ===');
   check('o ui.js limita a lista pelos botões',
         /function limitarLista\(\)/.test(ui) && /els\.buttonGroup/.test(ui), true);
   check('e limita ao ABRIR', /limitarLista\(\);/.test(ui), true);
-  check('e é ela que rola', /overflow-y:\s*auto/.test(rola), true);
-  const item = (css.match(/\.custom-dropdown-item\s*\{([^}]*)\}/) || [,''])[1];
+  // a lista de dentro não tem overflow NENHUM: ela não recorta nem rola, só
+  // cresce e se desloca. Quem recorta é a caixa de fora.
+  check('a lista de dentro não tem overflow', /overflow/.test(rola), false);
+  // ancorado no INÍCIO da linha: sem isso o regex casava com
+  // `#dropdownCaixa.tem-barra .custom-dropdown-item`, que também termina assim
+  const item = (css.match(/^\.custom-dropdown-item\s*\{([^}]*)\}/m) || [,''])[1];
   check('o item não encolhe', /flex-shrink:\s*0/.test(item), true);
   // e o item ativo não pode ficar mais alto: borda transparente na base
   check('o item já reserva a borda do ativo',
@@ -183,11 +187,24 @@ console.log('\n=== H. a lista rola em vez de comprimir ===');
   check('não há mais token de raio de item', /--raio-item/.test(css), false);
   // a barra sai por recorte, não por CSS de barra
   check('a caixa recorta', /overflow:\s*hidden/.test(caixa), true);
-  // a lista passa da borda exatamente a largura MEDIDA da barra, não um palpite:
-  // o 20px fixo que havia antes deixava um vão à direita de todo item
-  check('a lista passa da borda pela barra medida',
-        /margin-right:\s*calc\(var\(--barra-rolagem[^)]*\) \* -1\)/.test(rola), true);
-  check('e não devolve padding, que reabriria o vão', /padding-right/.test(rola), false);
+  // ROLAGEM SEM INDICADOR. A lista não ROLA, ela se DESLOCA: margin-top
+  // negativo, com a caixa recortando. `overflow: hidden` com scrollTop não rola
+  // no painel — o UXP trata isso como "não há área rolável".
+  check('nenhuma barra sobrou no CSS', /lista-barra|tem-barra/.test(css), false);
+  check('quem desloca é o margin-top', /style\.marginTop = \(-deslocamentoDaLista\)/.test(ui), true);
+  check('e o deslocamento é preso nos limites',
+        /Math\.max\(0, Math\.min\(m\.maximo, deslocamentoDaLista\)\)/.test(ui), true);
+  // dois gestos: a roda é o natural, o arrasto é a garantia — mousedown o painel
+  // entrega, a roda não se confirmou
+  check('a roda move', /addEventListener\('wheel', naRoda\)/.test(ui), true);
+  check('arrastar a lista move', /rolagem\.addEventListener\('mousedown'/.test(ui), true);
+  check('e o arrasto cancela o clique, para não escolher formato sem querer',
+        /if \(andou\) \{/.test(ui), true);
+  // as tentativas de domar a barra NATIVA saíram todas: medir a largura dela,
+  // recortá-la para fora e pintar um véu por cima. Nenhuma funcionava, e cada
+  // uma deixou resto no CSS.
+  check('nenhum resto das tentativas anteriores',
+        /barra-rolagem|custom-dropdown-veu|scrollbar/.test(css), false);
 }
 
 const f = failCount();

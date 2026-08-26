@@ -13,28 +13,28 @@
 @font-face { font-family: 'IBM Plex Mono'; font-weight: 700; font-style: italic; src: url('fonts/IBMPlexMono-BoldItalic.ttf'); }
 
 :root {
-  --noir-raro: #1e1e1e;
-  --noir-dark: #161616;
+  /* Paleta. Só as duas que o painel usa de fato: a principal, que o JS reescreve
+     a cada tema, e o Nude, que é o claro de toda a tipografia.
+
+     Saíram sete que ninguém lia — Noir, Noir Dark, Vermelho Hover, Areia, Azul,
+     card-bg, input-bg e border-subtle. Cor de marca declarada e não usada não é
+     documentação: é convite a alguém usar a errada, achando que está no
+     sistema. A paleta inteira vive no design system, e as quatro do tema vivem
+     nas bolinhas do rodapé, com data-color. */
   --vermelho-raro: #E61C00;
-  --vermelho-hover: #cc1600;
-  --areia-rara: #a39e93;
   --nude-raro: #e5e3d9;
-  --azul-raro: #7bbcd9;
 
   /* Cinza Médio Elegante com Contraste Perfeito para o Vermelho */
   --bg-color: #222222;
-  --card-bg: #222222;
-  --input-bg: #222222;
   --border-color: rgba(255, 255, 255, 0.16);
-  --border-subtle: rgba(255, 255, 255, 0.10);
   /* TEXTO. Nada de branco puro: a escala toda sai do Nude Raro (229,227,217),
      que é a cor mais clara da paleta. Os degraus são o mesmo nude com menos
      opacidade, para não inventar cor que não existe na marca. */
-  --text-main: #e5e3d9;
+  --text-main: var(--nude-raro);
   --text-muted: rgba(229, 227, 217, 0.78);
   --text-dim: rgba(229, 227, 217, 0.55);
 
-  --sobre-acento: #e5e3d9;   /* cor de texto sobre o acento */
+  --sobre-acento: var(--nude-raro);  /* cor de texto sobre o acento */
   --acento-visivel: #E61C00; /* acento em traço, sobre o painel escuro */
   --companheira: #e5e3d9;    /* par da cor escolhida (Vermelho → Nude) */
   --sobre-companheira: #222222; 
@@ -413,10 +413,8 @@ body {
      botões — o `limitarLista` do ui.js escreve por cima, ao abrir. A lista é
      `position: absolute`: abrir não empurra nada, ela passa por cima. */
   max-height: var(--alt-lista);
-  /* Recorta o que a lista de dentro deixa passar da borda — e é ali que a barra
-     de rolagem vai morar. Confirmado no painel: o UXP ignora `scrollbar-width`
-     e ignora `::-webkit-scrollbar`, então esconder a barra estilizando ela não
-     funciona. Tirá-la de vista funciona. */
+  /* Recorta as setas de rolagem nos cantos arredondados. A lista de dentro não
+     rola nativamente, então aqui não há barra a esconder. */
   overflow: hidden;
   /* mesmo fundo do painel: quem separa a lista é só o traço da borda. Sem
      sombra e sem fundo próprio, a lista não parece uma janela por cima — ela
@@ -448,13 +446,47 @@ body {
    volta a aparecer — feio, mas inteiro. Com um palpite, o que sobrava dele
    deslocava a lista e CORTAVA o texto à direita, que é pior: some informação em
    vez de aparecer enfeite. */
+/* A lista de dentro NÃO rola: ela se DESLOCA. Cresce à altura de todos os itens
+   e o `ui.js` a sobe com `margin-top` negativo; quem recorta é a caixa de fora.
+
+   Rolar de verdade era o plano anterior, com `overflow: hidden` aqui e
+   `scrollTop` no JS. No navegador funciona; no painel, não — o UXP trata
+   `overflow: hidden` como "não há área rolável", e `scrollTop` simplesmente não
+   anda. Foi por isso que a lista parou de descer.
+
+   Deslocar não depende de nada disso: margem negativa e recorte são duas coisas
+   que o painel já provou entender. */
 .custom-dropdown-rolagem {
   display: flex;
   flex-direction: column;
-  max-height: var(--alt-lista);
-  overflow-y: auto;
-  margin-right: calc(var(--barra-rolagem, 0px) * -1);
 }
+
+
+/* ---------------------------------------------------------------------------
+   ROLAGEM SEM INDICADOR
+
+   A lista rola quando há mais formatos do que cabem, e não aparece barra
+   nenhuma. Não é enfeite escondido: é que barra, aqui, nenhuma versão ficou boa.
+
+   O histórico, para ninguém repetir:
+
+     1. `scrollbar-width: none` e `::-webkit-scrollbar` — o UXP ignora os dois.
+     2. Recortar a barra para fora da caixa — no UXP ela é FLUTUANTE, não ocupa
+        layout, não existe faixa a recortar.
+     3. Estilizar fina — ignorado também.
+     4. Véu opaco em cima — ela pinta acima de qualquer elemento posicionado.
+     5. Setas nas pontas — funcionavam, e eram feias.
+     6. Barra desenhada por nós, de 3px — funcionava, e ela não quis nenhuma.
+
+   E `overflow: hidden` com `scrollTop` no JS, que era o plano 5 e 6, **não rola
+   no painel**: o UXP trata overflow hidden como "não há área rolável" e o
+   scrollTop não anda. Por isso a lista não ROLA, ela se DESLOCA — `margin-top`
+   negativo, com a caixa recortando. Margem e recorte o painel já provou
+   entender.
+
+   Movem a lista: a roda do mouse e ARRASTAR a própria lista. O arrasto existe
+   porque a roda é a única parte que não se confirmou no UXP, e mousedown, sim.
+   --------------------------------------------------------------------------- */
 
 .custom-dropdown-item {
   /* NÃO encolher é o que faz a lista ROLAR. O item é filho de um flex column, e
@@ -619,20 +651,33 @@ body {
   margin-top: var(--esp-acima-botoes);
 }
 
-.btn-primary {
+/* ---------------------------------------------------------------------------
+   BOTÕES DE AÇÃO. Um PREENCHIDO com a principal, o outro só VAZADO na mesma
+   cor: é o par que diz qual é a ação principal sem precisar de rótulo maior nem
+   de ícone.
+
+   Esta regra era duas, em pontos distintos do arquivo, e a de baixo vencia
+   calada. Foi assim que o botão de criar ficou tempo demais contornado quando o
+   desenho pedia preenchido: a primeira regra o preenchia, a segunda desfazia, e
+   nada no CSS dizia que havia um conflito. Agora é uma só.
+   --------------------------------------------------------------------------- */
+
+.btn-primary,
+.btn-secondary {
   /* recuo horizontal: sem ele um rótulo longo encosta na borda */
   padding: 0 var(--esp-botao-x);
   flex: 1;
   min-width: 0;
   height: var(--alt-botao);
-  background-color: var(--vermelho-raro);
-  color: var(--sobre-acento);
+  border: calc(var(--borda) * 1px) solid var(--acento-visivel);
   border-radius: calc(var(--alt-botao) / 2);
   font-family: var(--font-brand-mono);
   font-size: var(--fonte-botao);
   font-weight: var(--peso-botao);
   text-transform: uppercase;
-  letter-spacing: 0.6px;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -641,27 +686,15 @@ body {
   user-select: none;
 }
 
+.btn-primary {
+  background-color: var(--vermelho-raro);
+  border-color: var(--vermelho-raro);
+  color: var(--sobre-acento);
+}
+
 .btn-secondary {
-  /* recuo horizontal: sem ele um rótulo longo encosta na borda */
-  padding: 0 var(--esp-botao-x);
-  flex: 1;
-  min-width: 0;
-  height: var(--alt-botao);
   background-color: transparent;
-  color: var(--text-muted);
-  border: calc(var(--borda) * 1px) solid var(--border-color);
-  border-radius: calc(var(--alt-botao) / 2);
-  font-family: var(--font-brand-mono);
-  font-size: var(--fonte-botao);
-  font-weight: var(--peso-botao);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  user-select: none;
+  color: var(--text-main);
 }
 
 /* ---------------------------------------------------------------------------
@@ -1004,33 +1037,6 @@ body {
   white-space: nowrap;
 }
 
-
-/* ---------------------------------------------------------------------------
-   BOTÕES DE AÇÃO, como no desenho: um PREENCHIDO com a principal, o outro só
-   VAZADO na mesma cor. É o par que diz qual é a ação principal sem precisar de
-   rótulo maior nem de ícone.
-   --------------------------------------------------------------------------- */
-
-.btn-primary,
-.btn-secondary {
-  border: calc(var(--borda) * 1px) solid var(--acento-visivel);
-  font-size: var(--fonte-botao);
-  font-weight: var(--peso-botao);
-  letter-spacing: 0.5px;
-  white-space: nowrap;
-  overflow: hidden;
-}
-
-.btn-primary {
-  background-color: var(--vermelho-raro);
-  border-color: var(--vermelho-raro);
-  color: var(--sobre-acento);
-}
-
-.btn-secondary {
-  background-color: transparent;
-  color: var(--text-main);
-}
 
 /* No hover cada um responde do seu jeito, sem trocar de natureza: o CHEIO se
    preenche com a companheira, a segunda cor do tema, e a letra vai para

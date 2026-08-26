@@ -229,8 +229,6 @@ function buildDocName() {
 // Precisa cobrir toda a paleta de .theme-palette no index.html.
 const LIGHT_THEME_COLORS = ['#a2d2eb', '#fea8fe', '#e5e3d9', '#c5c0b6'];
 
-const DEFAULT_THEME_COLOR = '#E61C00';
-
 /** Cor de texto legível sobre a cor de tema informada. */
 function contrastOn(color) {
   // O claro é o Nude Raro, não branco puro: nenhum texto do painel é branco.
@@ -240,24 +238,9 @@ function contrastOn(color) {
   return LIGHT_THEME_COLORS.includes((color || '').toLowerCase()) ? '#222222' : '#e5e3d9';
 }
 
-// Última cor de tema escolhida. Guardada em JS porque o suporte do UXP a
-// getComputedStyle sobre variável CSS é irregular — ler da raiz é só o palpite
-// inicial, e uma exceção aqui derrubaria o init() inteiro.
+// Última cor de tema escolhida, para as preferências. Guardada em JS porque ler
+// variável de CSS por getComputedStyle é irregular no UXP.
 let themeColor = null;
-
-/** Cor de tema atualmente aplicada. */
-function currentThemeColor() {
-  if (themeColor) return themeColor;
-  try {
-    const fromRoot = getComputedStyle(document.documentElement)
-      .getPropertyValue('--vermelho-raro')
-      .trim();
-    if (fromRoot) return fromRoot;
-  } catch (e) {
-    console.log('[ESQUADRO] getComputedStyle indisponível, usando cor padrão.');
-  }
-  return DEFAULT_THEME_COLOR;
-}
 
 function init(config) {
   platformsData = config.data;
@@ -391,12 +374,14 @@ function bindEvents() {
   });
 
   // Toggle do Dropdown Customizado
+  ligarRolagemDaLista();
+
   els.dropdownTrigger.addEventListener('click', (e) => {
     e.stopPropagation();
     els.customDropdown.classList.toggle('open');
-    // nesta ordem: o limite muda se a lista rola, e é a altura que decide isso
+    // nesta ordem: o limite decide o que cabe, e as setas dependem do que cabe
     limitarLista();
-    medirBarraDeRolagem();
+    prepararLista();
   });
 
   document.addEventListener('click', (e) => {
@@ -667,31 +652,130 @@ function limitarLista() {
   // Piso: num painel muito baixo, é melhor uma lista curta que rola do que uma
   // fatia inútil de dois pixels.
   const alt = Math.max(60, teto > 0 ? Math.min(cabe, teto) : cabe);
+  // só na caixa: a lista de dentro tem que poder ser mais alta que a janela,
+  // senão não há o que deslocar
   caixa.style.maxHeight = alt + 'px';
-  els.dropdownMenu.style.maxHeight = alt + 'px';
+}
+
+// Quanto a lista está deslocada para cima, em px. É o nosso "scrollTop".
+let deslocamentoDaLista = 0;
+
+/** As três medidas da lista: o que existe, o que se vê, e o quanto dá para andar. */
+function medidasDaLista() {
+  const caixa = els.dropdownCaixa, rolagem = els.dropdownMenu;
+  if (!caixa || !rolagem) return null;
+  let recuo = 0;
+  try {
+    const cs = getComputedStyle(caixa);
+    recuo = (parseFloat(cs.paddingTop) || 0) + (parseFloat(cs.paddingBottom) || 0);
+  } catch (e) { /* sem leitura, o recuo entra como zero: erra por pouco */ }
+  // A altura da lista de dentro é a de TODOS os itens, mesmo os fora de vista, e
+  // ela NÃO muda com o deslocamento: `margin-top` move o elemento, não o
+  // encolhe. Somar o deslocamento aqui — como eu fiz primeiro — fazia o total
+  // crescer a cada volta, o máximo nunca chegar e a roda passar do fim.
+  const conteudo = rolagem.getBoundingClientRect().height;
+  const visivel = Math.max(0, caixa.clientHeight - recuo);
+  return { conteudo, visivel, maximo: Math.max(0, Math.round(conteudo - visivel)) };
 }
 
 /**
- * Mede a largura da barra de rolagem da lista e guarda em --barra-rolagem.
+ * Aplica o deslocamento da lista.
  *
- * A lista é mais larga que a caixa exatamente essa medida, para a barra cair na
- * faixa que a caixa recorta — é assim que ela desaparece, já que o UXP ignora
- * `scrollbar-width` e `::-webkit-scrollbar`. Antes a compensação era um 20px
- * fixo, e o que sobrava do palpite virava um vão à direita de todo item.
+ * A lista não ROLA, ela se DESLOCA: `margin-top` negativo, e a caixa recorta.
+ * Rolar de verdade não funciona no painel — o UXP trata `overflow: hidden` como
+ * "não há área rolável" e o `scrollTop` não anda. Margem e recorte, sim.
  *
- * Só mede com a lista ABERTA: fechada ela é `display: none` e tudo dá zero. E
- * zero é resposta válida — quando a lista não rola, não há barra.
+ * Não há indicador nenhum: seis versões de barra foram tentadas e nenhuma ficou
+ * boa. O histórico está no styles.css, junto da regra.
  */
-function medirBarraDeRolagem() {
-  // No PRÓXIMO passo: a lista acabou de sair do `display: none`, e medir agora
-  // devolve zero. Zero fazia a medição desistir, o CSS cair no valor de reserva
-  // e a lista ficar mais larga que a caixa — o texto saía cortado à direita.
+function aplicarDeslocamento() {
+  const m = medidasDaLista();
+  const rolagem = els.dropdownMenu;
+  if (!m || !rolagem) return;
+  deslocamentoDaLista = Math.max(0, Math.min(m.maximo, deslocamentoDaLista));
+  rolagem.style.marginTop = (-deslocamentoDaLista) + 'px';
+}
+
+/** Leva a lista a uma fração do total, entre 0 e 1. */
+function rolarPara(fracao) {
+  const m = medidasDaLista();
+  if (!m) return;
+  deslocamentoDaLista = fracao * m.maximo;
+  aplicarDeslocamento();
+}
+
+/** Move a lista alguns pixels: positivo desce, negativo sobe. */
+function rolarPor(px) {
+  deslocamentoDaLista += px;
+  aplicarDeslocamento();
+}
+
+function ligarRolagemDaLista() {
+  const rolagem = els.dropdownMenu;
+  if (!rolagem) return;
+
+  // 1. A RODA: o gesto natural, quando existe.
+  const naRoda = (e) => {
+    const d = e.deltaY || e.wheelDelta || 0;
+    if (!d) return;
+    rolarPor(d);
+    if (e.preventDefault) e.preventDefault();
+  };
+  try { rolagem.addEventListener('wheel', naRoda); } catch (e) {}
+  try { rolagem.addEventListener('mousewheel', naRoda); } catch (e) {}
+
+  // 2. ARRASTAR a própria lista. É a garantia: a roda é a única parte disso que
+  //    não se confirmou no UXP, e `mousedown` sim — o painel inteiro depende de
+  //    clique. Sem uma segunda via, uma roda que não funcionasse deixaria os
+  //    últimos formatos inalcançáveis.
+  //
+  //    O arrasto só começa a valer depois de 4px, e a partir daí ele CANCELA o
+  //    clique: arrastar a lista não deve escolher um formato sem querer.
+  let ancora = null, andou = false;
+
+  rolagem.addEventListener('mousedown', (e) => {
+    ancora = { y: e.clientY, de: deslocamentoDaLista };
+    andou = false;
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if (!ancora) return;
+    const dy = e.clientY - ancora.y;
+    if (!andou && Math.abs(dy) < 4) return;
+    andou = true;
+    deslocamentoDaLista = ancora.de - dy;
+    aplicarDeslocamento();
+  });
+
+  document.addEventListener('mouseup', () => { ancora = null; });
+
+  // o clique de escolher formato é ignorado quando a mão estava arrastando
+  rolagem.addEventListener('click', (e) => {
+    if (andou) {
+      e.stopPropagation();
+      if (e.preventDefault) e.preventDefault();
+      andou = false;
+    }
+  }, true);
+}
+
+/**
+ * Ao abrir: volta a lista ao topo e redesenha a barra.
+ *
+ * No PRÓXIMO passo, sempre: a caixa acabou de sair do `display: none`, e medir
+ * agora devolve zero — foi esse zero que já fez a lista abrir por cima dos
+ * botões e o texto sair cortado.
+ */
+function prepararLista() {
   setTimeout(() => {
-    const r = els.dropdownMenu;
-    if (!r) return;
-    const largura = Math.max(0, (r.offsetWidth || 0) - (r.clientWidth || 0));
-    document.documentElement.style.setProperty('--barra-rolagem', largura + 'px');
-    console.log(`[ESQUADRO] barra de rolagem: ${largura}px`);
+    deslocamentoDaLista = 0;
+    aplicarDeslocamento();
+    const m = medidasDaLista();
+    if (m) {
+      console.log(`[ESQUADRO] lista: conteúdo ${Math.round(m.conteudo)}` +
+                  `, visível ${Math.round(m.visivel)}` +
+                  `, dá para andar ${m.maximo}px`);
+    }
   }, 0);
 }
 

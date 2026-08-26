@@ -122,11 +122,10 @@
           <span id="dropdownCurrentLabel">Carregando...</span>
           <span id="dropdownCurrentDim" class="fmt-dim"></span>
         </div>
-        <!-- Duas camadas de propósito: a de fora RECORTA, a de dentro ROLA.
-             O UXP ignora `scrollbar-width` e o pseudo-elemento do WebKit, então
-             não dá para esconder a barra estilizando ela. O que dá é jogá-la
-             fora da área visível: a lista fica mais larga que a caixa, por
-             margem negativa, e a caixa corta o que sobra — inclusive a barra. -->
+        <!-- Duas camadas de propósito: a de fora desenha a caixa e recorta, a de
+             dentro leva os itens e é a que o JS rola. A de dentro tem
+             `overflow: hidden`: no UXP a barra nativa não sai por nenhum meio, e
+             sem rolagem nativa não há barra. -->
         <div class="custom-dropdown-menu" id="dropdownCaixa">
           <div class="custom-dropdown-rolagem" id="dropdownMenu">
             <!-- Preenchido dinamicamente -->
@@ -198,7 +197,7 @@
     </g>
           </svg>
           <div class="header-brand-label">BRAND INTELLIGENCE</div>
-          <div class="theme-palette" id="themePalette">
+          <div class="theme-palette">
             <!-- Combinações lidas dos 4 SVGs de UI (UI Illustrator/1-4.svg).
                  data-acento: cor em TRAÇO sobre o painel escuro, quando difere.
                  data-par:    a COMPANHEIRA — ORGÂNICO ativo, ícone da
