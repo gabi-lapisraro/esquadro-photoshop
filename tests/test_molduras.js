@@ -167,9 +167,21 @@ console.log('\n=== H. a lista rola em vez de comprimir ===');
   // e o item ativo não pode ficar mais alto: borda transparente na base
   check('o item já reserva a borda do ativo',
         /border:\s*calc\(var\(--borda\) \* 1px\) solid transparent/.test(item), true);
+  // PÍLULA POR CONSTRUÇÃO: o raio sai da altura do próprio item, e não de um
+  // token. Enquanto foi token, cada mexida no recuo ou na fonte deixava o raio
+  // passar de metade da altura e o item ovalizava no UXP.
+  check('o raio do item é derivado da altura',
+        /border-radius:\s*calc\(\(var\(--esp-item-y\) \* 2/.test(item), true);
+  check('e a entrelinha é explícita, para a altura ser calculável',
+        /line-height:\s*1\.28/.test(item), true);
+  check('não há mais token de raio de item', /--raio-item/.test(css), false);
   // a barra sai por recorte, não por CSS de barra
   check('a caixa recorta', /overflow:\s*hidden/.test(caixa), true);
-  check('a lista passa da borda', /margin-right:\s*-\d/.test(rola), true);
+  // a lista passa da borda exatamente a largura MEDIDA da barra, não um palpite:
+  // o 20px fixo que havia antes deixava um vão à direita de todo item
+  check('a lista passa da borda pela barra medida',
+        /margin-right:\s*calc\(var\(--barra-rolagem[^)]*\) \* -1\)/.test(rola), true);
+  check('e não devolve padding, que reabriria o vão', /padding-right/.test(rola), false);
 }
 
 const f = failCount();

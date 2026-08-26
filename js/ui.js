@@ -392,6 +392,7 @@ function bindEvents() {
   els.dropdownTrigger.addEventListener('click', (e) => {
     e.stopPropagation();
     els.customDropdown.classList.toggle('open');
+    medirBarraDeRolagem();
   });
 
   document.addEventListener('click', (e) => {
@@ -612,6 +613,24 @@ function selectFormat(fmtId) {
   // para o teto do formato novo, e ele chama o preview no fim.
   updateQtdLabel();
   salvarPrefs();
+}
+
+/**
+ * Mede a largura da barra de rolagem da lista e guarda em --barra-rolagem.
+ *
+ * A lista é mais larga que a caixa exatamente essa medida, para a barra cair na
+ * faixa que a caixa recorta — é assim que ela desaparece, já que o UXP ignora
+ * `scrollbar-width` e `::-webkit-scrollbar`. Antes a compensação era um 20px
+ * fixo, e o que sobrava do palpite virava um vão à direita de todo item.
+ *
+ * Só mede com a lista ABERTA: fechada ela é `display: none` e tudo dá zero. E
+ * zero é resposta válida — quando a lista não rola, não há barra.
+ */
+function medirBarraDeRolagem() {
+  const r = els.dropdownMenu;
+  if (!r || !r.offsetWidth) return;
+  const largura = r.offsetWidth - r.clientWidth;
+  document.documentElement.style.setProperty('--barra-rolagem', largura + 'px');
 }
 
 function populateFormats() {

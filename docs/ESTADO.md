@@ -412,6 +412,40 @@ Sobra um lugar onde o desenho e o código ainda discordam, não decidido: a
 **caixa do stepper**. Nos 4 desenhos ela é contornada na PRINCIPAL, como o
 APLICAR GUIAS; no painel está no cinza neutro da borda. É um token de trocar.
 
+### O playground AVISA de raio que ovaliza
+
+A regra "raio ≤ metade da menor dimensão" não dá para conferir no CSS: depende da
+altura renderizada. E não dá para ver no navegador, que encolhe os dois raios
+pelo mesmo fator e mostra pílula onde o UXP mostra elipse.
+
+Então o playground mede e avisa, numa tarja amarela embaixo dos controles. Três
+detalhes que ele custou a acertar:
+
+- **Ignora porcentagem.** `border-radius: 50%` é metade por definição e nunca
+  ovaliza; as bolinhas de cor apareciam como falso positivo.
+- **Agrupa por seletor.** Nove itens de lista com o mesmo defeito são um defeito,
+  não nove.
+- **Espera a transição.** Os controles animam o `border-radius`, e ler no mesmo
+  passo — ou um quadro depois — devolvia valor intermediário: o aviso saía com
+  número errado e um passo atrasado. São 250ms de debounce.
+
+Foi ele que pegou os dois raios da rodada de 26/08: `--raio-item` em 16,5 num
+item de 29,5, e o toast herdando `--raio-caixa` 18 numa altura de 28. O toast
+ganhou raio próprio, como o tooltip.
+
+**E o item da lista deixou de ter token de raio.** Ele avisou uma terceira vez —
+ela baixou `--esp-item-y`, o item encolheu, e o 14,5 que cabia passou a não
+caber. Um token que precisa ser reajustado a cada mexida em outro token é o
+problema, não o valor. Agora o raio é **metade da altura do próprio item**,
+calculada de `--esp-item-y`, `--borda` e `--fonte-item`.
+
+Para a altura ser calculável, a entrelinha virou **explícita** (`1.28`, que é
+exatamente o `normal` desta fonte, então nada mudou de aparência). Isso traz um
+segundo ganho: `normal` é definido pelas métricas da fonte **como cada motor as
+lê**, e navegador e UXP podem discordar. Fixando, o item tem a mesma altura nos
+dois. Conferido com recuo de 2 a 20 e fonte de 9 a 16: o raio é sempre metade da
+altura, e a tarja nunca acende.
+
 ### O playground LEMBRA o que ainda não virou código
 
 O `playground.html` é gerado de novo a cada mexida no `styles.css` — e é justo
@@ -482,10 +516,18 @@ O que dá é **tirá-la de vista**. A lista virou duas camadas:
                             padding-right: 20px
 ```
 
-A camada de dentro é 20px mais larga que a de fora, por margem negativa, e
-devolve os mesmos 20px em padding para o texto não deslocar. A barra nasce nessa
-faixa a mais, e a camada de fora a recorta. Só `overflow`, margem negativa e
-padding — três coisas que já sabemos que o UXP entende.
+A camada de dentro é mais larga que a de fora **exatamente a largura da barra**,
+que vem MEDIDA (`--barra-rolagem`, escrita pelo `ui.js` ao abrir a lista). A
+barra nasce nessa faixa a mais, e a camada de fora a recorta.
+
+A primeira versão usava 20px fixos e devolvia 20px em padding. Parecia dar no
+mesmo e não dava: a barra não tem 20px, e o que sobrava do palpite virava um
+**vão à direita de todo item**. Cada motor tem a sua medida — no navegador do
+macOS a barra é flutuante e mede 0; no UXP não se sabe, e é justamente por isso
+que se mede em vez de adivinhar.
+
+Medir só funciona com a lista ABERTA: fechada ela é `display: none` e tudo dá
+zero. E zero é resposta legítima — lista que não rola não tem barra.
 
 O `id="dropdownMenu"` mudou de elemento: agora é a camada que ROLA, que é quem
 recebe os itens. A de fora ganhou `id="dropdownCaixa"`. O `ui.js` não precisou
