@@ -77,7 +77,7 @@ console.log('\n=== E. opacidade: ícone apagado, bolinha cheia ===');
   // teste no painel os seis ícones saíram todos cheios.
   const cor = sel => w.getComputedStyle(w.document.querySelector(sel)).color;
   check('ícone não selecionado recua na cor',
-        cor('.platform-icon[data-platform="facebook"]'), 'rgba(255, 255, 255, 0.2)');
+        cor('.platform-icon[data-platform="facebook"]'), 'rgba(229, 227, 217, 0.2)');
   // o "..." não é plataforma: é o que avisa que há mais, e fica cheio
   // o jsdom não resolve var() em `color`, então aqui basta: o "..." NÃO usa a
   // cor recuada dos ícones
@@ -125,6 +125,25 @@ console.log('\n=== G. as duas guias saem da mesma cor ===');
   check('a caixa de reserva também', borda('guide-no-info'), '--companheira');
   check('não há variável de guia separada',
         /--guide-(safe|crop)\s*:/.test(css), false);
+}
+
+console.log('\n=== H0. a pílula do modo cobre o traço do trilho ===');
+{
+  const fs = require('fs');
+  const css = fs.readFileSync(path.join(ROOT, 'styles.css'), 'utf8')
+                .replace(/\/\*[\s\S]*?\*\//g, '');
+  const btn = (css.match(/\.mode-btn\s*\{([^}]*)\}/) || [,''])[1];
+  // altura CHEIA do trilho e avanço de uma borda para fora: com a altura do
+  // miolo sobrava 1px de linha em volta, e a pílula parecia quebradiça
+  check('a pílula tem a altura do trilho', /height:\s*var\(--alt-controle\)/.test(btn), true);
+  check('e avança uma borda para cima', /margin-top:\s*calc\(var\(--borda\) \* -1px\)/.test(btn), true);
+  check('e para baixo', /margin-bottom:\s*calc\(var\(--borda\) \* -1px\)/.test(btn), true);
+  check('raio = metade da altura cheia',
+        /border-radius:\s*calc\(var\(--alt-controle\) \/ 2\)/.test(btn), true);
+  // as pontas por ID: seletor estrutural que falhasse no UXP deixaria a linha à
+  // mostra sem nenhum aviso
+  check('as pontas avançam por id', /#modeOrganic\s*\{[^}]*margin-left/.test(css) &&
+        /#modeAds\s*\{[^}]*margin-right/.test(css), true);
 }
 
 console.log('\n=== H. a lista aberta tem altura fixa ===');

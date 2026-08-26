@@ -233,7 +233,11 @@ const DEFAULT_THEME_COLOR = '#E61C00';
 
 /** Cor de texto legível sobre a cor de tema informada. */
 function contrastOn(color) {
-  return LIGHT_THEME_COLORS.includes((color || '').toLowerCase()) ? '#222222' : '#ffffff';
+  // O claro é o Nude Raro, não branco puro: nenhum texto do painel é branco.
+  // Sobre o Vermelho isso dá 3,8:1 em vez de 4,6:1 — abaixo do AA para texto
+  // pequeno. Foi decisão de marca, e é o que o desenho pede (no 1.svg o rótulo
+  // do CRIAR PRANCHETA é nude sobre o vermelho).
+  return LIGHT_THEME_COLORS.includes((color || '').toLowerCase()) ? '#222222' : '#e5e3d9';
 }
 
 // Última cor de tema escolhida. Guardada em JS porque o suporte do UXP a

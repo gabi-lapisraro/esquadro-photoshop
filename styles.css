@@ -27,11 +27,14 @@
   --input-bg: #222222;
   --border-color: rgba(255, 255, 255, 0.16);
   --border-subtle: rgba(255, 255, 255, 0.10);
-  --text-main: #ffffff;
-  --text-muted: #d0d0d0;
-  --text-dim: #a0a0a0;
-  
-  --sobre-acento: #ffffff;   /* cor de texto sobre o acento */
+  /* TEXTO. Nada de branco puro: a escala toda sai do Nude Raro (229,227,217),
+     que é a cor mais clara da paleta. Os degraus são o mesmo nude com menos
+     opacidade, para não inventar cor que não existe na marca. */
+  --text-main: #e5e3d9;
+  --text-muted: rgba(229, 227, 217, 0.78);
+  --text-dim: rgba(229, 227, 217, 0.55);
+
+  --sobre-acento: #e5e3d9;   /* cor de texto sobre o acento */
   --acento-visivel: #E61C00; /* acento em traço, sobre o painel escuro */
   --companheira: #e5e3d9;    /* par da cor escolhida (Vermelho → Nude) */
   --sobre-companheira: #222222; 
@@ -211,7 +214,7 @@ body {
      O recuo é feito na COR, não em `opacity`: o UXP ignora opacity, e no
      primeiro teste no painel os seis ícones saíram todos cheios. rgba em
      `color` funciona, e o desenho do ícone segue por currentColor. */
-  color: rgba(255, 255, 255, 0.2);
+  color: rgba(229, 227, 217, 0.2);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -227,7 +230,7 @@ body {
 
 /* o hover só levanta o ícone: continua o mesmo desenho, sem caixa nem cor
    nova, para não competir com o "está selecionado" */
-.platform-icon:hover:not(.active) { color: rgba(255, 255, 255, 0.55); }
+.platform-icon:hover:not(.active) { color: rgba(229, 227, 217, 0.55); }
 
 /* O "..." não é plataforma: é o que diz que há MAIS. Fica cheio, como no
    desenho — recuado a 20% ele sumia justo onde precisa ser notado. */
@@ -270,13 +273,19 @@ body {
 
 .mode-btn {
   flex: 1;
-  height: 100%;
+  /* A pílula COBRE o traço do trilho, não fica dentro dele. Antes ela tinha a
+     altura do miolo — o trilho é border-box —, e sobrava 1px de linha visível
+     em volta, que dava o aspecto quebradiço. Agora ela tem a altura CHEIA do
+     trilho e avança uma borda para fora, de cada lado.
+
+     Como a altura voltou a ser --alt-controle, o raio é metade dela e continua
+     cabendo: raio nunca maior que metade da menor dimensão, senão o UXP ovaliza. */
+  height: var(--alt-controle);
+  margin-top: calc(var(--borda) * -1px);
+  margin-bottom: calc(var(--borda) * -1px);
   box-sizing: border-box;
   border: none;
-  /* A altura REAL do botão é a do trilho menos as duas bordas dele: o trilho é
-     border-box. Sem descontar, o raio passa de metade da altura e o UXP
-     ovaliza — foi o que aconteceu, e é a mesma armadilha do 999px. */
-  border-radius: calc((var(--alt-controle) - var(--borda) * 2px) / 2);
+  border-radius: calc(var(--alt-controle) / 2);
   font-family: var(--font-brand-mono);
   font-size: var(--fonte-modo);
   font-weight: var(--peso-modo);
@@ -293,6 +302,12 @@ body {
   transition: all 0.15s ease;
   user-select: none;
 }
+
+/* Avanço para fora nas PONTAS do trilho, por id e não por :first-child — id
+   sempre resolve, e se um seletor estrutural falhasse no UXP a pílula voltaria
+   a deixar a linha à mostra sem nenhum aviso. */
+#modeOrganic { margin-left: calc(var(--borda) * -1px); }
+#modeAds     { margin-right: calc(var(--borda) * -1px); }
 
 .stepper-group {
   flex: 1;
@@ -333,7 +348,7 @@ body {
    o UXP ignora opacity. O !important acompanha o da regra base, que existe para
    vencer a cor do tema. */
 .stepper-btn.is-disabled {
-  color: rgba(255, 255, 255, 0.18) !important;
+  color: rgba(229, 227, 217, 0.18) !important;
 }
 
 .stepper-btn:hover {
@@ -579,7 +594,7 @@ body {
   min-width: 0;
   height: var(--alt-botao);
   background-color: var(--vermelho-raro);
-  color: #ffffff;
+  color: var(--sobre-acento);
   border-radius: calc(var(--alt-botao) / 2);
   font-family: var(--font-brand-mono);
   font-size: var(--fonte-botao);
@@ -778,7 +793,7 @@ body {
 .floating-tooltip {
   position: fixed;
   background-color: #111111;
-  color: #f5f5f5;
+  color: var(--text-main);
   border: calc(var(--borda) * 1px) solid rgba(255, 255, 255, 0.2);
   padding: 3px 6px;
   /* 6px, e não --raio-caixa. O tooltip tem uns 17px de altura, e o raio das
@@ -813,7 +828,7 @@ body {
   left: 50%;
   transform: translateX(-50%);
   background-color: #111111;
-  color: #ffffff;
+  color: var(--text-main);
   padding: 6px 12px;
   border-radius: var(--raio-caixa);
   font-family: var(--font-brand-mono);
@@ -848,13 +863,13 @@ body {
 .btn-primary.is-disabled {
   background-color: rgba(255, 255, 255, 0.10);
   border-color: rgba(255, 255, 255, 0.10);
-  color: rgba(255, 255, 255, 0.35);
+  color: rgba(229, 227, 217, 0.35);
 }
 
 .btn-secondary.is-disabled {
   background-color: transparent;
   border-color: rgba(255, 255, 255, 0.12);
-  color: rgba(255, 255, 255, 0.35);
+  color: rgba(229, 227, 217, 0.35);
 }
 
 /* Nenhum formato: moldura vazia, sem sugerir dimensão */

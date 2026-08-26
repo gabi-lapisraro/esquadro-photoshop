@@ -223,6 +223,21 @@ O CSS é dirigido por **59 tokens** com comentário `/* Grupo | Rótulo */`, que
 painel **de verdade** (JS real, embrulhado num `require` de mentira) e só mexe
 em propriedades que o UXP suporta.
 
+**Nenhum texto do painel é branco puro.** A escala de texto toda sai do **Nude
+Raro** (229,227,217), que é a cor mais clara da paleta; os degraus
+(`--text-muted`, `--text-dim`) são o mesmo nude com menos opacidade, para não
+inventar cinza que não existe na marca. Conferido: zero elementos com
+`rgb(255,255,255)` em `color`.
+
+Isso inclui o texto **sobre** o acento: o `contrastOn` do `ui.js` devolve nude em
+vez de branco. Sobre o Vermelho isso dá **3,6:1**, abaixo do AA para texto
+pequeno (branco dava 4,6). Foi decisão de marca, e é o que o desenho pede — no
+`1.svg` o rótulo do CRIAR PRANCHETA é nude sobre o vermelho. Sobre o painel
+escuro o texto segue folgado, em 12,4:1.
+
+As bordas e os fundos translúcidos continuam em `rgba(255,255,255,…)`: são
+traço, não fonte. Se a marca também quiser o nude ali, é troca de número.
+
 O tema define **duas variáveis na raiz** e o CSS resolve o resto. Zero escrita
 de cor inline no JS — isso foi refatorado de propósito: estilo inline vence
 qualquer regra de CSS e desfazia todo ajuste no `styles.css`.

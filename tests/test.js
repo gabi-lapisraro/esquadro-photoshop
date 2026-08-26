@@ -79,7 +79,8 @@ check('azul -> texto escuro', sobreAcento(), '#222222');
 a.click(document.querySelector('.color-dot[data-color="#e5e3d9"]'));
 check('nude -> texto escuro', sobreAcento(), '#222222');
 a.click(document.querySelector('.color-dot[data-color="#E61C00"]'));
-check('vermelho -> texto branco', sobreAcento(), '#ffffff');
+// nenhum texto do painel é branco puro: o claro da paleta é o Nude Raro
+check('vermelho -> texto nude', sobreAcento(), '#e5e3d9');
 
 // ---------- B. estado vazio + dados degenerados ----------
 console.log('\n-- A6. combinações: cada cor traz sua companheira --');
