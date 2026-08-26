@@ -28,26 +28,31 @@
   --guide-safe: #E61C00;
   --sobre-acento: #ffffff;   /* cor de texto sobre o acento */
   --acento-visivel: #E61C00; /* acento em traço, sobre o painel escuro */
-  --companheira: #a2d2eb;    /* par da cor escolhida */
+  --companheira: #e5e3d9;    /* par da cor escolhida (Vermelho → Nude) */
   --sobre-companheira: #222222; 
-  --guide-crop: #7bbcd9; 
+  --guide-crop: #a2d2eb; /* o corte tem cor própria: ver data-corte */
 
   --font-brand-mono: 'IBM Plex Mono', monospace;
 
   /* ---- Espaçamento e tamanhos ----
      Editáveis pelo playground.html, que lê estes mesmos tokens.
+     Os valores de espaço, altura e fonte foram MEDIDOS em UI Illustrator/1.svg
+     e convertidos com k = 1,0928 — a razão entre o painel simulado (264px) e a
+     largura do desenho (241,58 unidades). Onde o desenho e o painel discordam,
+     está anotado em docs/ESTADO.md.
      Comentário no formato "Grupo | Rótulo" — o gerador do playground usa isso.
      Nada de `gap`: o UXP ignora gap em flexbox. */
-  --alt-logo: 21.5px;           /* Cabeçalho | Altura do logo ESQUADЯO */
+  --alt-logo: 21px;           /* Cabeçalho | Altura do logo ESQUADЯO */
 
   --tam-icone: 27px;            /* Ícones | Altura da célula */
   --colunas-icones: 7;          /* Ícones | Colunas (6 redes + o botão ...) */
   --tam-icone-svg: 17px;        /* Ícones | Desenho do ícone */
   --esp-fileiras: 2px;          /* Ícones | Entre as fileiras */
 
-  --alt-controle: 25px;         /* Controles | Altura */
-  --esp-modo-stepper: 5.5px;    /* Controles | Entre as pílulas */
-  --esp-dropdown-x: 7.5px;       /* Controles | Recuo do dropdown */
+  --alt-controle: 20px;         /* Controles | Altura */
+  --esp-modo-stepper: 4.5px;    /* Controles | Entre as pílulas */
+  --alt-seletor: 26px;          /* Controles | Altura do seletor de formato */
+  --esp-dropdown-x: 11px;       /* Controles | Recuo do dropdown */
   --esp-item-y: 6px;            /* Controles | Item da lista, vertical */
   --esp-item-x: 10px;            /* Controles | Item da lista, lateral */
 
@@ -59,47 +64,46 @@
   --esp-footer-linhas: 3.5px;     /* Preview | Entre as linhas de texto */
   --esp-legenda: 0px;          /* Preview | Entre itens da legenda */
 
-  --alt-botao: 29px;            /* Botões | Altura */
+  --alt-botao: 23.5px;            /* Botões | Altura */
   --esp-botoes: 4px;            /* Botões | Entre os dois */
   --esp-acima-botoes: 0px;      /* Botões | Acima do grupo */
   --esp-botao-x: 3.5px;           /* Botões | Recuo horizontal */
 
-  --esp-cabecalho: 25px;           /* Cabeçalho | Espaço em volta da moldura */
-  --alt-moldura-topo: 56px;     /* Molduras | Altura da moldura do topo */
-  --alt-moldura-base: 38px;     /* Molduras | Altura da moldura da base */
-  --esp-abaixo-rodape: 18px;    /* Molduras | Abaixo da moldura da base */
-  --tam-color-dot: 4.5px;         /* Cabeçalho | Bolinha de cor */
+  --esp-cabecalho: 23px;           /* Cabeçalho | Espaço em volta da moldura */
+  --alt-moldura-topo: 54px;     /* Molduras | Altura da moldura do topo */
+  --alt-moldura-base: 36px;     /* Molduras | Altura da moldura da base */
+  --esp-abaixo-rodape: 17px;    /* Molduras | Abaixo da moldura da base */
+  --tam-color-dot: 3.5px;         /* Cabeçalho | Bolinha de cor */
 
-  --esp-blocos: 10px;           /* Blocos | Plataformas → controles */
-  --esp-controles: 3px;        /* Blocos | Entre controles e preview */
+  --esp-blocos: 22px;           /* Blocos | Plataformas → controles */
+  --esp-controles: 5.5px;        /* Blocos | Entre controles e preview */
   --esp-preview: 20px;          /* Blocos | Abaixo do preview */
-  --esp-corpo-x: 14px;          /* Blocos | Margem lateral */
+  --esp-corpo-x: 18px;          /* Blocos | Margem lateral */
   --esp-corpo-topo: 0px;       /* Blocos | Topo do corpo */
-  --esp-corpo-base: 8px;        /* Blocos | Base do corpo */
+  --esp-corpo-base: 7px;        /* Blocos | Base do corpo */
 
-  --raio-caixa: 0px;            /* Formas | Cantos das caixas */
+  --raio-caixa: 14px;           /* Formas | Cantos das caixas */
   --raio-controle: 999px;       /* Formas | Cantos dos controles (999 = pílula) */
-  --raio-item: 0px;             /* Formas | Cantos dos itens */
-  --traco-selecao: 0.5px;       /* Formas | Traço da cor ativa */
+  --raio-item: 999px;           /* Formas | Cantos dos itens (999 = pílula) */
   --borda: 1;                   /* Formas | Espessura da borda */
 
   --fonte-dropdown: 11px;     /* Fontes | Formato selecionado */
   --fonte-item: 9px;           /* Fontes | Item da lista */
-  --fonte-modo: 8.5px;          /* Fontes | Orgânico / Anúncio */
-  --fonte-stepper: 8.5px;       /* Fontes | Número da quantidade */
-  --fonte-stepper-sinal: 12px;  /* Fontes | Sinais + e - */
+  --fonte-modo: 7.5px;          /* Fontes | Orgânico / Anúncio */
+  --fonte-stepper: 7.5px;       /* Fontes | Número da quantidade */
+  --fonte-stepper-sinal: 10px;  /* Fontes | Sinais + e - */
   --fonte-dim: 8.5px;             /* Fontes | Dimensão do preview */
   --fonte-legenda: 6.5px;         /* Fontes | Legenda do preview */
-  --fonte-fmt-dim: 11px;         /* Fontes | Dimensão no seletor */
+  --fonte-fmt-dim: 7.5px;         /* Fontes | Dimensão no seletor */
   --esp-fmt-dim: 5.5px;           /* Controles | Nome → dimensão */
-  --fonte-botao: 10px;           /* Fontes | Botões de ação */
-  --alt-wordmark: 8px;         /* Cabeçalho | Altura do wordmark */
-  --esp-assinatura: 6.5px;        /* Cabeçalho | Entre as linhas da assinatura */
+  --fonte-botao: 8.5px;           /* Fontes | Botões de ação */
+  --alt-wordmark: 5.5px;         /* Cabeçalho | Altura do wordmark */
+  --esp-assinatura: 3.5px;        /* Cabeçalho | Entre as linhas da assinatura */
   --fonte-rodape: 5.5px;          /* Cabeçalho | Fonte do texto */
 
   --peso-modo: 300;             /* Pesos | Orgânico / Anúncio */
   --peso-modo-ativo: 700;       /* Pesos | Modo ativo */
-  --peso-dropdown: 700;         /* Pesos | Formato selecionado */
+  --peso-dropdown: 400;         /* Pesos | Formato selecionado */
   --peso-botao: 400;            /* Pesos | Botões de ação */
   --peso-stepper-sinal: 400; /* Pesos | Sinais + e - */
   --peso-item: 400;        /* Pesos | Item da lista */
@@ -175,7 +179,11 @@ body {
   border-radius: var(--raio-controle);
   background-color: transparent;
   border: none;
-  color: var(--text-muted);
+  /* No desenho o ícone é sempre o MESMO desenho na mesma cor: o que muda é a
+     opacidade. Quem não está selecionado recua para 20%; quem está fica cheio
+     e ganha a companheira, na regra de combinação no fim do arquivo. */
+  color: var(--text-main);
+  opacity: 0.2;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -189,13 +197,18 @@ body {
   height: var(--tam-icone-svg);
 }
 
-.platform-icon:hover:not(.active) {
-  color: var(--text-main);
-  background-color: rgba(255, 255, 255, 0.08);
-}
+/* o hover só sobe a opacidade: o ícone continua o mesmo, sem caixa nem cor
+   nova, para não competir com o "está selecionado" */
+.platform-icon:hover:not(.active) { opacity: 0.55; }
+
+/* O "..." não é plataforma: é o que diz que há MAIS. Fica cheio, como no
+   desenho — apagado a 20% ele sumia justo onde precisa ser notado. */
+.btn-toggle-strip,
+.btn-toggle-strip:hover { opacity: 1; }
 
 .platform-icon.active {
   background-color: transparent;
+  opacity: 1;
   /* a cor vem da regra de combinação, no fim do arquivo. Aqui havia
      `color: var(--vermelho-raro) !important`, que vencia a cascata e impedia a
      companheira de colorir o ícone ativo. */
@@ -305,7 +318,7 @@ body {
 
 .custom-dropdown-trigger {
   width: 100%;
-  height: 28px;
+  height: var(--alt-seletor);
   background-color: transparent;
   border: calc(var(--borda) * 1px) solid var(--border-color);
   border-radius: var(--raio-controle);
@@ -336,12 +349,16 @@ body {
   width: 100%;
   max-height: 180px;
   overflow-y: auto;
-  background-color: #1a1a1a;
+  /* mesmo fundo do painel: quem separa a lista é só o traço da borda. Sem
+     sombra e sem fundo próprio, a lista não parece uma janela por cima — ela
+     parece o painel se abrindo. */
+  background-color: var(--bg-color);
   border: calc(var(--borda) * 1px) solid var(--border-color);
   border-radius: var(--raio-caixa);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
   display: none;
   flex-direction: column;
+  /* O recuo é o que faz o canto da caixa e o da pílula ficarem CONCÊNTRICOS:
+     raio da caixa = raio do item + recuo. Mexer num pede mexer no outro. */
   padding: 3px;
   z-index: 10000;
 }
@@ -669,7 +686,6 @@ body {
 }
 
 .color-dot {
-  opacity: 0.45;
   width: var(--tam-color-dot);
   height: var(--tam-color-dot);
   min-width: var(--tam-color-dot);
@@ -679,7 +695,6 @@ body {
   box-sizing: border-box;
   margin-left: 4px;
   flex-shrink: 0;
-  transition: opacity 0.15s ease;
 }
 
 .color-dot:first-child {
@@ -847,16 +862,14 @@ body {
 
 
 /* ---------------------------------------------------------------------------
-   BOTÕES DE AÇÃO: os dois com o mesmo desenho, contornados e sem cor. O acento
-   aparece só no hover — o painel em repouso fica calmo, e a cor passa a
-   significar "é aqui que eu vou clicar" em vez de decorar.
+   BOTÕES DE AÇÃO, como no desenho: um PREENCHIDO com a principal, o outro só
+   VAZADO na mesma cor. É o par que diz qual é a ação principal sem precisar de
+   rótulo maior nem de ícone.
    --------------------------------------------------------------------------- */
 
 .btn-primary,
 .btn-secondary {
-  background-color: transparent;
-  color: var(--text-muted);
-  border: calc(var(--borda) * 1px) solid var(--border-color);
+  border: calc(var(--borda) * 1px) solid var(--acento-visivel);
   font-size: var(--fonte-botao);
   font-weight: var(--peso-botao);
   letter-spacing: 0.5px;
@@ -864,10 +877,22 @@ body {
   overflow: hidden;
 }
 
-.btn-primary:hover,
-.btn-secondary:hover {
+.btn-primary {
   background-color: var(--vermelho-raro);
   border-color: var(--vermelho-raro);
+  color: var(--sobre-acento);
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color: var(--text-main);
+}
+
+/* O preenchido só recua um pouco; o vazado é que se preenche. */
+.btn-primary:hover { opacity: 0.85; }
+
+.btn-secondary:hover {
+  background-color: var(--acento-visivel);
   color: var(--sobre-acento);
 }
 
@@ -887,20 +912,13 @@ body {
 
 
 /* ---------------------------------------------------------------------------
-   SELETOR DE COR: a escolhida fica cheia, as outras recuam em opacidade, e a
-   ativa ganha um traço INTERNO fininho. Interno por border com box-sizing
-   border-box, e não por box-shadow inset, cujo suporte no UXP eu não confirmei.
-   Sem mudança de tamanho: o tamanho é o mesmo em todas.
+   SELETOR DE COR: as quatro bolinhas ficam IGUAIS, todas cheias — é assim nos
+   quatro desenhos. Elas são a paleta da marca, não um controle de rádio: quem
+   diz qual tema está no ar é o painel inteiro, que muda de cor junto.
+
+   Por isso a classe `.active` continua sendo posta pelo JS, mas não pinta
+   nada aqui. Ela ainda serve para o JS saber de quem ler data-par e data-corte.
    --------------------------------------------------------------------------- */
-
-
-.color-dot:hover { opacity: 0.8; }
-
-.color-dot.active {
-  opacity: 1;
-  border: var(--traco-selecao) solid rgba(255, 255, 255, 0.6);
-}
-
 
 /* ---------------------------------------------------------------------------
    COMBINAÇÕES: cada cor traz sua companheira, lidas dos 4 SVGs de UI.

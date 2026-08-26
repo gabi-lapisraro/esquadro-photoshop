@@ -59,6 +59,35 @@ a.click(b);
 check('fechou a fileira', a.$('extendedStrip').style.display, 'none');
 check('e o ícone voltou o mesmo', b.innerHTML, fechado);
 
+console.log('\n=== E. opacidade: ícone apagado, bolinha cheia ===');
+// O harness não busca o styles.css do <link>, então aqui eu monto um DOM à
+// parte com o CSS embutido — é a única forma de ler opacidade no jsdom.
+{
+  const fs = require('fs');
+  const { JSDOM } = require(path.join(__dirname, 'node_modules/jsdom'));
+  const css = fs.readFileSync(path.join(ROOT, 'styles.css'), 'utf8')
+                .replace(/@font-face \{[^}]*\}/g, '');
+  const html = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8')
+                 .replace('<link rel="stylesheet" href="styles.css">', '<style>' + css + '</style>')
+                 .replace(/<script[^>]*><\/script>/g, '');
+  const w = new JSDOM(html).window;
+  const op = sel => w.getComputedStyle(w.document.querySelector(sel)).opacity;
+
+  check('ícone não selecionado fica em 20%', op('.platform-icon[data-platform="facebook"]'), '0.2');
+  // o "..." não é plataforma: é o que avisa que há mais, e fica cheio
+  check('o "..." fica cheio', op('#btnToggleStrip'), '1');
+  // o índex já abre com o Instagram marcado
+  check('ícone selecionado fica cheio', op('.platform-icon.active'), '1');
+
+  // as bolinhas só podem diferir na cor de fundo: opacidade e traço iguais
+  const dots = [...w.document.querySelectorAll('.color-dot')].map(d => {
+    const cs = w.getComputedStyle(d);
+    return cs.opacity + '/' + cs.borderStyle;
+  });
+  check('as 4 bolinhas ficam iguais', new Set(dots).size, 1);
+  check('e todas cheias, sem traço', dots[0], '1/none');
+}
+
 const f = failCount();
 console.log(`\n=== ${f === 0 ? 'TODOS OS TESTES PASSARAM' : f + ' FALHA(S)'} ===`);
 process.exit(f === 0 ? 0 : 1);

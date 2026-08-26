@@ -79,13 +79,17 @@ check('vermelho -> texto branco', sobreAcento(), '#ffffff');
 console.log('\n-- A6. combinações: cada cor traz sua companheira --');
 const companheira = () => document.documentElement.style.getPropertyValue('--companheira').trim();
 check('4 bolinhas (Vinho fora do desenho)', document.querySelectorAll('.color-dot').length, 4);
+const corte = () => document.documentElement.style.getPropertyValue('--guide-crop').trim();
 const comb = c => { a.click(document.querySelector(`.color-dot[data-color="${c}"]`)); return [acento(), companheira()]; };
-check('Vermelho + Azul',  comb('#E61C00').join('|'), '#E61C00|#a2d2eb');
+check('Vermelho + Nude',  comb('#E61C00').join('|'), '#E61C00|#e5e3d9');
 check('Azul + Vermelho',  comb('#a2d2eb').join('|'), '#a2d2eb|#E61C00');
 check('Rosa + Azul',      comb('#fea8fe').join('|'), '#fea8fe|#a2d2eb');
 check('Nude + Rosa',      comb('#e5e3d9').join('|'), '#e5e3d9|#fea8fe');
-check('guia de corte segue a companheira',
-      document.documentElement.style.getPropertyValue('--guide-crop').trim(), '#fea8fe');
+// a guia de corte quase sempre é a companheira...
+check('guia de corte segue a companheira', corte(), '#fea8fe');
+// ...menos no Vermelho, que marca a escolha em Nude e corta em Azul (1.svg)
+comb('#E61C00');
+check('no Vermelho a guia destoa da companheira', corte(), '#a2d2eb');
 a.click(document.querySelector('.color-dot[data-color="#E61C00"]'));
 
 console.log('\n=== B. estado vazio e dados invalidos ===');

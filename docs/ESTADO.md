@@ -141,7 +141,7 @@ Ads, onde descrevem display ad.
 
 ## UI: onde parou
 
-O CSS é dirigido por **61 tokens** com comentário `/* Grupo | Rótulo */`, que o
+O CSS é dirigido por **62 tokens** com comentário `/* Grupo | Rótulo */`, que o
 `gerar-playground.py` lê para montar os controles. O `playground.html` roda o
 painel **de verdade** (JS real, embrulhado num `require` de mentira) e só mexe
 em propriedades que o UXP suporta.
@@ -152,15 +152,33 @@ qualquer regra de CSS e desfazia todo ajuste no `styles.css`.
 
 **Combinações de cor** (lidas dos 4 SVGs em `UI Illustrator/`):
 
-| Principal | Companheira |
-|---|---|
-| Vermelho | Azul |
-| Azul | Vermelho |
-| Rosa | Azul |
-| Nude | Rosa |
+| Principal | Companheira | Guia de corte |
+|---|---|---|
+| Vermelho | **Nude** | **Azul** |
+| Azul | Vermelho | Vermelho |
+| Rosa | Azul | Azul |
+| Nude | Rosa | Rosa |
 
 A principal preenche o botão de criar e os sinais do stepper. A companheira
-marca o modo ativo, o ícone da plataforma ativa, a guia de corte e o wordmark.
+marca o modo ativo, o ícone da plataforma ativa e o wordmark. A guia de corte é
+a companheira em três dos quatro temas — o Vermelho é a exceção.
+
+**Opacidade, e não cor, é o que separa selecionado de não selecionado** na
+fileira de plataformas: o ícone é sempre o mesmo desenho: quem não está
+escolhido recua para **20%**, quem está fica cheio e ganha a companheira. O
+hover só sobe para 55%, sem caixa e sem cor nova, para não competir com o
+"está selecionado".
+
+Duas exceções, ambas pedidas por ela e confirmadas pelo desenho:
+
+- **O "…" fica sempre cheio.** Não é plataforma: é o que avisa que há mais. A
+  20% ele sumia justo onde precisa ser notado.
+- **As quatro bolinhas de cor ficam iguais e cheias**, sem recuo de opacidade e
+  sem traço na ativa. Elas são a paleta da marca, não um controle de rádio —
+  quem diz qual tema está no ar é o painel inteiro, que muda de cor junto. A
+  classe `.active` continua sendo posta pelo JS (é dela que saem `data-par` e
+  `data-corte`), mas não pinta mais nada. O token `--traco-selecao` ficou sem
+  dono e foi removido.
 
 ### O redesenho dos SVGs, implementado em 25/08 à noite
 
@@ -232,44 +250,70 @@ Se a ponta sumir, o suspeito é o `calc` aninhado; a saída é escrever os valor
 já resolvidos em px, aceitando que mexer na altura no playground pare de
 funcionar sozinho.
 
-### Duas divergências entre o desenho e o código, para ela decidir
+### As duas divergências, decididas por ela em 25/08
 
-Nenhuma das duas foi mexida: as duas contrariam decisão que já estava tomada, e
-decisão de design é dela.
+1. **O tema Vermelho marca a escolha em Nude, e corta em Azul.** Era de
+   propósito: o `1.svg` está certo. Companheira e guia de corte deixaram de ser
+   a mesma variável — a bolinha declara um `data-corte` quando difere, e só o
+   Vermelho usa. Nos outros três temas a guia continua sendo a companheira.
 
-1. **O `1.svg` discorda da própria tabela de cores.** Nos 4 desenhos a guia de
-   corte segue a tabela acima (Vermelho→Azul, Azul→Vermelho, Rosa→Azul,
-   Nude→Rosa). Mas no `1.svg` — e só nele — o modo ativo, o ícone da plataforma
-   ativa e o wordmark saem em **Nude**, não em Azul. Nos outros três esses
-   mesmos elementos seguem a companheira certinho. Ou o tema Vermelho marca a
-   seleção em Nude de propósito, ou o `1.svg` ficou para trás. O código segue a
-   tabela, como estava.
+2. **Um botão é cheio, o outro é vazado.** CRIAR PRANCHETA preenchido com a
+   principal, APLICAR GUIAS só contornado na mesma cor. Desfez o "contornados,
+   com o acento só no hover". O preenchido recua no hover; o vazado é que se
+   preenche.
 
-2. **Os botões de ação.** No desenho, CRIAR PRANCHETA vem **preenchido** com a
-   principal e APLICAR GUIAS **contornado** na principal. No painel os dois são
-   contornados e sem cor, com o acento só no hover — decisão tomada no commit
-   "Botões lado a lado, contornados, com o acento só no hover", com a razão
-   escrita no CSS: o painel em repouso fica calmo. O desenho é mais antigo que
-   essa decisão nesse ponto. Ficou como está.
+Sobra um lugar onde o desenho e o código ainda discordam, não decidido: a
+**caixa do stepper**. Nos 4 desenhos ela é contornada na PRINCIPAL, como o
+APLICAR GUIAS; no painel está no cinza neutro da borda. É um token de trocar.
 
-### Tokens que mudaram de valor com o redesenho
+### Espaçamento, altura e fonte: medidos no desenho
 
-Todos calibrados para bater com a proporção do desenho na largura simulada do
-playground. São tokens: ela mexe no playground se quiser outra coisa.
+Não foram no olho. Todos os valores saíram de `UI Illustrator/1.svg`,
+convertidos com **k = 1,0928** — a razão entre o painel simulado do playground
+(264px de largura) e a largura do desenho (241,58 unidades). Se um dia o painel
+de referência mudar de largura, é esse k que muda.
 
-| Token | Antes | Agora | Por quê |
+| Token | Antes | Agora | No desenho |
 |---|---|---|---|
-| `--alt-logo` | 12px | 21,5px | proporção do ESQUADЯO no desenho |
+| `--esp-corpo-x` | 14px | 18px | margem lateral 16,49 un |
+| `--esp-cabecalho` | 25px | 23px | 21,51 un acima da moldura |
+| `--esp-blocos` | 10px | 22px | ícones → controles |
+| `--esp-controles` | 3px | 5,5px | controles → seletor, 5,00 un |
+| `--esp-modo-stepper` | 4px | 4,5px | folga entre pílulas, 4,17 un |
+| `--esp-dropdown-x` | 7,5px | 11px | recuo do texto no seletor |
+| `--esp-assinatura` | 6,5px | 3,5px | entre as linhas do rodapé |
+| `--esp-corpo-base` | 39px | 7px | botões → moldura da base |
+| `--esp-abaixo-rodape` | — | 17px | 15,89 un até a base do painel |
+| `--alt-controle` | 25px | 20px | 18,56 un |
+| `--alt-seletor` | 28px cravado | 26px | 23,93 un — virou token |
+| `--alt-botao` | 29px | 23,5px | 21,54 un |
+| `--alt-moldura-topo` | — | 54px | 49,19 un, eixo a eixo |
+| `--alt-moldura-base` | — | 36px | 33,33 un |
+| `--alt-logo` | 12px | 21px | ESQUADЯO, 19,15 un |
+| `--alt-wordmark` | 8px | 5,5px | LAPISЯARO é bem pequeno no desenho |
+| `--tam-color-dot` | 4,5px | 3,5px | elipse de rx 1,6 |
+| `--fonte-modo` | 8,5px | 7,5px | 7,0 un |
+| `--fonte-stepper` | 8,5px | 7,5px | 7,0 un |
+| `--fonte-stepper-sinal` | 12px | 10px | o desenho usa Arial, com métrica outra |
+| `--fonte-fmt-dim` | 11px | 7,5px | 6,77 un |
+| `--fonte-botao` | 10px | 8,5px | 8,0 un |
+| `--peso-dropdown` | 700 | 400 | o desenho usa Regular, não Bold |
 | `--raio-controle` | 0 | 999px | pílula |
-| `--esp-modo-stepper` | 4px | 5,5px | folga entre as três pílulas, do desenho |
-| `--esp-corpo-base` | 39px | 8px | não precisa mais reservar espaço de rodapé |
-| `--alt-moldura-topo` | — | 56px | novo |
-| `--alt-moldura-base` | — | 38px | novo |
-| `--esp-abaixo-rodape` | — | 18px | novo |
+| `--raio-caixa` | 0 | 14px | caixa da lista, concêntrica com as pílulas |
+| `--raio-item` | 0 | 999px | item da lista também é pílula |
 
-O `stroke-width` das pontas, no `index.html`, está em `0.88` — calibrado para
-dar 1px nessas duas alturas, que é a espessura da borda do miolo. Mexer MUITO
-nas alturas afina ou engrossa o traço da ponta sem mexer no do miolo.
+Três decisões dentro disso:
+
+- **`--fonte-stepper-sinal` é chute calibrado, não medida.** No desenho o − tem
+  10 un e o + tem 7,18 un, porque são glifos de Arial com métrica diferente. No
+  painel os dois saem em IBM Plex Mono e precisam do mesmo tamanho. 10px é o
+  meio-termo; é o primeiro que vale mexer se destoar.
+- **`--fonte-rodape` ficou em 5,5px**, embora o desenho peça 3,8. Era pedido
+  aberto dela, e o desenho puxa para menor ainda, não para maior.
+- **O `stroke-width` das pontas continua em 0,88** no index.html, calibrado
+  para 1px nas alturas de 56/38. Com 54/36 o traço fica ~4% mais fino que a
+  borda do miolo. Invisível num fio de 16% de opacidade; se aparecer, o valor
+  é 49,19 ÷ altura do topo e 33,33 ÷ altura da base.
 
 ### Pedidos abertos do último ciclo
 

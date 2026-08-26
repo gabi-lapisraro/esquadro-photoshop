@@ -440,8 +440,13 @@ function applyTheme(color) {
   // painel escuro e desaparece. A bolinha declara o seu em data-acento.
   const escolhida = document.querySelector(`.color-dot[data-color="${color}"]`);
   const acento = (escolhida && escolhida.getAttribute('data-acento')) || color;
-  // a companheira do par: guia de corte, modo ativo, ícone ativo e wordmark
+  // A COMPANHEIRA marca o que está escolhido: modo ativo, ícone da plataforma
+  // ativa e wordmark. Em data-par.
   const par = (escolhida && escolhida.getAttribute('data-par')) || null;
+  // A guia de corte quase sempre é a mesma companheira — menos no tema
+  // Vermelho, que marca a escolha em Nude mas desenha o corte em Azul. Por isso
+  // a bolinha pode declarar um data-corte próprio; sem ele, vale a companheira.
+  const corte = (escolhida && escolhida.getAttribute('data-corte')) || par;
 
   const raiz = document.documentElement.style;
   raiz.setProperty('--vermelho-raro', color);
@@ -450,9 +455,9 @@ function applyTheme(color) {
   raiz.setProperty('--sobre-acento', contrastOn(color));
   if (par) {
     raiz.setProperty('--companheira', par);
-    raiz.setProperty('--guide-crop', par);
     raiz.setProperty('--sobre-companheira', contrastOn(par));
   }
+  if (corte) raiz.setProperty('--guide-crop', corte);
 
   updatePreview();
   salvarPrefs();
