@@ -23,19 +23,54 @@ assinatura, nem de instalar ferramenta de desenvolvedor.
 Se a pasta `External` não existir, crie. No Finder use **Ir → Ir para a pasta**
 (`⇧⌘G`) e cole o caminho acima — a `Library` do usuário é oculta.
 
-4. Abra o Photoshop e vá em **Plugins → ESQUADЯO — Lápis Raro**.
+4. Abra o Photoshop e vá em **Plugins → Lápis RAЯO**.
 
 ### Windows
 
-Mesmo procedimento, com o caminho:
+**É o mesmo pacote.** Não existe versão para Mac e versão para Windows: o plugin
+é HTML, CSS e JavaScript, e nada dentro dele olha para o sistema. Todos os
+caminhos internos são relativos e com barra normal — que ali é URL, não caminho
+de disco, e funciona igual nos dois. O que muda entre os sistemas é **só onde a
+pasta é largada**.
+
+1. Feche o Photoshop.
+2. Descompacte o `ESQUADRO-1.0.0.zip`.
+3. Aperte **Win + R**, cole o caminho abaixo e dê Enter — o Explorer abre a pasta
+   certa, sem precisar caçar o `AppData`, que é oculto:
 
 ```
-%APPDATA%\Adobe\UXP\Plugins\External\
+%APPDATA%\Adobe\UXP\Plugins\External
 ```
 
-> Verificado no macOS. No Windows o caminho é o equivalente documentado pela
-> Adobe, mas não foi testado aqui — se o painel não aparecer, ver "Se não
-> aparecer" abaixo.
+4. Solte **a pasta** descompactada ali dentro. Se `External` não existir, crie
+   com esse nome exato.
+5. Abra o Photoshop e vá em **Plugins → Lápis RAЯO**.
+
+#### O que costuma dar errado no Windows
+
+Em ordem de probabilidade:
+
+1. **Pasta dentro de pasta.** O "Extrair tudo" do Windows costuma criar
+   `ESQUADRO-1.0.0\ESQUADRO-1.0.0\`. O que tem que ir para `External` é a
+   pasta que contém o `manifest.json` **na raiz**. Se o manifest estiver um nível
+   mais fundo, o Photoshop não vê o plugin e não reclama de nada.
+2. **A pasta `External` não existe.** É comum: ela só aparece depois do primeiro
+   plugin manual. Crie com o nome exato, sem espaço nem acento.
+3. **Não reiniciou o Photoshop.** Ele varre a pasta só ao iniciar.
+4. **Arquivo bloqueado.** Zip que veio por download pode chegar marcado como "de
+   origem externa". Antes de extrair: clique direito no `.zip` → Propriedades →
+   marque **Desbloquear** → OK.
+5. **Modo de desenvolvedor desligado.** Plugin sem assinatura da Adobe na pasta
+   `External` pode exigir isso: **Photoshop → Preferências → Plugins → Ativar
+   modo de desenvolvedor**, e reiniciar.
+6. **Photoshop antigo.** Precisa de 23.0 ou superior.
+
+> **O que ainda não foi verificado:** nada disto foi testado numa máquina Windows
+> de verdade. O caminho e o procedimento são os documentados pela Adobe, e o
+> pacote é o mesmo que roda no macOS — mas a primeira instalação no Windows é o
+> teste. Se falhar, o log daquela máquina responde: procure em `%APPDATA%\Adobe\`
+> a pasta da versão do Photoshop e, dentro dela, `Logs`. Mande as linhas que
+> citarem `esquadro`.
 
 ---
 
@@ -77,18 +112,36 @@ Procure por linhas com `esquadro`. Erro de manifest aparece como
 
 ---
 
+## Precisa de uma versão por sistema?
+
+**Não.** Um pacote só serve os dois, e ajustar algo para o Windows não coloca o
+macOS em risco — porque não há o que ajustar no plugin. Não existe detecção de
+sistema, nem caminho de disco, nem separador de pasta em lugar nenhum do código:
+o que o `index.html` e o `styles.css` referenciam é relativo, e o
+`require("./js/…")` é resolvido pelo próprio UXP.
+
+A diferença entre os sistemas mora **neste arquivo**, não no plugin: é a pasta
+onde a pasta do plugin é largada. Mudar a documentação não pode quebrar código.
+
+---
+
 ## Como usar
 
-1. Escolha a plataforma na fileira de ícones. O botão **+** abre a segunda
-   fileira (Google Ads, Meta Ads, X, Uber, iFood).
+1. Escolha a plataforma na fileira de ícones. O **…** abre a segunda fileira
+   (Google Ads, Meta Ads, X, Uber, iFood).
 2. Alterne **Orgânico / Anúncio**. Em plataformas que só existem em um dos
    modos, o outro fica travado.
 3. Escolha o formato no menu e a quantidade de pranchetas no stepper.
 4. **Criar Prancheta** monta o documento com as pranchetas lado a lado e já
-   desenha as guias. **Aplicar Apenas Guias** desenha as guias no documento
-   aberto, respeitando a prancheta ativa.
+   desenha as guias. A área segura vai em todas; a **linha de corte só na
+   primeira**. **Aplicar Guias** desenha tudo no documento aberto, respeitando a
+   prancheta ativa, sem essa restrição.
 
-As cores no rodapé trocam o tema do painel em tempo real.
+As quatro cores no rodapé trocam o tema do painel em tempo real.
+
+Na lista de formatos aberta: **role com a roda do mouse** ou **arraste a própria
+lista**. Ela não tem barra de rolagem de propósito — a barra nativa do Photoshop
+não se deixa esconder nem afinar, e ficava feia.
 
 ---
 

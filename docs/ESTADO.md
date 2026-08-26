@@ -806,6 +806,46 @@ O `validar-pacote.py` passou a conferir as chaves do entrypoint contra a lista
 do manifesto v5, e **trava o empacotamento** se achar uma que não existe. Testei
 recolocando a chave errada: ele pega.
 
+## Em estudo: formatos DIFERENTES no mesmo arquivo
+
+Ideia dela, para o futuro: em vez de N cópias do mesmo formato, um documento com
+pranchetas de formatos diferentes — o Feed, o Story e o Reels da mesma campanha
+lado a lado.
+
+O que já está pronto para isso: o `createArtboards` já posiciona prancheta por
+prancheta, somando `left`, e já desenha guia por prancheta com o offset dela. A
+mudança de assinatura é pequena — receber uma LISTA de formatos em vez de um
+formato e uma contagem.
+
+**A guia horizontal NÃO é o problema que eu supus.** Eu tinha escrito aqui que
+ela atravessaria o canvas e cortaria as pranchetas vizinhas ao meio. Ela disse
+que não é isso que acontece no Photoshop: **as guias das outras pranchetas ficam
+ATRÁS da prancheta selecionada.** Quem trabalha numa prancheta vê as guias dela.
+
+Isso muda o quadro por completo: o caminho direto — pranchetas lado a lado, cada
+uma com o seu formato e as suas guias — parece viável, e não precisa de nenhuma
+das saídas de emergência que eu havia listado (empilhar na vertical, um documento
+por formato, trocar guia por camada). Elas saíram daqui.
+
+Lição para mim, e é a segunda vez neste projeto: **não afirmar comportamento do
+Photoshop sem ver.** A primeira foi concluir que a coordenada de guia era relativa
+à prancheta quando é absoluta. Aqui eu inventei um bloqueio que não existe, e um
+bloqueio inventado custa mais caro que um bug — ele muda o desenho da solução
+antes de alguém checar.
+
+O que falta confirmar, e agora é uma pergunta pequena: se a guia desenhada pelo
+plugin (`doc.guides.add`, em coordenada absoluta) é adotada pela prancheta que
+está debaixo dela — porque é isso que faz ela ficar "atrás" das outras. A
+observação dela sugere que sim.
+
+Além disso, três coisas mecânicas para resolver quando for a hora:
+
+- **Altura do documento** passa a ser a do formato mais alto, não a de todos.
+- **O nome do documento** precisa de um token para "misto": hoje ele leva a
+  abreviação do formato único.
+- **O limite de 30.000 px** vale para a soma das larguras, e o `checkCapacity`
+  hoje calcula sobre um formato repetido.
+
 ## Distribuição, que é o próximo passo
 
 O pacote está **validado**: `validar-pacote.py` extrai o zip num diretório
