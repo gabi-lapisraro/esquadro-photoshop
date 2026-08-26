@@ -71,6 +71,7 @@ em navegador, Figma ou playground, porque lá o CSS funciona inteiro.
 | itálico não é sintetizado | `font-style: italic` saía reto | embarcar o `.ttf` itálico |
 | raio maior que metade da menor dimensão vira ELIPSE | botão oval com texto vazando; tooltip ovalado | raio ≤ METADE DA MENOR DIMENSÃO |
 | `opacity` é ignorado | os 6 ícones apagados saíram todos cheios | recuar na COR, com `rgba()` |
+| `text-transform` é ignorado | "Orgânico" em caixa mista | texto já em MAIÚSCULA na origem |
 
 As duas últimas apareceram em 26/08, no primeiro teste do redesenho no painel.
 O `999px` é o truque padrão de pílula na web: o CSS de verdade encolhe os dois
@@ -86,6 +87,17 @@ menor dimensão**.
 `opacity` sendo ignorado derruba mais coisa do que parece: onde o estado era
 dito por opacidade, ele passou a ser dito por cor. O `.is-disabled` mantém o
 `opacity` porque não custa, mas quem carrega o "bloqueado" agora é `rgba()`.
+
+`text-transform` é do mesmo tipo: some sem avisar, e a regra continua no CSS
+porque não custa e mantém o playground igual ao painel. Quem garante a caixa
+alta é o **texto na origem** — os rótulos do `index.html` e o que o `ui.js`
+escreve (rótulo do botão, legenda do corte, tooltip) já sobem em maiúscula.
+O `verificar-uxp.py` passou a listar cada `text-transform` como nota, para
+lembrar de conferir se existe texto de origem correspondente.
+
+**A ordem das bolinhas de cor é Vermelho, Rosa, Azul, Nude.** Ela é só visual:
+`data-par` e `data-corte` moram em cada bolinha, então reordenar não mexe em
+nenhuma combinação.
 
 Também sem suporte: **`opacity`**, **CSS Grid**, `::before`/`::after`, `float`, `clip-path`,
 `aspect-ratio`, `:has()`. Irregulares: `flex-wrap`, `position: fixed`.

@@ -273,10 +273,16 @@ body {
   height: 100%;
   box-sizing: border-box;
   border: none;
-  border-radius: calc(var(--alt-controle) / 2);
+  /* A altura REAL do botão é a do trilho menos as duas bordas dele: o trilho é
+     border-box. Sem descontar, o raio passa de metade da altura e o UXP
+     ovaliza — foi o que aconteceu, e é a mesma armadilha do 999px. */
+  border-radius: calc((var(--alt-controle) - var(--borda) * 2px) / 2);
   font-family: var(--font-brand-mono);
   font-size: var(--fonte-modo);
   font-weight: var(--peso-modo);
+  /* O UXP IGNORA text-transform. Ele fica porque não custa e mantém o
+     playground igual, mas quem garante a caixa alta é o texto na origem — no
+     index.html e no ui.js, já em maiúscula. */
   text-transform: uppercase;
   letter-spacing: 0.4px;
   display: flex;

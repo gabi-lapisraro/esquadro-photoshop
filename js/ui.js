@@ -323,7 +323,7 @@ function bindEvents() {
         return;
       }
       if (!rect) return;
-      els.floatingTooltip.textContent = tooltipText;
+      els.floatingTooltip.textContent = tooltipText.toUpperCase();
       els.floatingTooltip.style.left = `${rect.left + rect.width / 2}px`;
       els.floatingTooltip.style.top = `${rect.top}px`;
       els.floatingTooltip.classList.add('visible');
@@ -663,7 +663,8 @@ function updateQtdLabel() {
   let q = parseInt(els.qtdInput.textContent);
   if (isNaN(q) || q < 1) q = 1;
   els.qtdInput.textContent = q;
-  els.btnActionLabel.textContent = q > 1 ? "Criar Pranchetas" : "Criar Prancheta";
+  // Em MAIÚSCULA na origem: o UXP ignora text-transform.
+  els.btnActionLabel.textContent = q > 1 ? "CRIAR PRANCHETAS" : "CRIAR PRANCHETA";
   updatePreview();
 }
 
@@ -761,7 +762,8 @@ function updatePreview() {
 
     const cropTextEl = els.legendCropItem.querySelector('span');
     if (cropTextEl) {
-      cropTextEl.textContent = fmt.cropName || 'Linhas de Corte';
+      // maiúscula aqui, e não no CSS: o UXP ignora text-transform
+      cropTextEl.textContent = (fmt.cropName || 'Linhas de Corte').toUpperCase();
     }
 
     const lateral = fmt.crop.lateral || 0;

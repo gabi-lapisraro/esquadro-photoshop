@@ -17,6 +17,8 @@ Em 25/08/2026 esse buraco custou o dia:
 Em 26/08, no primeiro teste do redesenho no painel:
   - `border-radius: 999px` virando elipse: o UXP encolhe os dois raios
     separadamente, então o botão saiu oval e o texto vazou para fora.
+  - `opacity` ignorado: os seis ícones apagados saíram todos cheios.
+  - `text-transform: uppercase` ignorado: "Orgânico" ficou em caixa mista.
 
 Uso:
     python3 verificar-uxp.py             verifica e lista
@@ -99,6 +101,9 @@ NOTAS = [
     (r"pointer-events\s*:\s*none",
      "Pode não impedir clique no UXP; o JS já guarda com modeLocked e actionsEnabled."),
     (r"!important", "Cada !important dificulta ajuste futuro no CSS."),
+    (r"text-transform\s*:", "IGNORADO pelo UXP. Inofensivo em si, mas não dá para "
+     "CONTAR com ele: o texto tem que subir já na caixa certa, do index.html ou "
+     "do ui.js. Confira se cada um destes tem um texto de origem correspondente."),
     (r"user-select\s*:", "Ignorado pelo UXP, mas inofensivo."),
     (r"cursor\s*:", "O UXP usa cursor próprio; provavelmente ignorado."),
 ]
