@@ -57,11 +57,12 @@
   --tam-icone: 18px;            /* Ícones | Altura da célula */
   --colunas-icones: 7;          /* Ícones | Colunas (6 redes + o botão ...) */
   --tam-icone-svg: 17px;        /* Ícones | Desenho do ícone */
-  --esp-fileiras: 1.5px;          /* Ícones | Entre as fileiras */
+  --esp-fileiras: 6px;          /* Ícones | Entre as fileiras */
 
   --alt-controle: 19px;         /* Controles | Altura */
   --esp-modo-stepper: 4px;    /* Controles | Entre as pílulas */
   --alt-seletor: 26px;          /* Controles | Altura do seletor de formato */
+  --alt-lista: 180px;           /* Controles | Altura da lista aberta */
   --esp-dropdown-x: 12.5px;       /* Controles | Recuo do dropdown */
   --esp-item-y: 8.5px;            /* Controles | Item da lista, vertical */
   --esp-item-x: 9px;            /* Controles | Item da lista, lateral */
@@ -89,7 +90,7 @@
   --esp-blocos: 19px;           /* Blocos | Plataformas → controles */
   --esp-controles: 4px;        /* Blocos | Entre controles e preview */
   --esp-preview: 12px;          /* Blocos | Abaixo do preview */
-  --esp-corpo-x: 17px;          /* Blocos | Margem lateral */
+  --esp-corpo-x: 15px;          /* Blocos | Margem lateral */
   --esp-corpo-topo: 0px;       /* Blocos | Topo do corpo */
   --esp-corpo-base: 4px;        /* Blocos | Base do corpo */
 
@@ -328,6 +329,13 @@ body {
   user-select: none;
 }
 
+/* Sinal travado: o formato não admite mais pranchetas. Cor, e não opacity —
+   o UXP ignora opacity. O !important acompanha o da regra base, que existe para
+   vencer a cor do tema. */
+.stepper-btn.is-disabled {
+  color: rgba(255, 255, 255, 0.18) !important;
+}
+
 .stepper-btn:hover {
   background-color: rgba(255, 255, 255, 0.08) !important;
   color: var(--text-main) !important;
@@ -382,7 +390,10 @@ body {
   top: calc(100% + 4px);
   left: 0;
   width: 100%;
-  max-height: 180px;
+  /* Altura FIXA, não máxima: com `max-height` a caixa encolhia quando havia
+     poucos formatos, e a lista mudava de tamanho de plataforma para
+     plataforma. Fixa, ela é sempre a mesma, e rola quando não cabe. */
+  height: var(--alt-lista);
   /* Recorta o que a lista de dentro deixa passar da borda — e é ali que a barra
      de rolagem vai morar. Confirmado no painel: o UXP ignora `scrollbar-width`
      e ignora `::-webkit-scrollbar`, então esconder a barra estilizando ela não
@@ -413,7 +424,7 @@ body {
 .custom-dropdown-rolagem {
   display: flex;
   flex-direction: column;
-  max-height: 180px;
+  height: 100%;
   overflow-y: auto;
   margin-right: -20px;
   padding-right: 20px;

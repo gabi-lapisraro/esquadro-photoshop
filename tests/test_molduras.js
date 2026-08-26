@@ -127,6 +127,27 @@ console.log('\n=== G. as duas guias saem da mesma cor ===');
         /--guide-(safe|crop)\s*:/.test(css), false);
 }
 
+console.log('\n=== H. a lista aberta tem altura fixa ===');
+{
+  const fs = require('fs');
+  // sem os comentários: senão a palavra `max-height` DENTRO do comentário que
+  // explica por que ele saiu conta como se ele ainda estivesse lá. É o mesmo
+  // buraco que o verificar-uxp.py tinha com comentário de HTML.
+  const css = fs.readFileSync(path.join(ROOT, 'styles.css'), 'utf8')
+                .replace(/\/\*[\s\S]*?\*\//g, '');
+  const caixa = (css.match(/\.custom-dropdown-menu\s*\{([^}]*)\}/) || [,''])[1];
+  const rola = (css.match(/\.custom-dropdown-rolagem\s*\{([^}]*)\}/) || [,''])[1];
+  // altura FIXA: com max-height a caixa encolhia quando havia poucos formatos,
+  // e a lista mudava de tamanho de plataforma para plataforma
+  check('a caixa tem height, não max-height', /height:\s*var\(--alt-lista\)/.test(caixa), true);
+  check('e nenhum max-height sobrou', /max-height/.test(caixa), false);
+  check('a lista de dentro preenche a caixa', /height:\s*100%/.test(rola), true);
+  check('e é ela que rola', /overflow-y:\s*auto/.test(rola), true);
+  // a barra sai por recorte, não por CSS de barra
+  check('a caixa recorta', /overflow:\s*hidden/.test(caixa), true);
+  check('a lista passa da borda', /margin-right:\s*-\d/.test(rola), true);
+}
+
 const f = failCount();
 console.log(`\n=== ${f === 0 ? 'TODOS OS TESTES PASSARAM' : f + ' FALHA(S)'} ===`);
 process.exit(f === 0 ? 0 : 1);

@@ -259,6 +259,27 @@ for (const [pk, pv] of Object.entries(masterPlatforms)) {
 }
 check('todos os nomes bem formados', ruins, 0);
 
+console.log('\n-- D4b. Meta Ads: ordem propria e Retrato de peca unica --');
+d.pick('instagram'); d.click(d.$('modeAds'));
+check('ordem quadrado, retrato, story',
+      d.items().map(i => i.getAttribute('data-id')).join(' '),
+      'meta-ads-quadrado-1-1 meta-ads-retrato-4-5 meta-ads-story-reels-9-16');
+// o quadrado admite serie
+d.click(d.items().find(i => i.getAttribute('data-id') === 'meta-ads-quadrado-1-1'));
+d.click(d.$('btnPlus')); d.click(d.$('btnPlus'));
+check('quadrado chega a 3', d.$('qtdInput').textContent, '3');
+// trocar para o Retrato com 3 na tela tem que BAIXAR para 1, senao o botao
+// criaria tres de qualquer jeito
+d.click(d.items().find(i => i.getAttribute('data-id') === 'meta-ads-retrato-4-5'));
+check('Retrato baixa para 1', d.$('qtdInput').textContent, '1');
+d.click(d.$('btnPlus')); d.click(d.$('btnPlus'));
+check('e o + nao passa de 1', d.$('qtdInput').textContent, '1');
+check('sinal + travado', d.$('btnPlus').classList.contains('is-disabled'), true);
+// e o organico do Instagram nao herda a ordem do Meta Ads
+d.click(d.$('modeOrganic'));
+check('organico continua com o retrato 4:5 primeiro',
+      d.items()[0].getAttribute('data-id'), 'instagram-retrato-4-5');
+
 console.log('\n-- D5. modo Anuncio troca a abreviacao --');
 d.pick('instagram'); d.click(d.$('modeAds'));
 d.click(d.$('btnCreate'));

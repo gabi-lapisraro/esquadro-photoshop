@@ -129,6 +129,25 @@ const ORDEM_DE_USO = ['FEED', 'STORY', 'REELS', 'PERFIL'];
 // usada. Ordenar por área punha o 3:4 na frente do 4:5 só por ser mais alto.
 const ORDEM_PROPORCAO = ['4:5', '1:1', '3:4', '1.91:1', '16:9', '4:3', '5:4'];
 
+// Algumas plataformas usam outra ordem de proporção. No Meta Ads o quadrado vem
+// antes do retrato, ao contrário do Instagram orgânico — é a ordem em que a peça
+// é pedida ali. Chave é a do dataset (o que getActiveDatabaseKey devolve).
+const ORDEM_PROPORCAO_POR_BASE = {
+  meta_ads: ['1:1', '4:5', '9:16']
+};
+
+/** Máximo de PRANCHETAS por formato, quando é regra de veiculação e não de
+ *  canvas. O Retrato do Meta Ads é peça única: não faz sentido em série.
+ *  O limite por largura de canvas é outro, e mora no checkCapacity. */
+const MAX_PRANCHETAS = {
+  'meta-ads-retrato-4-5': 1
+};
+
+/** Quantas pranchetas o formato admite. Sem regra, o teto geral de 20. */
+function maxPranchetas(fmt) {
+  return (fmt && MAX_PRANCHETAS[fmt.id]) || 20;
+}
+
 // Nomes que são peça de feed mesmo onde a abreviação não vira FEED (Google Ads).
 const NOMES_FEED_PARA_ORDEM = ['Quadrado', 'Retrato', 'Paisagem', 'Feed', 'Carrossel'];
 
@@ -387,7 +406,7 @@ function bindEvents() {
 
   els.btnPlus.addEventListener('click', () => {
     let q = parseInt(els.qtdInput.textContent) || 1;
-    if (q < 20) {
+    if (q < maxPranchetas(getSelectedFormat())) {
       els.qtdInput.textContent = q + 1;
       updateQtdLabel();
     }
@@ -585,7 +604,9 @@ function selectFormat(fmtId) {
   });
 
   els.customDropdown.classList.remove('open');
-  updatePreview();
+  // updateQtdLabel, e não updatePreview direto: é ele que puxa a quantidade
+  // para o teto do formato novo, e ele chama o preview no fim.
+  updateQtdLabel();
   salvarPrefs();
 }
 
@@ -600,10 +621,11 @@ function populateFormats() {
     if (ra !== rb) return ra - rb;
 
     // dentro do grupo, a proporção mais usada primeiro
-    const pa = ORDEM_PROPORCAO.indexOf(a.ratio);
-    const pb = ORDEM_PROPORCAO.indexOf(b.ratio);
-    const ia = pa === -1 ? ORDEM_PROPORCAO.length : pa;
-    const ib = pb === -1 ? ORDEM_PROPORCAO.length : pb;
+    const ordemProp = ORDEM_PROPORCAO_POR_BASE[dbKey] || ORDEM_PROPORCAO;
+    const pa = ordemProp.indexOf(a.ratio);
+    const pb = ordemProp.indexOf(b.ratio);
+    const ia = pa === -1 ? ordemProp.length : pa;
+    const ib = pb === -1 ? ordemProp.length : pb;
     if (ia !== ib) return ia - ib;
 
     // proporção igual ou fora da lista: maior área primeiro
@@ -660,7 +682,14 @@ function populateFormats() {
 function updateQtdLabel() {
   let q = parseInt(els.qtdInput.textContent);
   if (isNaN(q) || q < 1) q = 1;
+  // O teto é do FORMATO: trocar para um formato de peça única com 3 na tela
+  // tinha que baixar para 1, senão o botão criaria três de qualquer jeito.
+  const teto = maxPranchetas(getSelectedFormat());
+  if (q > teto) q = teto;
   els.qtdInput.textContent = q;
+  // stepper travado quando o formato só admite uma
+  els.btnPlus.classList.toggle('is-disabled', q >= teto);
+  els.btnMinus.classList.toggle('is-disabled', q <= 1);
   // Em MAIÚSCULA na origem: o UXP ignora text-transform.
   els.btnActionLabel.textContent = q > 1 ? "CRIAR PRANCHETAS" : "CRIAR PRANCHETA";
   updatePreview();

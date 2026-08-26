@@ -163,6 +163,29 @@ estado vazio (tratado: botões travam, nada chega ao Photoshop).
 
 ---
 
+## Regras de lista e de quantidade
+
+**A lista aberta tem altura FIXA** (`--alt-lista`, 180px). Com `max-height` ela
+encolhia quando a plataforma tinha poucos formatos, e o painel mudava de cara de
+uma para outra. Fixa, é sempre a mesma caixa, e rola quando não cabe — sem barra,
+pelo recorte descrito acima.
+
+**A ordem de proporção pode ser por plataforma.** `ORDEM_PROPORCAO` é a geral, e
+`ORDEM_PROPORCAO_POR_BASE` sobrepõe por chave de dataset. Hoje só o `meta_ads`
+usa: lá o quadrado vem antes do retrato, ao contrário do Instagram orgânico, que
+abre no Retrato 4:5. São ordens diferentes de propósito — é a ordem em que a peça
+é pedida em cada lugar.
+
+**Alguns formatos são peça única.** `MAX_PRANCHETAS` guarda o teto por id de
+formato; hoje só o `meta-ads-retrato-4-5`, com 1. É regra de VEICULAÇÃO, e não de
+canvas — o limite por largura de canvas é outro e mora no `checkCapacity`.
+
+Duas coisas que esse teto precisa fazer, e faz: travar o `+`, e **baixar a
+quantidade ao trocar de formato**. Sem a segunda, quem estivesse com 3 na tela e
+mudasse para o Retrato criaria três de qualquer jeito — o botão lê o número, não
+o teto. Por isso o `selectFormat` chama `updateQtdLabel`, que ajusta e só então
+redesenha o preview.
+
 ## Nomenclatura dos arquivos
 
 ```
@@ -265,7 +288,7 @@ Nude, fundo do painel) com "ESQUADЯO" **na cor do tema**.
 Os quatro pontos foram feitos:
 
 1. **Duas molduras com recorte em Я** — uma no topo com ESQUADЯO, outra na base
-   com LAPISЯARO + BRAND INTELLIGENCE + as bolinhas. O cabeçalho único deixou
+   com LAPISRAЯO + BRAND INTELLIGENCE + as bolinhas. O cabeçalho único deixou
    de existir; a assinatura virou rodapé de verdade, colada na base do painel.
 2. **Controles em pílula.** Orgânico e Anúncio chegaram a virar duas pílulas
    soltas, lidas do desenho, mas voltaram para um TRILHO só: é um controle de
@@ -572,7 +595,7 @@ passou a régua no playground depois disso e reajustou quase tudo; o que vale é
 | `--alt-moldura-topo` | — | 54px | 49,19 un, eixo a eixo |
 | `--alt-moldura-base` | — | 36px | 33,33 un |
 | `--alt-logo` | 12px | 21px | ESQUADЯO, 19,15 un |
-| `--alt-wordmark` | 8px | 5,5px | LAPISЯARO é bem pequeno no desenho |
+| `--alt-wordmark` | 8px | 5,5px | LAPISRAЯO é bem pequeno no desenho |
 | `--tam-color-dot` | 4,5px | 3,5px | elipse de rx 1,6 |
 | `--fonte-modo` | 8,5px | 7,5px | 7,0 un |
 | `--fonte-stepper` | 8,5px | 7,5px | 7,0 un |
@@ -625,7 +648,7 @@ clareado reprovava com texto branco.
 ## Como o plugin aparece no Photoshop
 
 ```
-Plugins > ESQUADЯO > Lápis Raro
+Plugins > ESQUADЯO > Lápis Яaro
 ```
 
 O `name` do manifest é o que vira o item do menu; o `label` do entrypoint é o
@@ -634,9 +657,13 @@ painel dentro dele. Passou por três versões: primeiro "ESQUADЯO" com
 produto dentro; e agora o inverso, a pedido dela — o produto é o que se procura
 no menu, e a marca assina o painel.
 
-O `Я` é o cirílico U+042F, como no nome dos arquivos. Só o ESQUADЯO o usa; o
-"Lápis Raro" do rótulo vai escrito normal, com acento. (O wordmark em vetor do
-rodapé é outra coisa: ali é arte-final, e nela o Я aparece.)
+O `Я` é o cirílico U+042F, como no nome dos arquivos, e aparece **nos dois**:
+no ESQUADЯO e em "RaЯo".
+
+**É o SEGUNDO R de Raro que vira, não o primeiro** — LAPISRAЯO. Estava errado em
+dois lugares (no rótulo do painel e no rodapé de `docs/apresentacao.html`) até
+ela corrigir em 26/08. O `aria-label` do wordmark em vetor diz só "LAPISRARO",
+sem o cirílico, porque ali quem desenha a letra virada é o próprio vetor.
 
 **Achado no caminho: `preferredDockSize` não existe.** A chave certa é
 `preferredDockedSize`, com o "ed". A errada ficou no manifest sem fazer nada, e
