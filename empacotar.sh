@@ -39,6 +39,13 @@ cp fonts/*.ttf "$NOME/fonts/"
 cp "dist/${NOME}.zip" "dist/${NOME}.ccx"
 rm -rf "$NOME"
 
+# Confere o pacote como se fosse numa máquina nova. Arquivo faltando aqui só
+# apareceria no Photoshop de outra pessoa, com o painel em branco.
+if ! python3 validar-pacote.py "dist/${NOME}.zip"; then
+  echo "ABORTADO: o pacote não passou na validação."
+  exit 1
+fi
+
 echo "gerado:"
 ls -lh dist/ | awk 'NR>1{print "  " $9 "  " $5}'
 echo

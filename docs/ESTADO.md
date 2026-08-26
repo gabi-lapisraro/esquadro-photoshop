@@ -24,6 +24,7 @@ cd ~/Downloads/esquadro-photoshop
 ./empacotar-teste.sh        # instala uma 2ª cópia, lado a lado, para testar UI
 ./empacotar-teste.sh --remover
 python3 verificar-uxp.py    # checa CSS contra o que o UXP suporta
+python3 validar-pacote.py   # extrai o zip num diretório limpo e confere tudo
 python3 gerar-playground.py # gera playground.html a partir do index/styles reais
 ```
 
@@ -31,9 +32,17 @@ Instalação manual: copiar a pasta para
 `~/Library/Application Support/Adobe/UXP/Plugins/External/` e **reiniciar o
 Photoshop** (ele só varre essa pasta ao iniciar). Ver `INSTALAR.md`.
 
-Os testes vivem no scratchpad da sessão (`test.js`, `test_prefs.js`,
-`test_playground.js`, `harness.js`) e usam jsdom. **Não estão no repo** — se
-forem úteis, vale movê-los para `tests/`.
+Os testes estão em `tests/` e usam jsdom — carregam o `index.html` e o
+`data_photoshop.js` reais e exercitam o `ui.js` sem precisar do Photoshop:
+
+```bash
+cd tests && npm install jsdom   # uma vez
+node test.js  &&  node test_prefs.js  &&  node test_playground.js
+```
+
+`tests/computados.js` fotografa os valores computados dos elementos-chave.
+Serve para provar que uma limpeza de CSS não mudou nada visualmente: rode
+antes, rode depois, e compare com `diff`.
 
 ---
 
@@ -167,11 +176,11 @@ UXP. O caminho é **SVG inline** como fundo do cabeçalho. Não foi testado.
 
 ### Pedidos abertos do último ciclo
 
-- Refazer o playground: os limites dos sliders ficaram baixos demais, e ela
-  quer poder digitar valores.
-- `--peso-modo-ativo` está declarado e **nunca referenciado** — o slider dele
-  não faz nada. Auditoria encontrou esse único token morto.
-- Rodapé em 7px e 7,5px é pequeno de verdade; decisão dela.
+- Rodapé em fonte pequena (5,5px hoje); decisão dela se sobe.
+
+Resolvidos em 25/08, no fim: o playground ganhou campo numérico sem teto ao
+lado de cada slider (digitar acima do máximo ESTICA o slider), o token morto
+`--peso-modo-ativo` ganhou dono, e a cascata do CSS foi consolidada.
 
 ---
 
@@ -192,8 +201,12 @@ clareado reprovava com texto branco.
 
 ## Distribuição, que é o próximo passo
 
-Ainda **não** foi feita. O que existe: `dist/ESQUADRO-1.0.0.ccx` e `.zip`,
-gerados por `./empacotar.sh`, e o `INSTALAR.md` com o passo a passo.
+O pacote está **validado**: `validar-pacote.py` extrai o zip num diretório
+limpo e confere o manifest (inclusive `host` como objeto), se o `main` existe,
+se toda referência de HTML, CSS e `require()` resolve, se não há nada remoto e
+se não sobrou lixo. Roda automático no `empacotar.sh` e trava o build se falhar.
+
+O que existe: `dist/ESQUADRO-1.0.0.ccx` e `.zip` (312 KB), e o `INSTALAR.md`.
 
 Três caminhos, do mais simples ao mais robusto:
 
@@ -204,12 +217,15 @@ Três caminhos, do mais simples ao mais robusto:
 3. **Adobe Exchange em listagem privada** — instalação e atualização
    automáticas, mas passa por revisão da Adobe e exige conta de desenvolvedor.
 
-**Nada disso foi testado numa segunda máquina.** O único ambiente verificado é
-o desta, com instalação manual na pasta `External`.
+**O que continua sem teste: uma segunda máquina.** O pacote está íntegro, mas
+"íntegro" não é "instala e abre no computador do colega". O que só a máquina do
+outro responde: se o Creative Cloud aceita o `.ccx` sem assinatura, se a fonte
+embarcada aparece numa instalação limpa, e se o caminho do Windows está certo
+(escrevi pela documentação da Adobe, sem testar).
 
-Antes de distribuir, vale conferir: a fonte embarcada aparece (o `@import`
-remoto já falhou uma vez), o painel abre em tela não-retina, e o `INSTALAR.md`
-está atualizado para a versão empacotada.
+Sugestão: instalar em UMA máquina antes de mandar para todos, e usar o
+`INSTALAR.md` como roteiro. Se der problema, o log UXP dessa máquina diz o
+motivo — é onde achamos o `host` como array.
 
 ---
 

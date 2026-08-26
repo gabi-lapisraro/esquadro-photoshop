@@ -193,11 +193,9 @@ body {
 
 .platform-icon.active {
   background-color: transparent;
-  color: var(--vermelho-raro) !important;
-}
-
-.btn-toggle-strip.active {
-  color: var(--vermelho-raro);
+  /* a cor vem da regra de combinação, no fim do arquivo. Aqui havia
+     `color: var(--vermelho-raro) !important`, que vencia a cascata e impedia a
+     companheira de colorir o ícone ativo. */
 }
 
 .controls-row {
@@ -236,12 +234,6 @@ body {
   user-select: none;
 }
 
-.mode-btn.active {
-  background-color: var(--vermelho-raro);
-  color: #ffffff;
-  font-weight: 700;
-}
-
 .stepper-group {
   flex: 0 0 68px;
 }
@@ -264,7 +256,8 @@ body {
   height: 100%;
   background: transparent !important;
   border: none !important;
-  color: var(--text-muted) !important;
+  /* os sinais + e - usam a PRINCIPAL, como nos SVGs de referência */
+  color: var(--acento-visivel) !important;
   font-family: var(--font-brand-mono);
   font-size: var(--fonte-stepper-sinal);
   font-weight: var(--peso-stepper-sinal);
@@ -568,7 +561,6 @@ body {
 .header-meta .header-brand-label { text-align: right; }
 
 /* a paleta perde a altura fixa: quem manda é o bloco */
-.panel-header .theme-palette { height: auto; }
 
 .header-brand-label {
   font-family: var(--font-brand-mono);
@@ -586,6 +578,7 @@ body {
 }
 
 .color-dot {
+  opacity: 0.45;
   width: var(--tam-color-dot);
   height: var(--tam-color-dot);
   min-width: var(--tam-color-dot);
@@ -736,15 +729,6 @@ body {
    --------------------------------------------------------------------------- */
 
 
-.mode-btn.active {
-  background-color: var(--vermelho-raro);
-  color: var(--sobre-acento);
-}
-
-.platform-icon { color: var(--text-muted); }
-.platform-icon.active,
-.btn-toggle-strip.active { color: var(--acento-visivel); }
-
 
 
 /* ---------------------------------------------------------------------------
@@ -818,7 +802,7 @@ body {
 .header-wordmark {
   height: var(--alt-wordmark);
   width: auto;
-  color: var(--acento-visivel);
+  color: var(--companheira);
   flex-shrink: 0;
 }
 
@@ -830,7 +814,6 @@ body {
    Sem mudança de tamanho: o tamanho é o mesmo em todas.
    --------------------------------------------------------------------------- */
 
-.color-dot { opacity: 0.45; }
 
 .color-dot:hover { opacity: 0.8; }
 
@@ -850,11 +833,10 @@ body {
 .mode-btn.active {
   background-color: var(--companheira);
   color: var(--sobre-companheira);
+  font-weight: var(--peso-modo-ativo);
 }
 
 .platform-icon.active,
 .btn-toggle-strip.active { color: var(--companheira); }
 
-.header-wordmark { color: var(--companheira); }
 
-.stepper-btn { color: var(--acento-visivel) !important; }
