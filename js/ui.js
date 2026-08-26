@@ -261,7 +261,6 @@ function init(config) {
   els.safeOverlay = document.getElementById('safeOverlay');
   els.noInfoBox = document.getElementById('noInfoBox');
   els.cropOverlay = document.getElementById('cropOverlay');
-  els.dimText = document.getElementById('dimText');
   els.cropNoteText = document.getElementById('cropNoteText');
   els.legendSafeItem = document.getElementById('legendSafeItem');
   els.legendCropItem = document.getElementById('legendCropItem');
@@ -664,7 +663,6 @@ function clearPreview() {
   els.canvasPreview.style.height = '84px';
   els.canvasPreview.style.borderRadius = '2px';
   els.canvasPreview.classList.add('is-empty');
-  els.dimText.textContent = '—';
   els.safeOverlay.style.display = 'none';
   els.noInfoBox.style.display = 'none';
   els.cropOverlay.style.display = 'none';
@@ -698,7 +696,6 @@ function updatePreview() {
   els.canvasPreview.style.width = `${renderW}px`;
   els.canvasPreview.style.height = `${renderH}px`;
   els.canvasPreview.style.borderRadius = fmt.circular ? '50%' : '2px';
-  els.dimText.textContent = `${fmt.width} × ${fmt.height} px`;
 
   const scaleX = renderW / fmt.width;
   const scaleY = renderH / fmt.height;

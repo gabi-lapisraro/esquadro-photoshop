@@ -42,74 +42,72 @@
      está anotado em docs/ESTADO.md.
      Comentário no formato "Grupo | Rótulo" — o gerador do playground usa isso.
      Nada de `gap`: o UXP ignora gap em flexbox. */
-  --alt-logo: 21px;           /* Cabeçalho | Altura do logo ESQUADЯO */
+  --alt-logo: 22px;           /* Cabeçalho | Altura do logo ESQUADЯO */
 
-  --tam-icone: 27px;            /* Ícones | Altura da célula */
+  --tam-icone: 26px;            /* Ícones | Altura da célula */
   --colunas-icones: 7;          /* Ícones | Colunas (6 redes + o botão ...) */
   --tam-icone-svg: 17px;        /* Ícones | Desenho do ícone */
-  --esp-fileiras: 2px;          /* Ícones | Entre as fileiras */
+  --esp-fileiras: 1.5px;          /* Ícones | Entre as fileiras */
 
-  --alt-controle: 20px;         /* Controles | Altura */
-  --esp-modo-stepper: 4.5px;    /* Controles | Entre as pílulas */
+  --alt-controle: 19px;         /* Controles | Altura */
+  --esp-modo-stepper: 4px;    /* Controles | Entre as pílulas */
   --alt-seletor: 26px;          /* Controles | Altura do seletor de formato */
-  --esp-dropdown-x: 11px;       /* Controles | Recuo do dropdown */
+  --esp-dropdown-x: 15px;       /* Controles | Recuo do dropdown */
   --esp-item-y: 6px;            /* Controles | Item da lista, vertical */
-  --esp-item-x: 10px;            /* Controles | Item da lista, lateral */
+  --esp-item-x: 9px;            /* Controles | Item da lista, lateral */
 
-  --esp-preview-topo: 0px;     /* Preview | Topo */
+  --esp-preview-topo: 5.5px;     /* Preview | Topo */
   --esp-preview-base: 0px;     /* Preview | Base */
-  --alt-stage: 107px;           /* Preview | Altura do palco */
+  --alt-stage: 99px;           /* Preview | Altura do palco */
   --alt-preview-min: 0px;     /* Preview | Altura mínima */
-  --esp-preview-interno: 7.5px;  /* Preview | Entre canvas e textos */
-  --esp-footer-linhas: 3.5px;     /* Preview | Entre as linhas de texto */
+  --esp-preview-interno: 3.5px;  /* Preview | Entre canvas e textos */
+  --esp-footer-linhas: 3px;     /* Preview | Entre as linhas de texto */
   --esp-legenda: 0px;          /* Preview | Entre itens da legenda */
 
-  --alt-botao: 23.5px;            /* Botões | Altura */
+  --alt-botao: 26px;            /* Botões | Altura */
   --esp-botoes: 4px;            /* Botões | Entre os dois */
   --esp-acima-botoes: 0px;      /* Botões | Acima do grupo */
-  --esp-botao-x: 3.5px;           /* Botões | Recuo horizontal */
+  --esp-botao-x: 0px;           /* Botões | Recuo horizontal */
 
-  --esp-cabecalho: 23px;           /* Cabeçalho | Espaço em volta da moldura */
+  --esp-cabecalho: 20px;           /* Cabeçalho | Espaço em volta da moldura */
   --alt-moldura-topo: 54px;     /* Molduras | Altura da moldura do topo */
-  --alt-moldura-base: 36px;     /* Molduras | Altura da moldura da base */
-  --esp-abaixo-rodape: 17px;    /* Molduras | Abaixo da moldura da base */
-  --tam-color-dot: 3.5px;         /* Cabeçalho | Bolinha de cor */
+  --alt-moldura-base: 40px;     /* Molduras | Altura da moldura da base */
+  --esp-abaixo-rodape: 43px;    /* Molduras | Abaixo da moldura da base */
+  --tam-color-dot: 3px;         /* Cabeçalho | Bolinha de cor */
 
-  --esp-blocos: 22px;           /* Blocos | Plataformas → controles */
-  --esp-controles: 5.5px;        /* Blocos | Entre controles e preview */
-  --esp-preview: 20px;          /* Blocos | Abaixo do preview */
-  --esp-corpo-x: 18px;          /* Blocos | Margem lateral */
+  --esp-blocos: 19px;           /* Blocos | Plataformas → controles */
+  --esp-controles: 4px;        /* Blocos | Entre controles e preview */
+  --esp-preview: 0px;          /* Blocos | Abaixo do preview */
+  --esp-corpo-x: 17px;          /* Blocos | Margem lateral */
   --esp-corpo-topo: 0px;       /* Blocos | Topo do corpo */
-  --esp-corpo-base: 7px;        /* Blocos | Base do corpo */
+  --esp-corpo-base: 8.5px;        /* Blocos | Base do corpo */
 
-  --raio-caixa: 14px;           /* Formas | Cantos das caixas */
+  --raio-caixa: 14.5px;           /* Formas | Cantos das caixas */
   --raio-controle: 999px;       /* Formas | Cantos dos controles (999 = pílula) */
   --raio-item: 999px;           /* Formas | Cantos dos itens (999 = pílula) */
   --borda: 1;                   /* Formas | Espessura da borda */
 
-  --fonte-dropdown: 11px;     /* Fontes | Formato selecionado */
+  --fonte-dropdown: 10px;     /* Fontes | Formato selecionado */
   --fonte-item: 9px;           /* Fontes | Item da lista */
   --fonte-modo: 7.5px;          /* Fontes | Orgânico / Anúncio */
   --fonte-stepper: 7.5px;       /* Fontes | Número da quantidade */
   --fonte-stepper-sinal: 10px;  /* Fontes | Sinais + e - */
-  --fonte-dim: 8.5px;             /* Fontes | Dimensão do preview */
   --fonte-legenda: 6.5px;         /* Fontes | Legenda do preview */
-  --fonte-fmt-dim: 7.5px;         /* Fontes | Dimensão no seletor */
+  --fonte-fmt-dim: 9px;         /* Fontes | Dimensão no seletor */
   --esp-fmt-dim: 5.5px;           /* Controles | Nome → dimensão */
-  --fonte-botao: 8.5px;           /* Fontes | Botões de ação */
-  --alt-wordmark: 5.5px;         /* Cabeçalho | Altura do wordmark */
-  --esp-assinatura: 3.5px;        /* Cabeçalho | Entre as linhas da assinatura */
-  --fonte-rodape: 5.5px;          /* Cabeçalho | Fonte do texto */
+  --fonte-botao: 9px;           /* Fontes | Botões de ação */
+  --alt-wordmark: 6px;         /* Cabeçalho | Altura do wordmark */
+  --esp-assinatura: 4px;        /* Cabeçalho | Entre as linhas da assinatura */
+  --fonte-rodape: 5px;          /* Cabeçalho | Fonte do texto */
 
   --peso-modo: 300;             /* Pesos | Orgânico / Anúncio */
   --peso-modo-ativo: 700;       /* Pesos | Modo ativo */
-  --peso-dropdown: 400;         /* Pesos | Formato selecionado */
+  --peso-dropdown: 700;         /* Pesos | Formato selecionado */
   --peso-botao: 400;            /* Pesos | Botões de ação */
-  --peso-stepper-sinal: 400; /* Pesos | Sinais + e - */
+  --peso-stepper-sinal: 700; /* Pesos | Sinais + e - */
   --peso-item: 400;        /* Pesos | Item da lista */
   --peso-nota: 400;        /* Pesos | Nota do crop */
   --peso-tag: 400;         /* Pesos | Tag do cabeçalho */
-  --peso-dim: 500;         /* Pesos | Dimensão do preview */
   --peso-stepper: 400;     /* Pesos | Número da quantidade */
   --peso-item-ativo: 700;  /* Pesos | Item ativo da lista */
 }
@@ -458,14 +456,6 @@ body {
   width: 100%;
   border-top: none;
   padding-top: 2px;
-}
-
-.dim-badge {
-  font-family: var(--font-brand-mono);
-  font-size: var(--fonte-dim);
-  font-weight: var(--peso-dim);
-  color: var(--text-main);
-  letter-spacing: 0.8px;
 }
 
 .crop-note {

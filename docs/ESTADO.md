@@ -141,7 +141,7 @@ Ads, onde descrevem display ad.
 
 ## UI: onde parou
 
-O CSS é dirigido por **62 tokens** com comentário `/* Grupo | Rótulo */`, que o
+O CSS é dirigido por **59 tokens** com comentário `/* Grupo | Rótulo */`, que o
 `gerar-playground.py` lê para montar os controles. O `playground.html` roda o
 painel **de verdade** (JS real, embrulhado num `require` de mentira) e só mexe
 em propriedades que o UXP suporta.
@@ -266,6 +266,29 @@ Sobra um lugar onde o desenho e o código ainda discordam, não decidido: a
 **caixa do stepper**. Nos 4 desenhos ela é contornada na PRINCIPAL, como o
 APLICAR GUIAS; no painel está no cinza neutro da borda. É um token de trocar.
 
+### O playground ganhou a ALTURA DO ENCAIXE
+
+Era o único ajuste que faltava e não dava para fazer: a altura do painel estava
+cravada em 520px no gerador. Agora é um controle, no grupo **Painel**, no topo
+da coluna.
+
+Não é token do `styles.css` — no Photoshop quem escolhe a altura é quem arrasta
+o painel. O input carrega `data-fora="1"`, e por isso ele muda a tela mas **não
+entra no CSS de saída**: o que ela copia continua sendo só os tokens de
+verdade. Serve para ver como o rodapé se comporta num painel mais alto ou mais
+baixo — o rodapé fica colado na base, e `--esp-abaixo-rodape` é o que o levanta.
+
+### A dimensão saiu de baixo do preview
+
+Ela já aparece no seletor de formato, e repetida embaixo do preview não dizia
+nada de novo. Saiu o `<span id="dimText">`, a regra `.dim-badge`, as duas
+escritas no `ui.js` e os dois tokens que só ela usava (`--fonte-dim` e
+`--peso-dim`) — 61 tokens viraram 59.
+
+Os testes que afirmavam a dimensão passaram a afirmar no seletor, que é onde ela
+mora agora. A leitura continua coberta: se o cálculo de dimensão quebrar, o
+teste quebra.
+
 ### Espaçamento, altura e fonte: medidos no desenho
 
 Não foram no olho. Todos os valores saíram de `UI Illustrator/1.svg`,
@@ -273,7 +296,11 @@ convertidos com **k = 1,0928** — a razão entre o painel simulado do playgroun
 (264px de largura) e a largura do desenho (241,58 unidades). Se um dia o painel
 de referência mudar de largura, é esse k que muda.
 
-| Token | Antes | Agora | No desenho |
+**Os valores da tabela abaixo são o ponto de partida, não o estado atual.** Ela
+passou a régua no playground depois disso e reajustou quase tudo; o que vale é o
+`:root` do `styles.css`. A tabela fica porque mostra DE ONDE cada número saiu.
+
+| Token | Antes | Calibrado no desenho | No desenho |
 |---|---|---|---|
 | `--esp-corpo-x` | 14px | 18px | margem lateral 16,49 un |
 | `--esp-cabecalho` | 25px | 23px | 21,51 un acima da moldura |

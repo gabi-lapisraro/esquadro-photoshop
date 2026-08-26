@@ -22,7 +22,8 @@ check('e é o selecionado', a.$('dropdownCurrentDim').textContent, '1080×1350')
 
 console.log('\n-- A2. crop escalado (instagram quadrado) --');
 a.click(a.items().find(i => i.getAttribute('data-id') === 'instagram-quadrado-1-1'));
-check('dimText', a.$('dimText').textContent, '1080 × 1080 px');
+// a dimensão vive só no seletor agora; embaixo do preview não existe mais
+check('dimensao no seletor', a.$('dropdownCurrentDim').textContent, '1080×1080');
 check('crop visivel', a.$('cropOverlay').style.display, 'block');
 check('legenda', a.$('legendCropItem').querySelector('span').textContent, 'Corte Feed');
 // 1080px -> 84px de preview; lateral 135 -> 135*(84/1080) = 10.5px
@@ -38,7 +39,6 @@ a.pick('ooh');
 check('label avisa vazio', a.$('dropdownCurrentLabel').textContent, 'Sem formatos disponíveis');
 check('dimensao limpa no vazio', a.$('dropdownCurrentDim').textContent, '');
 check('preview marcado vazio', a.$('canvasPreview').classList.contains('is-empty'), true);
-check('dimText limpo', a.$('dimText').textContent, '\u2014');
 check('criar travado', a.$('btnCreate').classList.contains('is-disabled'), true);
 check('guias travado', a.$('btnGuidesOnly').classList.contains('is-disabled'), true);
 const antesOoh = calls.length;
@@ -109,7 +109,6 @@ b.pick('linkedin');
 check('label avisa vazio', b.$('dropdownCurrentLabel').textContent, 'Sem formatos disponíveis');
 check('dimensao limpa no vazio', b.$('dropdownCurrentDim').textContent, '');
 check('preview marcado vazio', b.$('canvasPreview').classList.contains('is-empty'), true);
-check('dimText limpo', b.$('dimText').textContent, '—');
 check('safe oculto', b.$('safeOverlay').style.display, 'none');
 check('crop oculto', b.$('cropOverlay').style.display, 'none');
 check('btnCreate travado', b.$('btnCreate').classList.contains('is-disabled'), true);
