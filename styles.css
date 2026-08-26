@@ -25,12 +25,17 @@
   --text-muted: #d0d0d0;
   --text-dim: #a0a0a0;
   
-  --guide-safe: #E61C00;
   --sobre-acento: #ffffff;   /* cor de texto sobre o acento */
   --acento-visivel: #E61C00; /* acento em traço, sobre o painel escuro */
   --companheira: #e5e3d9;    /* par da cor escolhida (Vermelho → Nude) */
   --sobre-companheira: #222222; 
-  --guide-crop: #a2d2eb; /* o corte tem cor própria: ver data-corte */
+  /* AS DUAS GUIAS — área segura e linha de corte — usam a mesma cor: a
+     SECUNDÁRIA do tema. Elas nunca aparecem juntas (só margem lateral = corte;
+     tem topo ou base = área segura), então não precisam se distinguir por cor.
+     Quem escreve isto é o ui.js, de data-corte ou, na falta dele, da
+     companheira. Antes a área segura ia na principal e o corte num azul fixo,
+     que não acompanhava o tema. */
+  --guide-crop: #a2d2eb;
 
   --font-brand-mono: 'IBM Plex Mono', monospace;
 
@@ -56,10 +61,11 @@
   --esp-item-y: 6px;            /* Controles | Item da lista, vertical */
   --esp-item-x: 9px;            /* Controles | Item da lista, lateral */
 
-  --esp-preview-topo: 5.5px;     /* Preview | Topo */
+  --esp-preview-topo: 12px;     /* Preview | Topo */
   --esp-preview-base: 0px;     /* Preview | Base */
-  --alt-stage: 99px;           /* Preview | Altura do palco */
+  --alt-stage: 101px;           /* Preview | Altura do palco */
   --alt-preview-min: 0px;     /* Preview | Altura mínima */
+  --alt-preview-max: 190px;   /* Preview | Altura máxima */
   --esp-preview-interno: 3.5px;  /* Preview | Entre canvas e textos */
   --esp-footer-linhas: 3px;     /* Preview | Entre as linhas de texto */
   --esp-legenda: 0px;          /* Preview | Entre itens da legenda */
@@ -72,15 +78,15 @@
   --esp-cabecalho: 20px;           /* Cabeçalho | Espaço em volta da moldura */
   --alt-moldura-topo: 54px;     /* Molduras | Altura da moldura do topo */
   --alt-moldura-base: 40px;     /* Molduras | Altura da moldura da base */
-  --esp-abaixo-rodape: 43px;    /* Molduras | Abaixo da moldura da base */
+  --esp-abaixo-rodape: 17px;    /* Molduras | Abaixo do rodapé (espaço final) */
   --tam-color-dot: 3px;         /* Cabeçalho | Bolinha de cor */
 
   --esp-blocos: 19px;           /* Blocos | Plataformas → controles */
   --esp-controles: 4px;        /* Blocos | Entre controles e preview */
-  --esp-preview: 0px;          /* Blocos | Abaixo do preview */
+  --esp-preview: 6.5px;          /* Blocos | Abaixo do preview */
   --esp-corpo-x: 17px;          /* Blocos | Margem lateral */
   --esp-corpo-topo: 0px;       /* Blocos | Topo do corpo */
-  --esp-corpo-base: 8.5px;        /* Blocos | Base do corpo */
+  --esp-corpo-base: 4px;        /* Blocos | Base do corpo */
 
   --raio-caixa: 14.5px;           /* Formas | Cantos das caixas */
   --raio-controle: 999px;       /* Formas | Cantos dos controles (999 = pílula) */
@@ -101,9 +107,9 @@
   --fonte-rodape: 5px;          /* Cabeçalho | Fonte do texto */
 
   --peso-modo: 300;             /* Pesos | Orgânico / Anúncio */
-  --peso-modo-ativo: 700;       /* Pesos | Modo ativo */
+  --peso-modo-ativo: 500;       /* Pesos | Modo ativo */
   --peso-dropdown: 700;         /* Pesos | Formato selecionado */
-  --peso-botao: 400;            /* Pesos | Botões de ação */
+  --peso-botao: 700;            /* Pesos | Botões de ação */
   --peso-stepper-sinal: 700; /* Pesos | Sinais + e - */
   --peso-item: 400;        /* Pesos | Item da lista */
   --peso-nota: 400;        /* Pesos | Nota do crop */
@@ -399,11 +405,15 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  /* absorve a altura sobrando do painel: a folga vira respiro em volta do
-     canvas, em vez de virar vazio entre os botões e o rodapé */
+  /* Absorve a altura sobrando do painel: a folga vira respiro em volta do
+     canvas, em vez de virar vazio entre os botões e o rodapé. Mas só ATÉ o
+     teto — sem ele, num painel alto o preview engolia tudo e não havia como
+     encurtar o bloco mexendo no palco. Passando do teto, a folga volta a cair
+     entre os botões e o rodapé, onde dá para ver e julgar. */
   flex: 1;
   justify-content: center;
   min-height: var(--alt-preview-min);
+  max-height: var(--alt-preview-max);
 }
 
 .preview-stage {
@@ -429,22 +439,24 @@ body {
 
 .guide-overlay {
   position: absolute;
-  border: 1px dashed var(--vermelho-raro);
+  border: 1px dashed var(--guide-crop);
   pointer-events: none;
   transition: all 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .guide-no-info {
   position: absolute;
-  border: 1px dashed var(--vermelho-raro);
-  background-color: rgba(230, 28, 0, 0.12);
+  border: 1px dashed var(--guide-crop);
+  /* sem tinta de fundo: era um vermelho cravado, que não acompanhava o tema e
+     não há como tirar alpha de uma variável sem color-mix, que o UXP não tem */
+  background-color: transparent;
   pointer-events: none;
   transition: all 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .guide-crop-overlay {
   position: absolute;
-  border: 1px dashed var(--azul-raro);
+  border: 1px dashed var(--guide-crop);
   pointer-events: none;
   transition: all 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
@@ -816,12 +828,11 @@ body {
 
 
 /* ---------------------------------------------------------------------------
-   LEGENDA: o próprio nome carrega a cor da guia, sem bolinha ao lado.
-   A área segura acompanha o tema (começa no Vermelho Raro); a linha de corte
-   fica no Azul Raro, como a guia desenhada no documento.
+   LEGENDA: o próprio nome carrega a cor da guia que ele nomeia, sem bolinha ao
+   lado. As duas guias usam a mesma cor, então as duas legendas também.
    --------------------------------------------------------------------------- */
 
-.legenda-safe { color: var(--acento-visivel); }
+.legenda-safe,
 .legenda-crop { color: var(--guide-crop); }
 
 
@@ -878,12 +889,22 @@ body {
   color: var(--text-main);
 }
 
-/* O preenchido só recua um pouco; o vazado é que se preenche. */
-.btn-primary:hover { opacity: 0.85; }
+/* No hover cada um responde do seu jeito, sem trocar de natureza: o CHEIO se
+   preenche com a companheira, a segunda cor do tema, e a letra vai para
+   --sobre-companheira, que o JS calcula por contraste. O VAZADO continua
+   vazado — o que muda é o traço, que vai para a companheira, e a letra, que
+   vai para a principal. No tema Vermelho isso dá o botão branco de um lado e,
+   do outro, linha branca com letra vermelha. */
+.btn-primary:hover {
+  background-color: var(--companheira);
+  border-color: var(--companheira);
+  color: var(--sobre-companheira);
+}
 
 .btn-secondary:hover {
-  background-color: var(--acento-visivel);
-  color: var(--sobre-acento);
+  background-color: transparent;
+  border-color: var(--companheira);
+  color: var(--acento-visivel);
 }
 
 

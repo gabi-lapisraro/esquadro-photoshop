@@ -442,15 +442,15 @@ function applyTheme(color) {
   // A COMPANHEIRA marca o que está escolhido: modo ativo, ícone da plataforma
   // ativa e wordmark. Em data-par.
   const par = (escolhida && escolhida.getAttribute('data-par')) || null;
-  // A guia de corte quase sempre é a mesma companheira — menos no tema
-  // Vermelho, que marca a escolha em Nude mas desenha o corte em Azul. Por isso
-  // a bolinha pode declarar um data-corte próprio; sem ele, vale a companheira.
+  // AS DUAS GUIAS — área segura e linha de corte — saem daqui, na mesma cor: a
+  // secundária do tema. Quase sempre é a companheira; no Vermelho, que marca a
+  // escolha em Nude, o desenho pede Azul para a guia (ver 1.svg). Por isso a
+  // bolinha pode declarar um data-corte próprio; sem ele, vale a companheira.
   const corte = (escolhida && escolhida.getAttribute('data-corte')) || par;
 
   const raiz = document.documentElement.style;
   raiz.setProperty('--vermelho-raro', color);
   raiz.setProperty('--acento-visivel', acento);
-  raiz.setProperty('--guide-safe', acento);
   raiz.setProperty('--sobre-acento', contrastOn(color));
   if (par) {
     raiz.setProperty('--companheira', par);

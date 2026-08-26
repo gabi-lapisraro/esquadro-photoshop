@@ -141,7 +141,7 @@ Ads, onde descrevem display ad.
 
 ## UI: onde parou
 
-O CSS é dirigido por **59 tokens** com comentário `/* Grupo | Rótulo */`, que o
+O CSS é dirigido por **60 tokens** com comentário `/* Grupo | Rótulo */`, que o
 `gerar-playground.py` lê para montar os controles. O `playground.html` roda o
 painel **de verdade** (JS real, embrulhado num `require` de mentira) e só mexe
 em propriedades que o UXP suporta.
@@ -162,6 +162,13 @@ qualquer regra de CSS e desfazia todo ajuste no `styles.css`.
 A principal preenche o botão de criar e os sinais do stepper. A companheira
 marca o modo ativo, o ícone da plataforma ativa e o wordmark. A guia de corte é
 a companheira em três dos quatro temas — o Vermelho é a exceção.
+
+**As duas guias — área segura e linha de corte — saem na mesma cor: a
+secundária do tema.** Elas nunca aparecem juntas (só margem lateral = linha de
+corte; tem topo ou base = área segura), então não precisam se distinguir por
+cor. Antes a área segura ia na principal e a linha de corte num azul CRAVADO,
+que não acompanhava o tema — era um bug, não uma decisão. O `--guide-safe` era
+variável morta: ninguém lia.
 
 **Opacidade, e não cor, é o que separa selecionado de não selecionado** na
 fileira de plataformas: o ícone é sempre o mesmo desenho: quem não está
@@ -259,8 +266,23 @@ funcionar sozinho.
 
 2. **Um botão é cheio, o outro é vazado.** CRIAR PRANCHETA preenchido com a
    principal, APLICAR GUIAS só contornado na mesma cor. Desfez o "contornados,
-   com o acento só no hover". O preenchido recua no hover; o vazado é que se
-   preenche.
+   com o acento só no hover".
+
+   **No hover cada um responde do seu jeito, sem trocar de natureza.** O CHEIO
+   se preenche com a companheira e a letra vai para `--sobre-companheira`, que o
+   `ui.js` calcula por contraste. O VAZADO continua vazado: o que muda é o
+   traço, que vai para a companheira, e a letra, que vai para a principal.
+
+   | Tema | Cheio no hover | Vazado no hover |
+   |---|---|---|
+   | Vermelho | fundo Nude, letra `#222` | traço Nude, letra Vermelho |
+   | Azul | fundo Vermelho, letra branca | traço Vermelho, letra Azul |
+   | Rosa | fundo Azul, letra `#222` | traço Azul, letra Rosa |
+   | Nude | fundo Rosa, letra `#222` | traço Rosa, letra Nude |
+
+   Os fundos do cheio passam WCAG AA nos quatro (12,4:1 / 4,6:1 / 9,8:1 /
+   9,3:1). A letra do vazado é a principal sobre o painel escuro, que é
+   exatamente para o que `--acento-visivel` existe.
 
 Sobra um lugar onde o desenho e o código ainda discordam, não decidido: a
 **caixa do stepper**. Nos 4 desenhos ela é contornada na PRINCIPAL, como o
@@ -277,6 +299,18 @@ o painel. O input carrega `data-fora="1"`, e por isso ele muda a tela mas **não
 entra no CSS de saída**: o que ela copia continua sendo só os tokens de
 verdade. Serve para ver como o rodapé se comporta num painel mais alto ou mais
 baixo — o rodapé fica colado na base, e `--esp-abaixo-rodape` é o que o levanta.
+
+### O preview tem teto de altura agora
+
+`.preview-card` tem `flex: 1` de propósito: ele absorve a altura que sobra do
+painel, para a folga virar respiro em volta do canvas em vez de virar vazio
+entre os botões e o rodapé. O efeito colateral é que num painel alto o preview
+engolia tudo, e **mexer em `--alt-stage` não encurtava o bloco**.
+
+Agora existe `--alt-preview-max`. Passando do teto, a folga volta a cair entre
+os botões e o rodapé — onde dá para ver e julgar. Com o teto em 128px e os
+tokens de hoje, a altura natural do painel fica em torno de **463px**: mais alto
+que isso, abre espaço acima do rodapé.
 
 ### A dimensão saiu de baixo do preview
 

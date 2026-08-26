@@ -88,6 +88,35 @@ console.log('\n=== E. opacidade: ícone apagado, bolinha cheia ===');
   check('e todas cheias, sem traço', dots[0], '1/none');
 }
 
+console.log('\n=== F. hover dos botões vai para a companheira ===');
+{
+  const fs = require('fs');
+  const css = fs.readFileSync(path.join(ROOT, 'styles.css'), 'utf8');
+  // jsdom não computa :hover, então aqui eu leio a regra. Fraco de propósito:
+  // o que ele pega é a regra ter sido apagada ou trocada sem querer.
+  const regra = n => (css.match(new RegExp('\\.btn-' + n + ':hover\\s*\\{([^}]*)\\}')) || [,''])[1];
+  const cheio = regra('primary'), vazado = regra('secondary');
+  // o CHEIO se preenche com a companheira e a letra vai para o contraste dela
+  check('o cheio se preenche com a companheira', /background-color:\s*var\(--companheira\)/.test(cheio), true);
+  check('e a letra vai para o contraste dela', /color:\s*var\(--sobre-companheira\)/.test(cheio), true);
+  // o VAZADO continua vazado: muda o traço e a letra, não o fundo
+  check('o vazado não se preenche', /background-color:\s*transparent/.test(vazado), true);
+  check('o traço dele vai para a companheira', /border-color:\s*var\(--companheira\)/.test(vazado), true);
+  check('e a letra dele vai para a principal', /[^-]color:\s*var\(--acento-visivel\)/.test(vazado), true);
+}
+
+console.log('\n=== G. as duas guias saem da mesma cor ===');
+{
+  const fs = require('fs');
+  const css = fs.readFileSync(path.join(ROOT, 'styles.css'), 'utf8');
+  const borda = cls => ((css.match(new RegExp('\\.' + cls + '\\s*\\{([^}]*)\\}')) || [,''])[1]
+                        .match(/border:[^;]*var\((--[\w-]+)\)/) || [,''])[1];
+  check('área segura na cor da guia', borda('guide-overlay'), '--guide-crop');
+  check('linha de corte na mesma', borda('guide-crop-overlay'), '--guide-crop');
+  check('a caixa de reserva também', borda('guide-no-info'), '--guide-crop');
+  check('--guide-safe não existe mais', /--guide-safe/.test(css), false);
+}
+
 const f = failCount();
 console.log(`\n=== ${f === 0 ? 'TODOS OS TESTES PASSARAM' : f + ' FALHA(S)'} ===`);
 process.exit(f === 0 ? 0 : 1);
