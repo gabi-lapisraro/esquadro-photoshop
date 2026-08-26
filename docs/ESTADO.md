@@ -333,6 +333,98 @@ entra no CSS de saída**: o que ela copia continua sendo só os tokens de
 verdade. Serve para ver como o rodapé se comporta num painel mais alto ou mais
 baixo — o rodapé fica colado na base, e `--esp-abaixo-rodape` é o que o levanta.
 
+### O painel tem ALTURA, não altura mínima
+
+Subir o palco para 150px cortou o rodapé: o conteúdo passou da borda de baixo do
+painel. A causa não era o palco — era o `.panel-container` ter só
+`min-height: 100vh`. Com mínimo e sem teto ele **crescia junto com o conteúdo**,
+nenhum filho flexível precisava ceder, e o que sobrava saía pela borda.
+
+Agora a corrente é `html`/`body`/`.panel-container` todos em `height: 100%`, e o
+container é exatamente a altura do painel. O `min-height: 100vh` fica como rede:
+se a corrente não pegar no UXP, volta ao comportamento antigo.
+
+Com o teto no lugar, **quem cede é o palco**: `flex: 1 1 var(--alt-stage)` com
+`min-height: 0`. Ele pede `--alt-stage`, cresce até o teto do card num painel
+alto, e comprime num painel baixo. Medido no playground, o rodapé cabe em todas:
+
+| Painel | Palco |
+|---|---|
+| 400px | 86px |
+| 440px | 126px |
+| 478px | 161px |
+| 520px e acima | 161px (teto do card) |
+
+**O playground também mentia sobre isso.** O painel simulado usava `min-height`,
+então crescia e escondia justo o defeito que interessa ver. Agora ele tem altura
+fixa e `overflow: hidden`, como um painel encaixado de verdade.
+
+### O preview era "travado": o vazio estava DENTRO dele
+
+Ela não conseguia mudar a distância do preview para o seletor, e nenhum
+espaçamento mordia. O motivo: o palco **crescia até encher o card**, e o canvas
+ficava centrado nesse vazio. O espaço que ela via não era entre dois blocos —
+era dentro do preview, e por isso margem nenhuma o alcançava.
+
+Duas mudanças resolvem:
+
+- `.preview-card` passou a `justify-content: flex-start`. Com `center` o canvas
+  boiava no meio; agora o topo é fixo e a folga cai depois do preview.
+- `.preview-stage` ganhou `max-height: var(--alt-stage)`. Ele continua podendo
+  ENCOLHER quando falta espaço — é o que impede o corte —, mas não pode mais
+  INCHAR quando sobra. Era o inchaço que empurrava o canvas para longe.
+
+Agora a distância do seletor ao canvas obedece a `--esp-controles` mais
+`--esp-preview-topo`. Medido: com o topo em 0 dá 11px, em 10 dá 21, em 30,5 dá
+34,8. Acima disso o card bate no `--alt-preview-max` e o ganho desacelera — o
+teto está fazendo o trabalho dele.
+
+#### Padding negativo: três estragos em cadeia
+
+Ela chegou a `--esp-preview-base: -17px`, depois `-7px`, tentando puxar o
+preview para cima. Padding negativo não existe em CSS — mas ele não foi só
+ignorado. Fez três estragos, e é por isso que o preview continuou "travado"
+mesmo depois de eu consertar o alinhamento:
+
+1. **Derrubou o atalho inteiro.** A regra era
+   `padding: var(--esp-preview-topo) 10px var(--esp-preview-base)`. Um único
+   valor inválido invalida a **declaração toda** — o `padding-top` foi junto, e
+   o "Preview | Topo" parou de fazer qualquer efeito. Agora os quatro lados são
+   declarações separadas: um valor ruim derruba só o próprio lado.
+2. **Sumiu o controle do playground.** O regex que lê os tokens do CSS era
+   `(\d+(?:\.\d+)?)`, sem sinal. Com o valor negativo o token não casava e
+   **desaparecia da coluna** — ela perdia o slider e não tinha como desfazer.
+   O regex passou a aceitar `-?`.
+3. **O campo numérico deixava digitar.** Agora tem piso em zero.
+
+#### O canvas ficava com o tamanho de antes
+
+O canvas mede o palco, mas só quando `updatePreview` roda — e mexer num slider
+não rodava. O canvas ficava do tamanho de antes, maior que o palco, e como o
+palco centra, ele **transbordava para cima e para baixo**, cobrindo o "Corte
+Feed". O `ui.js` passou a exportar `atualizarPreview`, o playground chama a cada
+token mexido, e o painel escuta `resize` — em `try/catch`, porque não confirmei
+esse evento no UXP.
+
+Depois disso a distância anda 1:1 com o token: topo 0 dá 3,8px (que é o
+`--esp-controles`), topo 20 dá 23,8, topo 50 dá 53,8, topo 95 dá 98,8.
+
+### O canvas do preview mede o palco
+
+`updatePreview` tinha **84x108 cravados**. O `--alt-stage` do playground só
+mudava o vazio em volta do canvas: era um controle que não controlava nada, e a
+única razão de o preview parecer pequeno no painel.
+
+Agora o canvas lê `clientWidth`/`clientHeight` do `.preview-stage` e ocupa o
+palco inteiro, respeitando a proporção do formato. Ele cresce junto com o
+painel, que o usuário redimensiona, e o token voltou a valer.
+
+O 84x108 ficou como **rede**: se o UXP devolver 0 — elemento ainda sem layout,
+ou `clientWidth` sem suporte —, o preview cairia para tamanho zero e sumiria.
+Melhor pequeno do que invisível. É essa rede que os testes exercitam: no jsdom
+não há layout, o palco mede 0, e o que fica guardado é a REGRA DE ESCALA das
+guias, que é a mesma nos dois caminhos.
+
 ### O preview tem teto de altura agora
 
 `.preview-card` tem `flex: 1` de propósito: ele absorve a altura que sobra do

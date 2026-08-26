@@ -27,6 +27,9 @@ check('dimensao no seletor', a.$('dropdownCurrentDim').textContent, '1080×1080'
 check('crop visivel', a.$('cropOverlay').style.display, 'block');
 check('legenda', a.$('legendCropItem').querySelector('span').textContent, 'Corte Feed');
 // 1080px -> 84px de preview; lateral 135 -> 135*(84/1080) = 10.5px
+// O 84 é a REDE do updatePreview: no jsdom não há layout, o palco mede 0 e o
+// código cai no tamanho de segurança. No painel o canvas mede o palco. O que
+// este teste guarda é a REGRA DE ESCALA, que é a mesma nos dois casos.
 check('crop left escalado', a.$('cropOverlay').style.left, '10.5px');
 check('crop right escalado', a.$('cropOverlay').style.right, '10.5px');
 check('crop top zerado', a.$('cropOverlay').style.top, '0px');

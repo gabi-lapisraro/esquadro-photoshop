@@ -245,6 +245,16 @@ function init(config) {
   els.floatingTooltip = document.getElementById('floatingTooltip');
   els.extendedStrip = document.getElementById('extendedStrip');
   els.btnToggleStrip = document.getElementById('btnToggleStrip');
+
+  // O canvas mede o palco, e o palco muda quando o usuário arrasta o painel.
+  // Sem isto o preview fica com o tamanho de quando abriu. Em try/catch porque
+  // não confirmei o evento `resize` no UXP; se não existir, o preview só deixa
+  // de acompanhar — que é o comportamento de antes, não uma quebra.
+  try {
+    window.addEventListener('resize', () => updatePreview());
+  } catch (e) {
+    console.log('[ESQUADRO] sem evento de resize: ' + (e && e.message));
+  }
   
   // Custom Dropdown
   els.customDropdown = document.getElementById('customDropdown');
@@ -258,6 +268,7 @@ function init(config) {
   els.btnPlus = document.getElementById('btnPlus');
   els.btnActionLabel = document.getElementById('btnActionLabel');
   els.canvasPreview = document.getElementById('canvasPreview');
+  els.previewStage = document.querySelector('.preview-stage');
   els.safeOverlay = document.getElementById('safeOverlay');
   els.noInfoBox = document.getElementById('noInfoBox');
   els.cropOverlay = document.getElementById('cropOverlay');
@@ -680,8 +691,18 @@ function updatePreview() {
   els.canvasPreview.classList.remove('is-empty');
 
   const q = parseInt(els.qtdInput.textContent) || 1;
-  const maxW = 84;
-  const maxH = 108;
+
+  // O canvas ocupa o PALCO inteiro, respeitando a proporção do formato. Antes
+  // 84x108 estavam cravados aqui, e o `--alt-stage` do playground só mudava o
+  // vazio em volta: era um controle que não controlava nada. Medindo o palco,
+  // o preview passa a crescer com o painel — que o usuário redimensiona — e o
+  // token volta a valer.
+  //
+  // O 84x108 fica como rede: se o UXP devolver 0 (elemento ainda sem layout, ou
+  // clientWidth não suportado), o preview some. Melhor pequeno que invisível.
+  const palco = els.previewStage;
+  const maxW = (palco && palco.clientWidth) || 84;
+  const maxH = (palco && palco.clientHeight) || 108;
   const ratio = fmt.width / fmt.height;
 
   let renderW, renderH;
@@ -803,5 +824,8 @@ function showToast(msg, type) {
 }
 
 module.exports = {
-  init
+  init,
+  // O playground chama isto quando um token muda: o canvas mede o palco, e sem
+  // remedir ele fica com o tamanho de antes e transborda por cima da legenda.
+  atualizarPreview: updatePreview
 };

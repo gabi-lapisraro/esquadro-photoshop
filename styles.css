@@ -47,9 +47,9 @@
      está anotado em docs/ESTADO.md.
      Comentário no formato "Grupo | Rótulo" — o gerador do playground usa isso.
      Nada de `gap`: o UXP ignora gap em flexbox. */
-  --alt-logo: 22px;           /* Cabeçalho | Altura do logo ESQUADЯO */
+  --alt-logo: 17px;           /* Cabeçalho | Altura do logo ESQUADЯO */
 
-  --tam-icone: 26px;            /* Ícones | Altura da célula */
+  --tam-icone: 18px;            /* Ícones | Altura da célula */
   --colunas-icones: 7;          /* Ícones | Colunas (6 redes + o botão ...) */
   --tam-icone-svg: 17px;        /* Ícones | Desenho do ícone */
   --esp-fileiras: 1.5px;          /* Ícones | Entre as fileiras */
@@ -57,17 +57,17 @@
   --alt-controle: 19px;         /* Controles | Altura */
   --esp-modo-stepper: 4px;    /* Controles | Entre as pílulas */
   --alt-seletor: 26px;          /* Controles | Altura do seletor de formato */
-  --esp-dropdown-x: 15px;       /* Controles | Recuo do dropdown */
+  --esp-dropdown-x: 12.5px;       /* Controles | Recuo do dropdown */
   --esp-item-y: 6px;            /* Controles | Item da lista, vertical */
   --esp-item-x: 9px;            /* Controles | Item da lista, lateral */
 
-  --esp-preview-topo: 12px;     /* Preview | Topo */
+  --esp-preview-topo: 95px;     /* Preview | Topo */
   --esp-preview-base: 0px;     /* Preview | Base */
-  --alt-stage: 101px;           /* Preview | Altura do palco */
+  --alt-stage: 450px;           /* Preview | Altura do palco */
   --alt-preview-min: 0px;     /* Preview | Altura mínima */
-  --alt-preview-max: 190px;   /* Preview | Altura máxima */
-  --esp-preview-interno: 3.5px;  /* Preview | Entre canvas e textos */
-  --esp-footer-linhas: 3px;     /* Preview | Entre as linhas de texto */
+  --alt-preview-max: 590px;   /* Preview | Altura máxima */
+  --esp-preview-interno: 29px;  /* Preview | Entre canvas e textos */
+  --esp-footer-linhas: 0px;     /* Preview | Entre as linhas de texto */
   --esp-legenda: 0px;          /* Preview | Entre itens da legenda */
 
   --alt-botao: 26px;            /* Botões | Altura */
@@ -75,15 +75,15 @@
   --esp-acima-botoes: 0px;      /* Botões | Acima do grupo */
   --esp-botao-x: 0px;           /* Botões | Recuo horizontal */
 
-  --esp-cabecalho: 20px;           /* Cabeçalho | Espaço em volta da moldura */
-  --alt-moldura-topo: 54px;     /* Molduras | Altura da moldura do topo */
+  --esp-cabecalho: 16px;           /* Cabeçalho | Espaço em volta da moldura */
+  --alt-moldura-topo: 40px;     /* Molduras | Altura da moldura do topo */
   --alt-moldura-base: 40px;     /* Molduras | Altura da moldura da base */
-  --esp-abaixo-rodape: 17px;    /* Molduras | Abaixo do rodapé (espaço final) */
+  --esp-abaixo-rodape: 14px;    /* Molduras | Abaixo do rodapé (espaço final) */
   --tam-color-dot: 3px;         /* Cabeçalho | Bolinha de cor */
 
   --esp-blocos: 19px;           /* Blocos | Plataformas → controles */
   --esp-controles: 4px;        /* Blocos | Entre controles e preview */
-  --esp-preview: 6.5px;          /* Blocos | Abaixo do preview */
+  --esp-preview: 73px;          /* Blocos | Abaixo do preview */
   --esp-corpo-x: 17px;          /* Blocos | Margem lateral */
   --esp-corpo-topo: 0px;       /* Blocos | Topo do corpo */
   --esp-corpo-base: 4px;        /* Blocos | Base do corpo */
@@ -100,7 +100,7 @@
   --fonte-legenda: 6.5px;         /* Fontes | Legenda do preview */
   --fonte-fmt-dim: 9px;         /* Fontes | Dimensão no seletor */
   --esp-fmt-dim: 5.5px;           /* Controles | Nome → dimensão */
-  --fonte-botao: 9px;           /* Fontes | Botões de ação */
+  --fonte-botao: 7px;           /* Fontes | Botões de ação */
   --alt-wordmark: 6px;         /* Cabeçalho | Altura do wordmark */
   --esp-assinatura: 4px;        /* Cabeçalho | Entre as linhas da assinatura */
   --fonte-rodape: 5px;          /* Cabeçalho | Fonte do texto */
@@ -108,7 +108,7 @@
   --peso-modo: 300;             /* Pesos | Orgânico / Anúncio */
   --peso-modo-ativo: 500;       /* Pesos | Modo ativo */
   --peso-dropdown: 700;         /* Pesos | Formato selecionado */
-  --peso-botao: 700;            /* Pesos | Botões de ação */
+  --peso-botao: 600;            /* Pesos | Botões de ação */
   --peso-stepper-sinal: 700; /* Pesos | Sinais + e - */
   --peso-item: 400;        /* Pesos | Item da lista */
   --peso-nota: 400;        /* Pesos | Nota do crop */
@@ -125,6 +125,12 @@
   -webkit-font-smoothing: antialiased;
 }
 
+html {
+  /* a corrente de alturas: sem uma altura aqui, o `height: 100%` do container
+     não tem de que ser 100% e ele volta a crescer com o conteúdo */
+  height: 100%;
+}
+
 body {
   font-family: 'IBM Plex Mono', monospace !important;
   background-color: var(--bg-color);
@@ -132,6 +138,7 @@ body {
   margin: 0;
   padding: 0;
   width: 100%;
+  height: 100%;
   min-height: 100vh; /* uxp-ok: o rodapé precisa alcançar a base do painel */
   display: flex;
   justify-content: center;
@@ -140,6 +147,13 @@ body {
 
 .panel-container {
   width: 100%;
+  /* O container é EXATAMENTE a altura do painel, não no mínimo. Só com um teto
+     os filhos flexíveis são obrigados a caber: sem ele o container crescia
+     junto com o conteúdo, o palco nunca precisava ceder, e o que passava da
+     borda do painel era cortado — o rodapé sumia embaixo.
+     O min-height: 100vh fica como rede, para o caso de a corrente de `height:
+     100%` não pegar no UXP: aí volta ao que era antes, crescendo. */
+  height: 100%;
   min-height: 100vh; /* uxp-ok: idem, o corpo ocupa a altura toda */
   background-color: var(--bg-color);
   display: flex;
@@ -152,6 +166,9 @@ body {
   flex-direction: column;
   /* o corpo ocupa a altura livre, e a sobra é absorvida pelo preview abaixo */
   flex: 1;
+  /* sem isto um filho de conteúdo alto impede o corpo de encolher, e o que
+     passa da altura do painel é cortado em vez de comprimir o preview */
+  min-height: 0;
   background-color: var(--bg-color);
 }
 
@@ -402,7 +419,14 @@ body {
   background-color: transparent;
   border: none;
   border-radius: var(--raio-caixa);
-  padding: var(--esp-preview-topo) 10px var(--esp-preview-base);
+  /* Separado, e não no atalho `padding`. Um único valor inválido derruba a
+     declaração INTEIRA no CSS: com --esp-preview-base em -7px (padding negativo
+     não existe), o padding-top ia junto e o "Preview | Topo" parava de fazer
+     efeito. Foi assim que o preview pareceu travado. */
+  padding-top: var(--esp-preview-topo);
+  padding-bottom: var(--esp-preview-base);
+  padding-left: 10px;
+  padding-right: 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -412,14 +436,28 @@ body {
      encurtar o bloco mexendo no palco. Passando do teto, a folga volta a cair
      entre os botões e o rodapé, onde dá para ver e julgar. */
   flex: 1;
-  justify-content: center;
+  /* flex-start, não center: com `center` o canvas boiava no meio do card e a
+     distância dele para o seletor não obedecia a espaçamento nenhum — o vazio
+     estava DENTRO do preview, não entre os dois blocos. Agora o topo é fixo e
+     a folga cai embaixo, entre o preview e os botões. */
+  justify-content: flex-start;
   min-height: var(--alt-preview-min);
   max-height: var(--alt-preview-max);
 }
 
 .preview-stage {
   width: 100%;
-  height: var(--alt-stage);
+  /* O palco PEDE --alt-stage, mas cede. Como altura fixa ele não encolhia, e
+     num painel mais baixo que o conteúdo o rodapé saía cortado — foi o que
+     aconteceu ao subir o palco para 150px. Com base flexível e min-height
+     zero, ele é a peça que dá espaço quando falta: o canvas mede o palco, e
+     acompanha. Num painel alto ele cresce até o teto do card. */
+  flex: 1 1 var(--alt-stage);
+  min-height: 0;
+  /* Cresce NADA além do token: o palco pode encolher quando falta espaço, mas
+     não pode inchar quando sobra. Era o inchaço que empurrava o canvas para
+     longe do seletor. A folga que sobra vai para depois do preview. */
+  max-height: var(--alt-stage);
   display: flex;
   justify-content: center;
   align-items: center;
