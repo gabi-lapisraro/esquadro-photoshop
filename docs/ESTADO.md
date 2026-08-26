@@ -288,6 +288,23 @@ Sobra um lugar onde o desenho e o código ainda discordam, não decidido: a
 **caixa do stepper**. Nos 4 desenhos ela é contornada na PRINCIPAL, como o
 APLICAR GUIAS; no painel está no cinza neutro da borda. É um token de trocar.
 
+### O playground LEMBRA o que ainda não virou código
+
+O `playground.html` é gerado de novo a cada mexida no `styles.css` — e é justo
+no meio do ajuste dela que eu regero. Recarregar a página jogava fora todo
+slider que ainda não tinha me chegado. Aconteceu de verdade, e ela achou que eu
+tinha desfeito as alturas dela.
+
+Agora os controles ficam no `localStorage`. O que ele guarda são DOIS mapas: o
+valor que ela escolheu e o valor que o ARQUIVO tinha na hora. Ao carregar, se o
+arquivo mudou desde então, **o arquivo manda** — foi decisão nova, e sobrepor
+com o valor velho faria parecer que a mudança não pegou. Um lembrete embaixo dos
+botões diz quantos ajustes voltaram, e "Voltar ao atual" descarta tudo.
+
+Está todo em `try/catch`: `localStorage` estoura em origem opaca — é o caso do
+`jsdom` nos testes e do navegador embutido, que serve por `data:`. Sem guarda,
+isso derrubaria o playground inteiro.
+
 ### O playground ganhou a ALTURA DO ENCAIXE
 
 Era o único ajuste que faltava e não dava para fazer: a altura do painel estava
