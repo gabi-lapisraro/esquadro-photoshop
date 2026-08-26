@@ -452,10 +452,10 @@ function applyTheme(color) {
   // A COMPANHEIRA marca o que está escolhido: modo ativo, ícone da plataforma
   // ativa e wordmark. Em data-par.
   const par = (escolhida && escolhida.getAttribute('data-par')) || null;
-  // AS DUAS GUIAS — área segura e linha de corte — saem daqui, na mesma cor: a
-  // COMPANHEIRA, sem exceção. Chegou a existir um data-corte por bolinha, porque
-  // o 1.svg desenha o corte do tema Vermelho em Azul; ela decidiu que não, é
-  // Nude como o resto. Se a exceção voltar, o caminho é esse atributo.
+  // As duas guias — área segura e linha de corte — leem `--companheira` direto
+  // no CSS, então não há nada a escrever aqui para elas. Havia uma
+  // `--guide-crop` à parte, e o padrão dela no CSS era azul: bastava esta função
+  // não rodar para o azul voltar no tema Vermelho.
 
   const raiz = document.documentElement.style;
   raiz.setProperty('--vermelho-raro', color);
@@ -465,7 +465,6 @@ function applyTheme(color) {
     raiz.setProperty('--companheira', par);
     raiz.setProperty('--sobre-companheira', contrastOn(par));
   }
-  if (par) raiz.setProperty('--guide-crop', par);
 
   updatePreview();
   salvarPrefs();

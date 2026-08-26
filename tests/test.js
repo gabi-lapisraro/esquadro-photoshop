@@ -85,7 +85,10 @@ check('vermelho -> texto branco', sobreAcento(), '#ffffff');
 console.log('\n-- A6. combinações: cada cor traz sua companheira --');
 const companheira = () => document.documentElement.style.getPropertyValue('--companheira').trim();
 check('4 bolinhas (Vinho fora do desenho)', document.querySelectorAll('.color-dot').length, 4);
-const corte = () => document.documentElement.style.getPropertyValue('--guide-crop').trim();
+// As guias não têm variável própria: leem --companheira direto no CSS. Antes
+// havia uma --guide-crop à parte, com padrão azul no CSS, e bastava o tema não
+// ser reescrito para o azul voltar no Vermelho. É isto que o teste guarda.
+const corte = () => document.documentElement.style.getPropertyValue('--companheira').trim();
 const comb = c => { a.click(document.querySelector(`.color-dot[data-color="${c}"]`)); return [acento(), companheira()]; };
 check('Vermelho + Nude',  comb('#E61C00').join('|'), '#E61C00|#e5e3d9');
 check('Azul + Vermelho',  comb('#a2d2eb').join('|'), '#a2d2eb|#E61C00');
@@ -93,9 +96,9 @@ check('Rosa + Azul',      comb('#fea8fe').join('|'), '#fea8fe|#a2d2eb');
 check('Nude + Rosa',      comb('#e5e3d9').join('|'), '#e5e3d9|#fea8fe');
 // as duas guias são a companheira, em TODOS os temas. Houve uma exceção para o
 // Vermelho, lida do 1.svg, que ela desfez: é Nude como o resto.
-check('guia de corte segue a companheira', corte(), '#fea8fe');
+check('as guias saem da companheira', corte(), '#fea8fe');
 comb('#E61C00');
-check('no Vermelho também', corte(), '#e5e3d9');
+check('no Vermelho também, e é Nude', corte(), '#e5e3d9');
 a.click(document.querySelector('.color-dot[data-color="#E61C00"]'));
 
 console.log('\n=== B. estado vazio e dados invalidos ===');

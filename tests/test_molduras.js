@@ -118,10 +118,13 @@ console.log('\n=== G. as duas guias saem da mesma cor ===');
   const css = fs.readFileSync(path.join(ROOT, 'styles.css'), 'utf8');
   const borda = cls => ((css.match(new RegExp('\\.' + cls + '\\s*\\{([^}]*)\\}')) || [,''])[1]
                         .match(/border:[^;]*var\((--[\w-]+)\)/) || [,''])[1];
-  check('área segura na cor da guia', borda('guide-overlay'), '--guide-crop');
-  check('linha de corte na mesma', borda('guide-crop-overlay'), '--guide-crop');
-  check('a caixa de reserva também', borda('guide-no-info'), '--guide-crop');
-  check('--guide-safe não existe mais', /--guide-safe/.test(css), false);
+  // as três leem --companheira DIRETO: variável de guia à parte foi o que fez o
+  // azul voltar sozinho no tema Vermelho, porque ela tinha padrão próprio
+  check('área segura na companheira', borda('guide-overlay'), '--companheira');
+  check('linha de corte na mesma', borda('guide-crop-overlay'), '--companheira');
+  check('a caixa de reserva também', borda('guide-no-info'), '--companheira');
+  check('não há variável de guia separada',
+        /--guide-(safe|crop)\s*:/.test(css), false);
 }
 
 const f = failCount();

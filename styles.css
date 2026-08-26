@@ -35,12 +35,12 @@
   --acento-visivel: #E61C00; /* acento em traço, sobre o painel escuro */
   --companheira: #e5e3d9;    /* par da cor escolhida (Vermelho → Nude) */
   --sobre-companheira: #222222; 
-  /* AS DUAS GUIAS — área segura e linha de corte — usam a mesma cor: a
-     SECUNDÁRIA do tema. Elas nunca aparecem juntas (só margem lateral = corte;
-     tem topo ou base = área segura), então não precisam se distinguir por cor.
-     Quem escreve isto é o ui.js, sempre da companheira. Antes a área segura ia
-     na principal e o corte num azul fixo, que não acompanhava o tema. */
-  --guide-crop: #a2d2eb;
+  /* Não existe variável de guia. AS DUAS GUIAS — área segura e linha de corte —
+     leem `--companheira` direto, e é de propósito: enquanto havia uma
+     `--guide-crop` separada, ela tinha o próprio valor padrão aqui, e o padrão
+     era azul. Bastava o JS não reescrever para o azul voltar sozinho no tema
+     Vermelho — foi o que aconteceu. Duas variáveis para uma cor só é uma
+     divergência esperando acontecer. */
 
   --font-brand-mono: 'IBM Plex Mono', monospace;
 
@@ -508,14 +508,14 @@ body {
 
 .guide-overlay {
   position: absolute;
-  border: 1px dashed var(--guide-crop);
+  border: 1px dashed var(--companheira);
   pointer-events: none;
   transition: all 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .guide-no-info {
   position: absolute;
-  border: 1px dashed var(--guide-crop);
+  border: 1px dashed var(--companheira);
   /* sem tinta de fundo: era um vermelho cravado, que não acompanhava o tema e
      não há como tirar alpha de uma variável sem color-mix, que o UXP não tem */
   background-color: transparent;
@@ -525,7 +525,7 @@ body {
 
 .guide-crop-overlay {
   position: absolute;
-  border: 1px dashed var(--guide-crop);
+  border: 1px dashed var(--companheira);
   pointer-events: none;
   transition: all 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
@@ -915,7 +915,7 @@ body {
    --------------------------------------------------------------------------- */
 
 .legenda-safe,
-.legenda-crop { color: var(--guide-crop); }
+.legenda-crop { color: var(--companheira); }
 
 
 /* ---------------------------------------------------------------------------

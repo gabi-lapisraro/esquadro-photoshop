@@ -221,6 +221,16 @@ tema Vermelho em Azul, e por um tempo o código tinha um `data-corte` por bolinh
 para isso. Ela decidiu que não — no Vermelho a guia é Nude como o resto. O
 atributo saiu; se a exceção voltar, é por ali.
 
+**E não existe mais variável de guia.** Tirar o `data-corte` não bastou: havia
+uma `--guide-crop` à parte, com valor padrão PRÓPRIO no `:root`, e esse padrão
+era azul. Bastava o `ui.js` não reescrever ela — ao abrir o painel, por exemplo —
+para o azul voltar sozinho no tema Vermelho. Foi exatamente o que ela viu.
+
+As guias agora leem `--companheira` **direto** no CSS, e o `ui.js` não escreve
+nada para elas. Duas variáveis para uma cor só é uma divergência esperando
+acontecer, e o padrão de uma delas sempre vai estar errado para três dos quatro
+temas.
+
 **As duas guias — área segura e linha de corte — saem na mesma cor: a
 secundária do tema.** Elas nunca aparecem juntas (só margem lateral = linha de
 corte; tem topo ou base = área segura), então não precisam se distinguir por
