@@ -93,9 +93,16 @@ NOTAS = [
 ]
 
 
-def sem_comentarios(css):
-    """Remove comentários, para não acusar o que só está explicado em texto."""
-    return re.sub(r"/\*.*?\*/", lambda m: "\n" * m.group(0).count("\n"), css, flags=re.S)
+def sem_comentarios(texto):
+    """Remove comentários, para não acusar o que só está explicado em texto.
+
+    Vale para os dois: /* ... */ do CSS e <!-- ... --> do HTML. Sem o segundo,
+    um comentário que só EXPLICA por que não dá para usar ::before virava erro.
+    A troca preserva as quebras de linha, para o número da linha não andar."""
+    def apaga(m):
+        return "\n" * m.group(0).count("\n")
+    texto = re.sub(r"/\*.*?\*/", apaga, texto, flags=re.S)
+    return re.sub(r"<!--.*?-->", apaga, texto, flags=re.S)
 
 
 def liberadas(css):

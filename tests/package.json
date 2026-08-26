@@ -1,0 +1,8 @@
+{
+  "name": "esquadro-testes",
+  "private": true,
+  "description": "Suíte headless do painel. jsdom só, sem navegador de verdade.",
+  "dependencies": {
+    "jsdom": "^30.0.1"
+  }
+}

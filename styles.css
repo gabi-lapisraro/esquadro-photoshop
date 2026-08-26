@@ -38,15 +38,15 @@
      Editáveis pelo playground.html, que lê estes mesmos tokens.
      Comentário no formato "Grupo | Rótulo" — o gerador do playground usa isso.
      Nada de `gap`: o UXP ignora gap em flexbox. */
-  --alt-logo: 12px;             /* Cabeçalho | Altura do logo ESQUADЯO */
+  --alt-logo: 21.5px;           /* Cabeçalho | Altura do logo ESQUADЯO */
 
   --tam-icone: 27px;            /* Ícones | Altura da célula */
-  --colunas-icones: 7;          /* Ícones | Colunas (6 redes + o botão +) */
+  --colunas-icones: 7;          /* Ícones | Colunas (6 redes + o botão ...) */
   --tam-icone-svg: 17px;        /* Ícones | Desenho do ícone */
   --esp-fileiras: 2px;          /* Ícones | Entre as fileiras */
 
   --alt-controle: 25px;         /* Controles | Altura */
-  --esp-modo-stepper: 4px;      /* Controles | Modo → stepper */
+  --esp-modo-stepper: 5.5px;    /* Controles | Entre as pílulas */
   --esp-dropdown-x: 7.5px;       /* Controles | Recuo do dropdown */
   --esp-item-y: 6px;            /* Controles | Item da lista, vertical */
   --esp-item-x: 10px;            /* Controles | Item da lista, lateral */
@@ -64,7 +64,10 @@
   --esp-acima-botoes: 0px;      /* Botões | Acima do grupo */
   --esp-botao-x: 3.5px;           /* Botões | Recuo horizontal */
 
-  --esp-cabecalho: 25px;           /* Cabeçalho | Altura */
+  --esp-cabecalho: 25px;           /* Cabeçalho | Espaço em volta da moldura */
+  --alt-moldura-topo: 56px;     /* Molduras | Altura da moldura do topo */
+  --alt-moldura-base: 38px;     /* Molduras | Altura da moldura da base */
+  --esp-abaixo-rodape: 18px;    /* Molduras | Abaixo da moldura da base */
   --tam-color-dot: 4.5px;         /* Cabeçalho | Bolinha de cor */
 
   --esp-blocos: 10px;           /* Blocos | Plataformas → controles */
@@ -72,10 +75,10 @@
   --esp-preview: 20px;          /* Blocos | Abaixo do preview */
   --esp-corpo-x: 14px;          /* Blocos | Margem lateral */
   --esp-corpo-topo: 0px;       /* Blocos | Topo do corpo */
-  --esp-corpo-base: 39px;       /* Blocos | Base do corpo */
+  --esp-corpo-base: 8px;        /* Blocos | Base do corpo */
 
   --raio-caixa: 0px;            /* Formas | Cantos das caixas */
-  --raio-controle: 0px;         /* Formas | Cantos dos controles */
+  --raio-controle: 999px;       /* Formas | Cantos dos controles (999 = pílula) */
   --raio-item: 0px;             /* Formas | Cantos dos itens */
   --traco-selecao: 0.5px;       /* Formas | Traço da cor ativa */
   --borda: 1;                   /* Formas | Espessura da borda */
@@ -204,22 +207,28 @@ body {
 }
 
 .mode-container {
-  flex: 1.7;
+  /* duas pílulas aqui, uma no stepper: os três terços do desenho */
+  flex: 2;
 }
 
+/* Orgânico e Anúncio deixaram de morar numa caixa segmentada: no desenho são
+   duas pílulas soltas, do mesmo tamanho do stepper. A caixa de fora vira só o
+   trilho que as põe lado a lado. */
 .mode-segmented {
   display: flex;
   background-color: transparent;
-  border: calc(var(--borda) * 1px) solid var(--border-color);
-  border-radius: var(--raio-controle);
-  padding: 2px;
+  border: none;
+  padding: 0;
   height: var(--alt-controle);
   box-sizing: border-box;
 }
 
 .mode-btn {
   flex: 1;
-  border-radius: var(--raio-item);
+  height: 100%;
+  box-sizing: border-box;
+  border: calc(var(--borda) * 1px) solid var(--border-color);
+  border-radius: var(--raio-controle);
   font-family: var(--font-brand-mono);
   font-size: var(--fonte-modo);
   font-weight: var(--peso-modo);
@@ -234,8 +243,10 @@ body {
   user-select: none;
 }
 
+.mode-btn + .mode-btn { margin-left: var(--esp-modo-stepper); }
+
 .stepper-group {
-  flex: 0 0 68px;
+  flex: 1;
 }
 
 .stepper-container {
@@ -314,16 +325,9 @@ body {
   border-color: rgba(255, 255, 255, 0.35);
 }
 
-.dropdown-arrow {
-  width: 9px;
-  height: 5px;
-  color: var(--text-muted);
-  transition: transform 0.2s ease;
-}
-
-.custom-dropdown.open .dropdown-arrow {
-  transform: rotate(180deg);
-}
+/* O nome do formato é sublinhado: sem a seta, é o sublinhado que diz que ali
+   se clica. A dimensão, à direita, fica sem ele. */
+#dropdownCurrentLabel { text-decoration: underline; }
 
 .custom-dropdown-menu {
   position: absolute;
@@ -522,45 +526,132 @@ body {
   user-select: none;
 }
 
-.panel-header {
-  padding: var(--esp-cabecalho) var(--esp-corpo-x) var(--esp-cabecalho);
+/* ---------------------------------------------------------------------------
+   MOLDURAS COM RECORTE EM Я
+
+   O UXP não tem clip-path nem ::before/::after, e `border` não sabe seguir um
+   caminho arbitrário. Então a moldura é fatiada em três:
+
+       [ ponta esquerda ]===== miolo que estica =====[ ponta direita ]
+
+   As PONTAS são SVG de largura fixa: carregam o recorte e desenham o traço com
+   `stroke`. O MIOLO é uma div com border-top e border-bottom, e é ela que
+   absorve a largura do painel — que muda, porque o usuário redimensiona.
+
+   As proporções abaixo saem do desenho (UI Illustrator/1.svg) e são todas
+   função da ALTURA da moldura, para a ponta nunca distorcer:
+
+     largura  = altura * kw        altura da ponta = altura * kh
+     sobe     = altura * kt        quanto a ponta passa acima da linha de cima
+     avança   = altura * ko        quanto ela entra no miolo, para o traço
+                                   encostar sem emenda
+
+   O `stroke-width` das pontas está calibrado para dar 1px nas alturas padrão
+   (56px em cima, 38px embaixo), que é a espessura da borda do miolo. Mexer
+   MUITO nessas alturas afina ou engrossa o traço da ponta sem mexer no do
+   miolo; se isso aparecer, o valor a corrigir é o `stroke-width` no index.html.
+   --------------------------------------------------------------------------- */
+
+.moldura {
   display: flex;
-  /* logo do ESQUADЯO à esquerda; à direita, um bloco com cores, wordmark e
-     tag, uma por linha. `stretch` faz a logo crescer até a altura das três
-     linhas juntas, sem eu ter que somar os valores à mão — a soma mudaria a
-     cada ajuste de espaçamento no playground. */
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: stretch;
-  border-top: none;
-  width: 100%;
-  background-color: var(--bg-color);
+  align-items: flex-start;
+  margin-left: var(--esp-corpo-x);
+  margin-right: var(--esp-corpo-x);
 }
 
-/* logo do ESQUADЯO, sem a caixa de borda que tinha antes. A altura vem do
-   bloco da direita, não de um valor fixo; o min-height é só rede de segurança
-   caso o `stretch` não pegue no UXP. */
+.moldura-ponta {
+  flex-shrink: 0;
+  /* o traço da ponta é `currentColor`, para casar com a borda do miolo */
+  color: var(--border-color);
+}
+
+.moldura-meio {
+  flex: 1;
+  min-width: 0;
+  box-sizing: border-box;
+  border-top: calc(var(--borda) * 1px) solid var(--border-color);
+  border-bottom: calc(var(--borda) * 1px) solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* --- moldura do topo: o ESQUADЯO --- */
+
+.moldura-topo {
+  /* --linha é o que as pontas seguem: a distância de EIXO A EIXO entre as duas
+     linhas, que é a altura da moldura menos a espessura de uma borda. Sem esse
+     desconto a ponta fica meio pixel mais alta que o miolo e o traço dá um
+     degrauzinho no encontro. --meia-borda desce a ponta até o eixo da borda. */
+  --linha: calc(var(--alt-moldura-topo) - var(--borda) * 1px);
+  --meia-borda: calc(var(--borda) * 0.5px);
+  height: var(--alt-moldura-topo);
+  margin-top: var(--esp-cabecalho);
+  margin-bottom: var(--esp-cabecalho);
+}
+
+.moldura-topo .moldura-meio {
+  height: var(--alt-moldura-topo);
+  /* a ponta esquerda é bem mais larga que a direita, então o centro do miolo
+     não é o centro da moldura. Este padding devolve a diferença e o ESQUADЯO
+     volta a ficar centrado na moldura INTEIRA, como no desenho. */
+  padding-right: calc(var(--linha) * 0.7310);
+}
+
+.ponta-topo-esq {
+  width:        calc(var(--linha) * 0.7920);
+  height:       calc(var(--linha) * 1.0413);
+  margin-top:   calc(var(--meia-borda) - var(--linha) * 0.0110);
+  margin-right: calc(var(--linha) * -0.0102);
+}
+
+.ponta-topo-dir {
+  width:       calc(var(--linha) * 0.2352);
+  height:      calc(var(--linha) * 1.0204);
+  margin-top:  calc(var(--meia-borda) - var(--linha) * 0.0102);
+  margin-left: calc(var(--linha) * -0.1844);
+}
+
 .header-logo {
-  align-self: stretch;
-  height: auto;
-  min-height: var(--alt-logo);
+  height: var(--alt-logo);
   width: auto;
-  max-width: 118px;
   color: var(--acento-visivel);
   flex-shrink: 0;
 }
 
-/* bloco da direita: uma informação por linha, encostadas à direita */
-.header-meta {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
+/* --- moldura da base: a assinatura --- */
+
+.moldura-base {
+  --linha: calc(var(--alt-moldura-base) - var(--borda) * 1px);
+  --meia-borda: calc(var(--borda) * 0.5px);
+  height: var(--alt-moldura-base);
+  margin-bottom: var(--esp-abaixo-rodape);
 }
 
-.header-meta > * + * { margin-top: var(--esp-assinatura); }
-.header-meta .header-brand-label { text-align: right; }
+.moldura-base .moldura-meio { height: var(--alt-moldura-base); }
 
-/* a paleta perde a altura fixa: quem manda é o bloco */
+.ponta-base-esq {
+  width:        calc(var(--linha) * 0.4809);
+  height:       calc(var(--linha) * 1.0300);
+  margin-top:   calc(var(--meia-borda) - var(--linha) * 0.0150);
+  margin-right: calc(var(--linha) * -0.0150);
+}
+
+.ponta-base-dir {
+  width:       calc(var(--linha) * 0.4812);
+  height:      calc(var(--linha) * 1.0300);
+  margin-top:  calc(var(--meia-borda) - var(--linha) * 0.0150);
+  margin-left: calc(var(--linha) * -0.0150);
+}
+
+/* assinatura: wordmark, tag e bolinhas, uma por linha, centradas */
+.assinatura {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.assinatura > * + * { margin-top: var(--esp-assinatura); }
 
 .header-brand-label {
   font-family: var(--font-brand-mono);
@@ -700,18 +791,6 @@ body {
 .preview-footer .legend-item + .legend-item { margin-left: var(--esp-legenda); }
 
 /* ---------------------------------------------------------------------------
-   RODAPÉ: tag menor e tudo na mesma altura de linha.
-   --------------------------------------------------------------------------- */
-
-.panel-header .theme-palette {
-  display: flex;
-  align-items: center;
-}
-
-
-
-
-/* ---------------------------------------------------------------------------
    O que era `gap` virou margin. O UXP ignora gap em flexbox, então todo espaço
    interno que dependia dele chegava ZERADO no painel: dentro do preview, entre
    as linhas de texto e entre a bolinha e o rótulo da legenda.
@@ -832,6 +911,7 @@ body {
 
 .mode-btn.active {
   background-color: var(--companheira);
+  border-color: var(--companheira);
   color: var(--sobre-companheira);
   font-weight: var(--peso-modo-ativo);
 }

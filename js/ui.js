@@ -325,19 +325,24 @@ function bindEvents() {
     });
   });
 
-  // Botão + / - para expandir/recolher
+  // Botão para abrir/fechar a segunda fileira de plataformas.
+  // O ícone fechado ("...") vem do index.html e é guardado aqui: assim o
+  // desenho mora num lugar só, e recolher a fileira não o troca por outro.
+  const iconeAbrir = els.btnToggleStrip.innerHTML;
+  const iconeFechar = '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M19 13H5v-2h14v2z"/></svg>';
+
   els.btnToggleStrip.addEventListener('click', () => {
     const isExpanded = els.extendedStrip.style.display === 'flex';
     if (isExpanded) {
       els.extendedStrip.style.display = 'none';
       els.btnToggleStrip.classList.remove('active');
       els.btnToggleStrip.setAttribute('data-tooltip', 'Mais Plataformas');
-      els.btnToggleStrip.innerHTML = '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>';
+      els.btnToggleStrip.innerHTML = iconeAbrir;
     } else {
       els.extendedStrip.style.display = 'flex';
       els.btnToggleStrip.classList.add('active');
       els.btnToggleStrip.setAttribute('data-tooltip', 'Menos Plataformas');
-      els.btnToggleStrip.innerHTML = '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M19 13H5v-2h14v2z"/></svg>';
+      els.btnToggleStrip.innerHTML = iconeFechar;
     }
   });
 
