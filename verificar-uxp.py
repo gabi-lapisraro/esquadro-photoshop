@@ -45,8 +45,11 @@ ERROS = [
      "Recurso remoto não carrega. Embarque no pacote."),
     (r"border-radius\s*:[^;]*?(?<![.\d])\d{3,}px", "CONFIRMADO",
      "border-radius gigante (o truque do 999px) vira ELIPSE no UXP: ele encolhe "
-     "os dois raios separadamente, e sai rx=largura/2 com ry=altura/2. Para "
-     "pílula, use metade da ALTURA do próprio elemento."),
+     "os dois raios separadamente, e sai rx=largura/2 com ry=altura/2. A regra "
+     "geral: o raio nunca pode passar de METADE DA MENOR DIMENSÃO do elemento. "
+     "Para pílula, use metade da altura. Isto aqui pega só o caso gritante do "
+     "999px; um raio de 14px num elemento de 17px de altura também ovaliza, e "
+     "esse só o olho pega no painel."),
     (r"outline\s*:", "CONFIRMADO",
      "`outline` não segue border-radius: sai quadrado em elemento redondo. Use box-shadow."),
     (r"display\s*:\s*(?:inline-)?grid", "DOCUMENTADO",

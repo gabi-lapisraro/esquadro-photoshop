@@ -272,7 +272,6 @@ function init(config) {
   els.safeOverlay = document.getElementById('safeOverlay');
   els.noInfoBox = document.getElementById('noInfoBox');
   els.cropOverlay = document.getElementById('cropOverlay');
-  els.cropNoteText = document.getElementById('cropNoteText');
   els.legendSafeItem = document.getElementById('legendSafeItem');
   els.legendCropItem = document.getElementById('legendCropItem');
   els.btnCreate = document.getElementById('btnCreate');
@@ -679,7 +678,6 @@ function clearPreview() {
   els.cropOverlay.style.display = 'none';
   els.legendSafeItem.style.display = 'none';
   els.legendCropItem.style.display = 'none';
-  els.cropNoteText.style.display = 'none';
 }
 
 function updatePreview() {
@@ -689,8 +687,6 @@ function updatePreview() {
     return;
   }
   els.canvasPreview.classList.remove('is-empty');
-
-  const q = parseInt(els.qtdInput.textContent) || 1;
 
   // O canvas ocupa o PALCO inteiro, respeitando a proporção do formato. Antes
   // 84x108 estavam cravados aqui, e o `--alt-stage` do playground só mudava o
@@ -773,12 +769,9 @@ function updatePreview() {
     els.cropOverlay.style.right = `${lateral * scaleX}px`;
     els.cropOverlay.style.top = `${(fmt.crop.top || 0) * scaleY}px`;
     els.cropOverlay.style.bottom = `${(fmt.crop.bottom || 0) * scaleY}px`;
-
-    els.cropNoteText.style.display = q > 1 ? 'block' : 'none';
   } else {
     els.legendCropItem.style.display = 'none';
     els.cropOverlay.style.display = 'none';
-    els.cropNoteText.style.display = 'none';
   }
 }
 

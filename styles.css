@@ -5,6 +5,12 @@
 @font-face { font-family: 'IBM Plex Mono'; font-weight: 500; src: url('fonts/IBMPlexMono-Medium.ttf'); }
 @font-face { font-family: 'IBM Plex Mono'; font-weight: 600; src: url('fonts/IBMPlexMono-SemiBold.ttf'); }
 @font-face { font-family: 'IBM Plex Mono'; font-weight: 700; src: url('fonts/IBMPlexMono-Bold.ttf'); }
+/* Itálicos. O UXP não sintetiza itálico a partir do romano — sem o arquivo, o
+   `font-style: italic` cai calado no texto reto. São dois porque o modo ativo é
+   o único itálico do painel, e o peso dele é token: em 500 pega o Medium, em
+   700 o Bold. */
+@font-face { font-family: 'IBM Plex Mono'; font-weight: 500; font-style: italic; src: url('fonts/IBMPlexMono-MediumItalic.ttf'); }
+@font-face { font-family: 'IBM Plex Mono'; font-weight: 700; font-style: italic; src: url('fonts/IBMPlexMono-BoldItalic.ttf'); }
 
 :root {
   --noir-raro: #1e1e1e;
@@ -61,12 +67,12 @@
   --esp-item-y: 6px;            /* Controles | Item da lista, vertical */
   --esp-item-x: 9px;            /* Controles | Item da lista, lateral */
 
-  --esp-preview-topo: 95px;     /* Preview | Topo */
-  --esp-preview-base: 0px;     /* Preview | Base */
+  --esp-preview-topo: 25px;     /* Preview | Topo */
+  --esp-preview-base: 20px;     /* Preview | Base */
   --alt-stage: 450px;           /* Preview | Altura do palco */
   --alt-preview-min: 0px;     /* Preview | Altura mínima */
   --alt-preview-max: 590px;   /* Preview | Altura máxima */
-  --esp-preview-interno: 29px;  /* Preview | Entre canvas e textos */
+  --esp-preview-interno: 8px;  /* Preview | Entre canvas e textos */
   --esp-footer-linhas: 0px;     /* Preview | Entre as linhas de texto */
   --esp-legenda: 0px;          /* Preview | Entre itens da legenda */
 
@@ -83,7 +89,7 @@
 
   --esp-blocos: 19px;           /* Blocos | Plataformas → controles */
   --esp-controles: 4px;        /* Blocos | Entre controles e preview */
-  --esp-preview: 73px;          /* Blocos | Abaixo do preview */
+  --esp-preview: 12px;          /* Blocos | Abaixo do preview */
   --esp-corpo-x: 17px;          /* Blocos | Margem lateral */
   --esp-corpo-topo: 0px;       /* Blocos | Topo do corpo */
   --esp-corpo-base: 4px;        /* Blocos | Base do corpo */
@@ -94,13 +100,13 @@
 
   --fonte-dropdown: 10px;     /* Fontes | Formato selecionado */
   --fonte-item: 9px;           /* Fontes | Item da lista */
-  --fonte-modo: 7.5px;          /* Fontes | Orgânico / Anúncio */
+  --fonte-modo: 8px;          /* Fontes | Orgânico / Anúncio */
   --fonte-stepper: 7.5px;       /* Fontes | Número da quantidade */
   --fonte-stepper-sinal: 10px;  /* Fontes | Sinais + e - */
   --fonte-legenda: 6.5px;         /* Fontes | Legenda do preview */
   --fonte-fmt-dim: 9px;         /* Fontes | Dimensão no seletor */
   --esp-fmt-dim: 5.5px;           /* Controles | Nome → dimensão */
-  --fonte-botao: 7px;           /* Fontes | Botões de ação */
+  --fonte-botao: 9px;           /* Fontes | Botões de ação */
   --alt-wordmark: 6px;         /* Cabeçalho | Altura do wordmark */
   --esp-assinatura: 4px;        /* Cabeçalho | Entre as linhas da assinatura */
   --fonte-rodape: 5px;          /* Cabeçalho | Fonte do texto */
@@ -111,7 +117,6 @@
   --peso-botao: 600;            /* Pesos | Botões de ação */
   --peso-stepper-sinal: 700; /* Pesos | Sinais + e - */
   --peso-item: 400;        /* Pesos | Item da lista */
-  --peso-nota: 400;        /* Pesos | Nota do crop */
   --peso-tag: 400;         /* Pesos | Tag do cabeçalho */
   --peso-stepper: 400;     /* Pesos | Número da quantidade */
   --peso-item-ativo: 700;  /* Pesos | Item ativo da lista */
@@ -246,13 +251,18 @@ body {
   flex: 2;
 }
 
-/* Orgânico e Anúncio deixaram de morar numa caixa segmentada: no desenho são
-   duas pílulas soltas, do mesmo tamanho do stepper. A caixa de fora vira só o
-   trilho que as põe lado a lado. */
+/* Orgânico e Anúncio num TRILHO só, com a escolhida deslizando dentro dele:
+   é um controle de duas posições, não dois botões independentes. O contorno é
+   do trilho; a pílula preenchida por dentro é a posição atual.
+
+   Recuo ZERO: a pílula tem a altura CHEIA do trilho e encosta na linha, em vez
+   de flutuar dentro dela. Por isso as duas têm o mesmo raio — metade da altura
+   —, e a ponta arredondada da pílula cai exatamente sobre a do trilho. */
 .mode-segmented {
   display: flex;
   background-color: transparent;
-  border: none;
+  border: calc(var(--borda) * 1px) solid var(--border-color);
+  border-radius: calc(var(--alt-controle) / 2);
   padding: 0;
   height: var(--alt-controle);
   box-sizing: border-box;
@@ -262,7 +272,7 @@ body {
   flex: 1;
   height: 100%;
   box-sizing: border-box;
-  border: calc(var(--borda) * 1px) solid var(--border-color);
+  border: none;
   border-radius: calc(var(--alt-controle) / 2);
   font-family: var(--font-brand-mono);
   font-size: var(--fonte-modo);
@@ -277,8 +287,6 @@ body {
   transition: all 0.15s ease;
   user-select: none;
 }
-
-.mode-btn + .mode-btn { margin-left: var(--esp-modo-stepper); }
 
 .stepper-group {
   flex: 1;
@@ -507,14 +515,6 @@ body {
   width: 100%;
   border-top: none;
   padding-top: 2px;
-}
-
-.crop-note {
-  font-family: var(--font-brand-mono);
-  font-size: 8px;
-  color: var(--azul-raro);
-  font-weight: var(--peso-nota);
-  letter-spacing: 0.3px;
 }
 
 .legend-row {
@@ -748,7 +748,11 @@ body {
   color: #f5f5f5;
   border: calc(var(--borda) * 1px) solid rgba(255, 255, 255, 0.2);
   padding: 3px 6px;
-  border-radius: var(--raio-caixa);
+  /* 6px, e não --raio-caixa. O tooltip tem uns 17px de altura, e o raio das
+     caixas é 14,5: passa da metade da menor dimensão, e aí o UXP corta cada
+     eixo por conta e ovaliza. A regra geral vale para tudo aqui dentro — o
+     raio nunca pode passar de METADE DA MENOR DIMENSÃO do elemento. */
+  border-radius: 6px;
   font-family: var(--font-brand-mono);
   font-size: 8.5px;
   font-weight: 600;
@@ -999,6 +1003,9 @@ body {
   border-color: var(--companheira);
   color: var(--sobre-companheira);
   font-weight: var(--peso-modo-ativo);
+  /* itálico, como no desenho: é o segundo sinal de "este é o modo escolhido",
+     junto com o preenchimento. O arquivo da fonte está embarcado acima. */
+  font-style: italic;
 }
 
 .platform-icon.active,

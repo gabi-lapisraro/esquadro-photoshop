@@ -1,7 +1,8 @@
 # ESQUADЯO — estado do projeto
 
-Documento de passagem. Lido em 25/08/2026, fim do dia; retomado em 25/08 à
-noite, quando o redesenho dos SVGs foi implementado.
+Documento de passagem. Lido em 25/08/2026, fim do dia; retomado na noite de
+25/08 e ao longo de 26/08, quando o redesenho dos SVGs foi implementado e
+**testado no Photoshop de verdade**.
 Projeto: `~/Downloads/esquadro-photoshop`, git com histórico completo.
 
 ---
@@ -12,7 +13,14 @@ Plugin UXP para Photoshop que cria pranchetas e guias dos formatos de mídia
 social, a partir do Guia de Formatos Digitais da LAPISRARO.
 
 **Funciona e está instalado.** Todos os caminhos de código já rodaram no
-Photoshop 27.9.1 pelo menos uma vez, verificados por log.
+Photoshop 27.9.1 pelo menos uma vez, verificados por log. O redesenho subiu no
+painel em 26/08 e foi ajustado ali, olhando: é dessa rodada que saíram as duas
+armadilhas novas do UXP (raio virando elipse, `opacity` ignorado) e o itálico
+sem arquivo.
+
+Estado do pacote em 26/08: `dist/ESQUADRO-1.0.0.{zip,ccx}`, 441 KB, validado, e
+instalado em `~/Library/Application Support/Adobe/UXP/Plugins/External/`.
+Aparece como **Plugins > Lápis Raro > ESQUADЯO** e abre em 264x476.
 
 ---
 
@@ -60,13 +68,20 @@ em navegador, Figma ou playground, porque lá o CSS funciona inteiro.
 | `gap` em flexbox é ignorado | "ainda está tudo colado", 3 rodadas | espaçamento só por `margin` |
 | `outline` não segue `border-radius` | anel quadrado em bolinha redonda | `box-shadow`, ou `border` com `border-box` |
 | CSS remoto não carrega | fonte da marca sumia | `@font-face` local, `.ttf` embarcado |
-| `border-radius: 999px` vira ELIPSE | botão oval, texto vazando para fora | raio = METADE DA ALTURA do elemento |
+| itálico não é sintetizado | `font-style: italic` saía reto | embarcar o `.ttf` itálico |
+| raio maior que metade da menor dimensão vira ELIPSE | botão oval com texto vazando; tooltip ovalado | raio ≤ METADE DA MENOR DIMENSÃO |
 | `opacity` é ignorado | os 6 ícones apagados saíram todos cheios | recuar na COR, com `rgba()` |
 
 As duas últimas apareceram em 26/08, no primeiro teste do redesenho no painel.
 O `999px` é o truque padrão de pílula na web: o CSS de verdade encolhe os dois
 raios **pelo mesmo fator** quando não cabem, e sai pílula. O UXP encolhe cada
 eixo **por conta**, e sai `rx = largura/2` com `ry = altura/2` — uma elipse.
+
+**E não é só o 999.** O tooltip das plataformas ovalou com `--raio-caixa`, que
+é 14,5px, num elemento de uns 17px de altura: 14,5 passa de 8,5, e o mesmo corte
+por eixo acontece. O `verificar-uxp.py` só pega o caso gritante do três dígitos;
+o resto é olho no painel. A regra a carregar na cabeça é **raio ≤ metade da
+menor dimensão**.
 
 `opacity` sendo ignorado derruba mais coisa do que parece: onde o estado era
 dito por opacidade, ele passou a ser dito por cor. O `.is-disabled` mantém o
@@ -215,9 +230,12 @@ Os quatro pontos foram feitos:
 1. **Duas molduras com recorte em Я** — uma no topo com ESQUADЯO, outra na base
    com LAPISЯARO + BRAND INTELLIGENCE + as bolinhas. O cabeçalho único deixou
    de existir; a assinatura virou rodapé de verdade, colada na base do painel.
-2. **Controles em pílula.** `--raio-controle` foi para 999px. Orgânico e
-   Anúncio saíram da caixa segmentada e viraram duas pílulas soltas, do mesmo
-   tamanho do stepper: os três terços do desenho.
+2. **Controles em pílula.** Orgânico e Anúncio chegaram a virar duas pílulas
+   soltas, lidas do desenho, mas voltaram para um TRILHO só: é um controle de
+   duas posições, não dois botões independentes. O contorno é do trilho, e a
+   pílula preenchida por dentro é a posição atual — desliza de uma para a
+   outra. O recuo de 2px separa a pílula do contorno e entra duas vezes na
+   conta do raio interno.
 3. **Seletor de formato** com o nome sublinhado e sem seta.
 4. **"…"** no lugar do "+".
 
@@ -396,6 +414,23 @@ mesmo depois de eu consertar o alinhamento:
    **desaparecia da coluna** — ela perdia o slider e não tinha como desfazer.
    O regex passou a aceitar `-?`.
 3. **O campo numérico deixava digitar.** Agora tem piso em zero.
+
+#### O topo e o preview dividem o mesmo espaço
+
+Com o mecanismo consertado, os valores dela ficaram visíveis pelo que eram:
+topo 95 + interno 29 + abaixo 73 deixavam o canvas em **20x25px**. Não é bug — é
+que o card tem uma altura só, e cada pixel de recuo sai do palco.
+
+Medido num painel de 478px:
+
+| topo / interno / abaixo | canvas |
+|---|---|
+| 95 / 29 / 73 | 20 x 25 |
+| 30 / 10 / 20 | 130 x 162 |
+| 20 / 8 / 16 | 142 x 178 |
+| **12 / 8 / 12** | **152 x 190** |
+
+Ficou em 12 / 8 / 12.
 
 #### O canvas ficava com o tamanho de antes
 
