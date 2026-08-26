@@ -600,12 +600,18 @@ clareado reprovava com texto branco.
 ## Como o plugin aparece no Photoshop
 
 ```
-Plugins > Lápis Raro > ESQUADЯO
+Plugins > ESQUADЯO > Lápis Raro
 ```
 
 O `name` do manifest é o que vira o item do menu; o `label` do entrypoint é o
-painel dentro dele. Antes eram "ESQUADЯO" e "ESQUADЯO — Lápis Raro", que
-repetiam o nome e enterravam a marca.
+painel dentro dele. Passou por três versões: primeiro "ESQUADЯO" com
+"ESQUADЯO — Lápis Raro" dentro, que repetia o nome; depois a marca fora e o
+produto dentro; e agora o inverso, a pedido dela — o produto é o que se procura
+no menu, e a marca assina o painel.
+
+O `Я` é o cirílico U+042F, como no nome dos arquivos. Só o ESQUADЯO o usa; o
+"Lápis Raro" do rótulo vai escrito normal, com acento. (O wordmark em vetor do
+rodapé é outra coisa: ali é arte-final, e nela o Я aparece.)
 
 **Achado no caminho: `preferredDockSize` não existe.** A chave certa é
 `preferredDockedSize`, com o "ed". A errada ficou no manifest sem fazer nada, e
