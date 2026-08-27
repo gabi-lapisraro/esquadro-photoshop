@@ -8,7 +8,7 @@ coisa foi resolvida, o que foi tentado e falhou, e as medidas tiradas do
 desenho. Este arquivo ficou com o que se consulta trabalhando; aquele, com o que
 se consulta quando algo não faz sentido.
 
-## Por onde continuar — 26/08, revisão de código
+## Por onde continuar — 27/08
 
 Tudo o que está aqui embaixo é contexto. Isto é o estado.
 
@@ -57,16 +57,17 @@ Tudo o que está aqui embaixo é contexto. Isto é o estado.
   Descobri quebrando de propósito: passou.
 
 **Fechado antes, em 25 e 26/08:** o redesenho inteiro da UI, testado no painel; o
-pacote `dist/ESQUADRO-1.0.0.{zip,ccx}` (449 KB), validado; a apresentação em três
+pacote `dist/ESQUADRO-1.0.0.{zip,ccx}`, validado; a apresentação em três
 formatos (artifact publicado, PDF e PPTX); e o `INSTALAR.md` com o Windows passo
 a passo.
 
-**Esperando resposta do Photoshop — uma coisa só:**
+**Nada esperando resposta do Photoshop.** A última pendência de código fechou em
+27/08: a prancheta **nasce transparente**, confirmado no painel. O valor `3` de
+`artboardBackgroundType`, que tinha sido deduzido da ordem das opções nas
+Propriedades, estava certo.
 
-- **A prancheta nasce transparente?** Último commit. O valor `3` de
-  `artboardBackgroundType` foi deduzido, não confirmado. Se sair branca, o log
-  diz com que valor ela ficou e é trocar `_FUNDO_TRANSPARENTE` em
-  `js/photoshop.js`. Ver "Bugs que já foram corrigidos".
+Também confirmado em 27/08: o modo de desenvolvedor é necessário para
+**instalar**, não para **usar** — ver "Distribuição".
 
 **Aberto, em ordem de valor:**
 
@@ -94,9 +95,9 @@ painel em 26/08 e foi ajustado ali, olhando: é dessa rodada que saíram as duas
 armadilhas novas do UXP (raio virando elipse, `opacity` ignorado) e o itálico
 sem arquivo.
 
-Estado do pacote em 26/08: `dist/ESQUADRO-1.0.0.{zip,ccx}`, 441 KB, validado, e
+Estado do pacote: `dist/ESQUADRO-1.0.0.{zip,ccx}`, 451 KB, validado, e
 instalado em `~/Library/Application Support/Adobe/UXP/Plugins/External/`.
-Aparece como **Plugins > Lápis Raro > ESQUADЯO** e abre em 264x476.
+Aparece como **Plugins > ESQUADЯO > Lápis RAЯO** e abre em 264x476.
 
 ---
 
@@ -450,25 +451,66 @@ limpo e confere o manifest (inclusive `host` como objeto), se o `main` existe,
 se toda referência de HTML, CSS e `require()` resolve, se não há nada remoto e
 se não sobrou lixo. Roda automático no `empacotar.sh` e trava o build se falhar.
 
-O que existe: `dist/ESQUADRO-1.0.0.ccx` e `.zip` (312 KB), e o `INSTALAR.md`.
+O que existe: `dist/ESQUADRO-1.0.0.ccx` e `.zip`, e o `INSTALAR.md`.
 
-Três caminhos, do mais simples ao mais robusto:
+### O modo de desenvolvedor NÃO precisa ficar ligado — CONFIRMADO em 27/08
 
-1. **`.ccx` por duplo clique** — Creative Cloud instala. Não é assinado pela
-   Adobe, então pode aparecer aviso ou ser recusado dependendo da versão.
-2. **Pasta compartilhada com o `.zip`** + `INSTALAR.md`. Previsível, mas
-   atualização é manual.
-3. **Adobe Exchange em listagem privada** — instalação e atualização
-   automáticas, mas passa por revisão da Adobe e exige conta de desenvolvedor.
+Testado no painel: com o plugin já instalado em
+`~/Library/Application Support/Adobe/UXP/Plugins/External/`, **desligar o modo
+de desenvolvedor e reiniciar o Photoshop não faz o plugin sumir.** Ele continua
+aparecendo e operando.
 
-**O que continua sem teste: uma segunda máquina.** O pacote está íntegro, mas
-"íntegro" não é "instala e abre no computador do colega". O que só a máquina do
-outro responde: se o Creative Cloud aceita o `.ccx` sem assinatura, se a fonte
-embarcada aparece numa instalação limpa, e se o caminho do Windows está certo
-(escrevi pela documentação da Adobe, sem testar).
+O teste foi feito com **Sair completo** do Photoshop antes de reabrir, não
+fechando a janela — no macOS fechar a janela não encerra o aplicativo, e a
+varredura de plugins só roda no início de verdade. Sem isso o teste não valeria.
 
-Sugestão: instalar em UMA máquina antes de mandar para todos, e usar o
-`INSTALAR.md` como roteiro. Se der problema, o log UXP dessa máquina diz o
-motivo — é onde achamos o `host` como array.
+Isso muda o pedido ao TI de "exceção permanente de política" para "habilitar uma
+vez durante a instalação". É bem mais fácil de aprovar.
+
+**O limite deste teste:** ele prova *instalei com o modo ligado, funciona com ele
+desligado*. Não prova *consigo instalar numa máquina que nunca teve o modo
+ligado* — pode ser que a cópia da pasta baste, pode ser que o Photoshop precise
+do modo uma vez para registrar o plugin. É o que a segunda máquina responde.
+
+### O `.ccx` pode não ser problema de assinatura
+
+Há uma thread no fórum da Adobe descrevendo exatamente o mesmo sintoma, no mesmo
+Photoshop **27.9.1**: `.ccx` recusando instalar com "Couldn't install plugin" e
+"Compatible app required", enquanto o mesmo plugin instala no Premiere e funciona
+em modo de desenvolvedor.
+
+<https://forums.creativeclouddeveloper.com/t/photoshop-27-9-1-packaged-uxp-plugin-ccx-fails-to-install-couldnt-install-plugin-compatible-app-required-premiere-fine-dev-mode-fine/12089>
+
+A suspeita de quem abriu é a reescrita do backend de plugins do Photoshop
+("Drover"), em liberação pública desde 26/07. Versão, canal beta, manifest e
+cache foram descartados. **A thread está sem resolução.**
+
+Ou seja: pode ser regressão do 27.9.1, não falta de assinatura. A mensagem de
+erro distingue — "Compatible app required" aponta para o bug; aviso de origem
+não verificada aponta para assinatura.
+
+### Os caminhos, com o que se sabe hoje
+
+1. **Pasta compartilhada com o `.zip`** + `INSTALAR.md`, com modo de
+   desenvolvedor ligado só na instalação. **É o caminho viável hoje.**
+   Atualização é cópia manual de pasta em cada máquina.
+2. **`.ccx` por duplo clique** — não funcionou aqui. Antes de descartar, vale
+   distinguir bug de assinatura pela mensagem de erro, e testar noutra versão do
+   Photoshop.
+3. **Adobe Exchange** — sai assinado, com instalação e atualização automáticas, e
+   dispensa modo de desenvolvedor. Exige conta de desenvolvedor (Adobe ID
+   pessoal serve, sem taxa documentada), perfil público de publisher com site de
+   marketing, e revisão da Adobe. **Atenção:** a documentação pública descreve
+   listagem no Marketplace e no Exchange, os dois **públicos** — não encontrei
+   opção de listagem privada para plugin UXP. Confirmar com a Adobe antes de
+   assumir que dá para distribuir só internamente.
+
+**O que continua sem teste: uma segunda máquina.** Se a fonte embarcada aparece
+numa instalação limpa, se a cópia da pasta funciona sem nunca ter ligado o modo
+de desenvolvedor, e se o caminho do Windows está certo (escrito pela
+documentação da Adobe, sem testar).
+
+Se der problema, o log UXP da máquina diz o motivo — é onde achamos o `host`
+como array.
 
 ---

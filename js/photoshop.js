@@ -279,8 +279,9 @@ const _CAMADA_ATIVA = { _ref: "layer", _enum: "ordinal", _value: "targetEnum" };
  *
  * `artboardBackgroundType` é o campo, e o valor vai na ordem em que as opções
  * aparecem nas Propriedades da prancheta: Branco, Preto, Transparente, Outro.
- * Daí o 3. NÃO CONFIRMADO no painel — se sair errado, o log diz qual valor a
- * prancheta ficou tendo, e é só trocar aqui.
+ * Daí o 3. CONFIRMADO no painel em 27/08/2026: a prancheta nasce transparente.
+ * A conferência abaixo fica, porque pedir não é obter — se um dia o Photoshop
+ * mudar o significado do valor, o log diz com o que a prancheta ficou.
  */
 const _FUNDO_TRANSPARENTE = 3;
 

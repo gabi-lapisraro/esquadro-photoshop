@@ -20,9 +20,15 @@ Photoshop 27.9.1, verificados por log. 69 formatos, 14 plataformas.
 Plugins > ESQUADЯO > Lápis RAЯO
 ```
 
-Duplo clique em `dist/ESQUADRO-1.0.0.ccx` (o Creative Cloud instala), ou
-instalação manual copiando a pasta para o diretório de plugins UXP e
-**reiniciando o Photoshop** — ele só varre essa pasta ao iniciar.
+Copiar a pasta do plugin para o diretório de plugins UXP e **reiniciar o
+Photoshop** — ele só varre essa pasta ao iniciar. Exige o modo de desenvolvedor
+do Photoshop ligado **na hora de instalar**; confirmado em 27/08 que ele pode
+ser desligado depois, e o plugin continua funcionando.
+
+O `.ccx` por duplo clique **não instalou** no Photoshop 27.9.1. Pode ser falta
+de assinatura da Adobe ou uma regressão conhecida dessa versão — a seção
+"Distribuição" do [`docs/ESTADO.md`](docs/ESTADO.md) tem o link da thread no
+fórum da Adobe e como distinguir os dois casos.
 
 Passo a passo, macOS e Windows: **[`INSTALAR.md`](INSTALAR.md)**.
 
@@ -113,9 +119,12 @@ não abre nem salva arquivos.
 versões entre 23 e 27 não foram verificadas. Se a política for suportar só o que
 foi testado, o `minVersion` deve subir.
 
-Os três caminhos de distribuição avaliados (`.ccx` por duplo clique, pasta
-compartilhada com o `.zip`, e Adobe Exchange em listagem privada) estão na seção
-"Distribuição" do [`docs/ESTADO.md`](docs/ESTADO.md), com o que falta em cada um.
+**A distribuição é a questão em aberto.** O `.ccx` não instalou nesta versão do
+Photoshop; a instalação manual funciona mas pede modo de desenvolvedor na hora
+de instalar; e o Adobe Exchange resolveria com assinatura e atualização
+automática, mas a listagem documentada é pública. A seção "Distribuição" do
+[`docs/ESTADO.md`](docs/ESTADO.md) tem o quadro completo, com o que está
+confirmado e o que não está.
 
 ## Licenças de terceiros
 
