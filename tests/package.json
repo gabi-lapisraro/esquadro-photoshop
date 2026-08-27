@@ -6,6 +6,6 @@
     "jsdom": "^30.0.1"
   },
   "scripts": {
-    "test": "node test.js && node test_prefs.js && node test_playground.js && node test_molduras.js"
+    "test": "node test.js && node test_prefs.js && node test_molduras.js"
   }
 }

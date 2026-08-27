@@ -14,3 +14,24 @@ node_modules/
 
 # Playground de espaçamento (gerado)
 playground.html
+
+# Token do GitHub e config de MCP: NUNCA versionar
+.env
+.mcp.json
+
+# Exportação antiga da UI: duplica o index.html/styles.css de um estágio
+# anterior. Fica no disco, sai do git — quem precisar dela acha no histórico.
+ESQUADRO_UI_EXPORT_FINAL/
+
+# Contexto para agente de código. Condensa o README e o ESTADO, então é mais
+# um lugar para sincronizar — fica local em vez de versionado.
+CLAUDE.md
+
+# Logo solta: nenhum código, script ou documento referencia, e não entra no
+# pacote. O que o gerar-molduras.py lê é UI Illustrator/1.svg.
+SVG/
+
+# Calibração de tokens de CSS: ferramenta do papel de design, não do build.
+# O playground.html gerado já era ignorado.
+gerar-playground.py
+tests/test_playground.js

@@ -8,7 +8,6 @@ estado vazio, nomenclatura, tema e preferências.
 cd tests && npm install   # uma vez
 node test.js            # suíte principal
 node test_prefs.js      # o painel reabre na última escolha
-node test_playground.js # o playground sobe e reage
 node test_molduras.js   # as molduras com recorte em Я, e o que veio com elas
 ```
 
