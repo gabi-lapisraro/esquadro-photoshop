@@ -1,7 +1,10 @@
 # ESQUADЯO — estado do projeto
 
 Documento de passagem: o que está aberto, o que não se pode quebrar, e por onde
-continuar. Projeto: `~/Downloads/esquadro-photoshop`.
+continuar.
+
+**Repositório:** <https://github.com/gabi-lapisraro/esquadro-photoshop>, privado.
+Pasta local: `~/Downloads/esquadro-photoshop`.
 
 **O histórico das decisões está em [`HISTORICO.md`](HISTORICO.md)** — como cada
 coisa foi resolvida, o que foi tentado e falhou, e as medidas tiradas do
@@ -12,7 +15,7 @@ se consulta quando algo não faz sentido.
 
 Tudo o que está aqui embaixo é contexto. Isto é o estado.
 
-**Fechado na revisão de 26/08 (fim do dia):**
+**Fechado na revisão de 26 para 27/08:**
 
 - **O bug do stepper estava vivo em outros cinco lugares.** `transition: all` em
   cima de propriedade que carrega ESTADO, em `.platform-icon`, `.mode-btn`,
@@ -38,6 +41,17 @@ Tudo o que está aqui embaixo é contexto. Isto é o estado.
 - **`::before`/`::after` deixaram de travar o build.** Ver a seção de armadilhas.
 - **Três correções neste documento**, que estava divergindo do código: o
   parágrafo da opacidade, o `noInfoBox` e o tamanho do pacote.
+- **O documento foi partido em dois.** Tinha 999 linhas, e a maior parte era
+  narrativa de coisa resolvida. Este ficou com o que se consulta trabalhando; o
+  `HISTORICO.md` levou o porquê de cada decisão e o que falhou.
+- **Saíram do versionamento**, continuando no disco: a apresentação de pitch (que
+  virou repositório próprio), a exportação antiga da UI, o `gerar-playground.py`
+  com o teste dele, e a logo solta em `SVG/`. Quem clonar não os encontra — é de
+  propósito, e o `.gitignore` explica cada um.
+- **O repositório foi refeito limpo**, com 63 commits e sem os arquivos acima em
+  ponto nenhum do histórico. O histórico completo — as 126 versões originais,
+  com todas as tentativas — existe **só na máquina local**, nas branches de
+  backup e num bundle em `~/Downloads/`.
 
 **Achados que NÃO virei código, de propósito:**
 
@@ -71,8 +85,12 @@ Também confirmado em 27/08: o modo de desenvolvedor é necessário para
 
 **Aberto, em ordem de valor:**
 
-1. **Instalar numa segunda máquina.** É o que falta para distribuir. "Funciona
-   aqui" não é "instala no computador do colega" — ver "Distribuição".
+1. **Instalar numa máquina que NUNCA teve modo de desenvolvedor ligado.** É a
+   incógnita que sobrou depois do teste de 27/08: já se sabe que dá para
+   desligar o modo depois de instalar; falta saber se dá para instalar sem
+   nunca tê-lo ligado. Junto vai o resto do que só a máquina do colega
+   responde: se a fonte embarcada aparece numa instalação limpa e se o caminho
+   do Windows está certo. Ver "Distribuição".
 2. **O gerador `planilha → js/data_photoshop.js`.** Enquanto não existir, editar
    a planilha não muda o plugin. As regras já estão escritas e conferidas; falta
    o invólucro. Ver "Dados".
@@ -380,18 +398,19 @@ O `name` do manifest é o que vira o item do menu; o `label` do entrypoint é o
 painel dentro dele.
 
 **Não existe como tirar o nível do meio.** O manifesto v5 não tem chave para
-isso: o Photoshop monta `Plugins > nome do plugin > painel` por conta. Ela pediu
-só `Plugins > Lápis Raro`, e o que dá é escolher qual palavra fica em cada
-nível — a marca ficou no primeiro. **A confirmar no painel:** se o Photoshop
-achatar plugin de um painel só, sai exatamente `Plugins > Lápis RAЯO`; se não,
-sai com o ESQUADЯO dentro. De um jeito ou de outro, o primeiro nível é o que ela
-pediu, e é por isso que a apresentação cita só ele.
+isso: o Photoshop monta `Plugins > nome do plugin > painel` por conta. O pedido
+era só `Plugins > Lápis Raro`, e o que dá é escolher qual palavra fica em cada
+nível.
+
+**Confirmado no painel:** sai `Plugins > ESQUADЯO > Lápis RAЯO`. O Photoshop não
+achata plugin de um painel só.
 
 O `Я` é o cirílico U+042F, como no nome dos arquivos, e aparece **nos dois**:
 no ESQUADЯO e em "RaЯo".
 
 **É o SEGUNDO R de Raro que vira, não o primeiro** — LAPISRAЯO. Estava errado em
-dois lugares (no rótulo do painel e no rodapé de `docs/apresentacao.html`) até
+dois lugares (no rótulo do painel e no rodapé da apresentação, hoje no
+repositório `esquadro-apresentacao`) até
 ser corrigido em 26/08. O `aria-label` do wordmark em vetor diz só "LAPISRARO",
 sem o cirílico, porque ali quem desenha a letra virada é o próprio vetor.
 
@@ -434,7 +453,7 @@ antes de alguém checar.
 O que falta confirmar, e agora é uma pergunta pequena: se a guia desenhada pelo
 plugin (`doc.guides.add`, em coordenada absoluta) é adotada pela prancheta que
 está debaixo dela — porque é isso que faz ela ficar "atrás" das outras. A
-observação dela sugere que sim.
+observação no painel sugere que sim.
 
 Além disso, três coisas mecânicas para resolver quando for a hora:
 
