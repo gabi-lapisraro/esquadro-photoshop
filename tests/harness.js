@@ -1,7 +1,10 @@
 const path = require('path');
 const fs = require('fs');
 const { JSDOM } = require(path.join(__dirname, 'node_modules/jsdom'));
-const ROOT = '/Users/gabi/Downloads/esquadro-photoshop';
+// Relativo ao próprio arquivo, e não cravado: a suíte precisa rodar na máquina
+// de quem clona o repo. Caminho absoluto aqui fazia "funciona aqui" valer
+// literalmente só aqui.
+const ROOT = path.join(__dirname, '..');
 
 // localStorage que sobrevive a vários boot(), modelando o painel reaberto na
 // mesma máquina. O do jsdom morre com a janela e exige origem não-opaca.

@@ -2,7 +2,7 @@
 // limpeza de CSS não mudou nada visualmente.
 const fs=require("fs"), path=require("path");
 const {JSDOM}=require(path.join(__dirname,"node_modules/jsdom"));
-const R="/Users/gabi/Downloads/esquadro-photoshop";
+const R=path.join(__dirname,"..");
 let html=fs.readFileSync(R+"/index.html","utf8");
 const css=fs.readFileSync(R+"/styles.css","utf8").replace(/@font-face \{[^}]*\}/g,"");
 html=html.replace('<link rel="stylesheet" href="styles.css">',"<style>"+css+"</style>")

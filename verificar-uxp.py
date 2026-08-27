@@ -39,6 +39,25 @@ RAIZ = pathlib.Path(__file__).parent
 #   CONFIRMADO — visto quebrando neste projeto, no Photoshop 27.9.1
 #   DOCUMENTADO — limitação conhecida do UXP, não testada por nós aqui
 #   IRREGULAR  — suporte varia por versão; funciona mas não dá para confiar
+#
+# E POR QUE A DOCUMENTAÇÃO DA ADOBE NÃO RESOLVE ISTO SOZINHA.
+#
+# A referência de CSS do UXP tem uma lista de propriedades suportadas
+# (developer.adobe.com/photoshop/uxp/2022/uxp-api/reference-css/Styles/). Ela
+# não serve como lista de permissão, e falha nos dois sentidos:
+#
+#   - ESTAR na lista não garante nada. `opacity` está lá, e a página da própria
+#     propriedade diz "Photoshop does not support this property, although UXP
+#     will parse it" e "you should not use this style to control visibility".
+#     É exatamente o que vimos no painel.
+#   - NÃO estar na lista não prova nada. Este painel usa 13 propriedades que a
+#     lista não menciona — `position`, `box-sizing`, `line-height`, `box-shadow`,
+#     `transition`, `border` — e todas funcionam. Sem elas não há painel.
+#
+# Ou seja: a lista da Adobe é um sinal fraco, nas duas direções. O que vale
+# mais é o CONFIRMADO — cada um tem uma falha observada aqui atrás dele. Quando
+# a Adobe contradiz um DOCUMENTADO nosso, o certo é rebaixar para AVISO e ir
+# testar, não trocar uma crença por outra.
 
 ERROS = [
     (r"(?<![-\w])(?:row-|column-)?gap\s*:", "CONFIRMADO",
@@ -60,8 +79,6 @@ ERROS = [
      "CSS Grid não é suportado. Use flex com base fixa."),
     (r"(?<![-\w])grid-(?:template|area|column|row|gap|auto)", "DOCUMENTADO",
      "Propriedade de Grid, sem suporte."),
-    (r"::(?:before|after)\b", "DOCUMENTADO",
-     "Pseudo-elementos ::before e ::after não são suportados. Use um elemento real."),
     (r"(?<![-\w])float\s*:", "DOCUMENTADO",
      "`float` não é suportado. Use flex."),
     (r"backdrop-filter\s*:", "DOCUMENTADO",
@@ -81,6 +98,14 @@ ERROS = [
 ]
 
 AVISOS = [
+    (r"::(?:before|after)\b", "IRREGULAR",
+     "ERA ERRO AQUI, e travava o empacotamento. A Adobe documenta ::before e "
+     "::after como pseudo-elementos SUPORTADOS, desde o UXP 3.0 — e foi a "
+     "crença de que não eram que levou a moldura a ser fatiada em três SVGs. "
+     "Nunca testamos no painel, então isto continua sendo uma pergunta em "
+     "aberto, não uma permissão: confirme com um caso pequeno antes de "
+     "depender. O que mudou é que uma crença não verificada deixou de bloquear "
+     "o build. A moldura fatiada FUNCIONA e não há razão para reescrevê-la."),
     (r"scrollbar-width\s*:\s*none|::-webkit-scrollbar\s*\{[^}]*width\s*:\s*0", "CONFIRMADO",
      "SUMIR com a barra por CSS não funciona no UXP: `scrollbar-width: none` e "
      "`::-webkit-scrollbar { width: 0 }` foram testados no painel e ignorados. "

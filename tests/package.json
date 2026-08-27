@@ -4,5 +4,8 @@
   "description": "Suíte headless do painel. jsdom só, sem navegador de verdade.",
   "dependencies": {
     "jsdom": "^30.0.1"
+  },
+  "scripts": {
+    "test": "node test.js && node test_prefs.js && node test_playground.js && node test_molduras.js"
   }
 }
