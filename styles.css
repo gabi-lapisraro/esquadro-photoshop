@@ -35,9 +35,19 @@
   --text-dim: rgba(229, 227, 217, 0.55);
 
   --sobre-acento: var(--nude-raro);  /* cor de texto sobre o acento */
-  --acento-visivel: #E61C00; /* acento em traço, sobre o painel escuro */
+  /* Acento em TRAÇO, sobre o painel escuro. O padrão DERIVA da principal, e não
+     é um hex escrito de novo: era `#E61C00` cravado aqui, a mesma forma exata
+     da `--guide-crop` que já nos custou o azul voltando sozinho no tema
+     Vermelho. Um padrão cravado só está certo para um dos quatro temas, e fica
+     esperando o dia em que o JS não escrever por cima.
+
+     Hoje as quatro bolinhas declaram `data-acento` igual ao `data-color`, então
+     esta variável é sempre a principal. Ela existe para o caso de uma cor da
+     marca ser legível cheia e sumir em traço — se isso nunca acontecer, o
+     caminho é apagar a variável e o atributo, não deixar os dois divergirem. */
+  --acento-visivel: var(--vermelho-raro);
   --companheira: #e5e3d9;    /* par da cor escolhida (Vermelho → Nude) */
-  --sobre-companheira: #222222; 
+  --sobre-companheira: #222222;
   /* Não existe variável de guia. AS DUAS GUIAS — área segura e linha de corte —
      leem `--companheira` direto, e é de propósito: enquanto havia uma
      `--guide-crop` separada, ela tinha o próprio valor padrão aqui, e o padrão
@@ -218,7 +228,11 @@ body {
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  transition: all 0.15s ease;
+  /* SEM transição, pela mesma razão do .stepper-btn: a `color` aqui é ESTADO —
+     é ela, e só ela, que diz qual plataforma está escolhida. No painel a
+     transição de cor não completa, a classe sai e a cor fica para trás, e o
+     ícone da plataforma anterior continua aceso. Enquanto o recuo era feito em
+     `opacity` isso não aparecia, porque o UXP ignorava a propriedade inteira. */
   user-select: none;
 }
 
@@ -228,8 +242,13 @@ body {
 }
 
 /* o hover só levanta o ícone: continua o mesmo desenho, sem caixa nem cor
-   nova, para não competir com o "está selecionado" */
-.platform-icon:hover:not(.active) { color: rgba(229, 227, 217, 0.55); }
+   nova, para não competir com o "está selecionado".
+
+   O `:not(.btn-toggle-strip)` não é enfeite: sem ele esta regra tem
+   especificidade (0,3,0) e VENCE a do "..." logo abaixo, que tem (0,2,0). O
+   resultado era o "..." apagar para 55% justo ao passar o mouse — o contrário
+   do que o desenho pede. Ordem no arquivo não resolve: especificidade ganha. */
+.platform-icon:hover:not(.active):not(.btn-toggle-strip) { color: rgba(229, 227, 217, 0.55); }
 
 /* O "..." não é plataforma: é o que diz que há MAIS. Fica cheio, como no
    desenho — recuado a 20% ele sumia justo onde precisa ser notado. */
@@ -298,7 +317,15 @@ body {
   align-items: center;
   color: var(--text-muted);
   cursor: pointer;
-  transition: all 0.15s ease;
+  /* SEM transição. Aqui o estado é dito por QUATRO propriedades ao mesmo tempo
+     — fundo, cor, peso e itálico — e `transition: all` animava as quatro. Peso
+     e itálico não são animáveis de forma útil, e fundo e cor são exatamente o
+     que diz qual modo está escolhido: se a transição não completa no painel, o
+     ORGÂNICO fica meio-preenchido ou os dois acendem juntos.
+
+     O preço é a pílula trocar de posição na hora, sem esmaecer. Num controle
+     de duas posições isso é aceitável; se ela quiser o esmaecimento de volta, é
+     esta linha, e o risco é o descrito acima. */
   user-select: none;
 }
 
@@ -400,7 +427,11 @@ body {
   font-weight: var(--peso-dropdown);
   color: var(--text-main);
   cursor: pointer;
-  transition: all 0.15s ease;
+  /* Só `border-color`, que é a única coisa que o hover muda aqui — e hover não
+     é estado, então animar é seguro. Era `all`, que animava também altura e
+     fonte: os dois são token de playground, e animar dimensão obriga o motor a
+     refazer o layout a cada quadro. */
+  transition: border-color 0.15s ease;
 }
 
 .custom-dropdown-trigger:hover {
@@ -529,7 +560,12 @@ body {
   border-radius: calc((var(--esp-item-y) * 2 + var(--borda) * 2px
                        + var(--fonte-item) * 1.28) / 2);
   cursor: pointer;
-  transition: all 0.12s ease;
+  /* SEM transição. O `.active` marca o formato escolhido por borda, cor e peso,
+     e era tudo animado. Animar o que carrega estado é o bug do stepper.
+
+     Some junto a animação do `border-radius` — que é o raio calculado logo
+     acima. Era ela que fazia o aviso de ovalização do playground ler valor
+     intermediário e precisar de 250ms de debounce. */
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -694,7 +730,13 @@ body {
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  transition: all 0.15s ease;
+  /* SEM transição. O `.is-disabled` destes dois botões é dito por fundo, borda
+     e cor — e é ESTADO: diz que não há formato para esta plataforma. Com a
+     transição, o botão podia continuar parecendo clicável depois de travado,
+     que é justamente o erro silencioso que este plugin existe para evitar.
+
+     Quem impede o clique de valer é o JS (`actionsEnabled`); isto aqui é só o
+     que a pessoa vê. Mas ver errado é o bastante. */
   user-select: none;
 }
 

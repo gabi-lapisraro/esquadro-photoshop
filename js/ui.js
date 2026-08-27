@@ -474,10 +474,16 @@ function applyTheme(color) {
   raiz.setProperty('--vermelho-raro', color);
   raiz.setProperty('--acento-visivel', acento);
   raiz.setProperty('--sobre-acento', contrastOn(color));
-  if (par) {
-    raiz.setProperty('--companheira', par);
-    raiz.setProperty('--sobre-companheira', contrastOn(par));
-  }
+
+  // A companheira é escrita SEMPRE, mesmo sem `data-par`. Antes havia um
+  // `if (par)` aqui, e o que ele fazia no silêncio era manter a companheira do
+  // tema ANTERIOR — e a companheira é quem pinta as duas guias. Uma bolinha
+  // nova sem o atributo desenharia guia da cor errada sem nada avisar, que é
+  // exatamente como a `--guide-crop` nos pegou. Sem par declarado, o par é a
+  // própria cor: fica sem contraste, o que se vê, em vez de errado, que não.
+  const companheira = par || color;
+  raiz.setProperty('--companheira', companheira);
+  raiz.setProperty('--sobre-companheira', contrastOn(companheira));
 
   updatePreview();
   salvarPrefs();
