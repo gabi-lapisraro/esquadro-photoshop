@@ -139,7 +139,7 @@ usados para identificar o destino de cada formato.
 ## Licença
 
 Copyright © 2026 **LAPISRARO**. Todos os direitos reservados — ver
-[`LICENSE`](LICENSE). Autoria: Gabriella Felisberto, para a LAPISRARO.
+[`LICENSE`](LICENSE). 
 
 ---
 
